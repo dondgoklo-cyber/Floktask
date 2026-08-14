@@ -8,6 +8,9 @@ import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.HabitLogRepository
 import com.taskmanager.domain.repository.HabitRepository
 import com.taskmanager.domain.repository.PomodoroSessionRepository
+import com.taskmanager.domain.model.Transaction
+import com.taskmanager.domain.usecase.finance.GetFinanceSummaryUseCase
+import com.taskmanager.domain.usecase.finance.GetRecentTransactionsUseCase
 import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +39,10 @@ data class TodayUiState(
     val habitsCompleted: Int = 0,
     val habitsTotal: Int = 0,
     val projects: List<Project> = emptyList(),
+    val financeBalance: Double = 0.0,
+    val financeIncome: Double = 0.0,
+    val financeExpense: Double = 0.0,
+    val recentTransactions: List<Transaction> = emptyList(),
     val isLoading: Boolean = true
 )
 
@@ -45,7 +52,9 @@ class TodayViewModel @Inject constructor(
     private val projectRepository: ProjectRepository,
     private val habitRepository: HabitRepository,
     private val habitLogRepository: HabitLogRepository,
-    private val pomodoroSessionRepository: PomodoroSessionRepository
+    private val pomodoroSessionRepository: PomodoroSessionRepository,
+    private val getFinanceSummaryUseCase: GetFinanceSummaryUseCase,
+    private val getRecentTransactionsUseCase: GetRecentTransactionsUseCase
 ) : ViewModel() {
 
     private val zone = ZoneId.systemDefault()
@@ -62,12 +71,20 @@ class TodayViewModel @Inject constructor(
         val dayStart = today.atStartOfDay(zone).toInstant().toEpochMilli()
         val dayEnd = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
 
+        val financeFlow = combine(
+            getFinanceSummaryUseCase.totalIncome(),
+            getFinanceSummaryUseCase.totalExpense(),
+            getRecentTransactionsUseCase(3)
+        ) { income, expense, recentTx ->
+            Triple(income, expense, recentTx)
+        }
         combine(
             taskRepository.getTasksForDay(dayStart, dayEnd),
             pomodoroSessionRepository.getSessionsForDay(dayStart, dayEnd),
             habitRepository.getActiveHabits(),
-            projectRepository.getActiveProjects()
-        ) { tasks, pomodoros, habits, projects ->
+            projectRepository.getActiveProjects(),
+            financeFlow
+        ) { tasks, pomodoros, habits, projects, finance ->
             val now = System.currentTimeMillis()
             val completedToday = tasks.count { it.isCompleted }
             val totalToday = tasks.size
@@ -103,6 +120,10 @@ class TodayViewModel @Inject constructor(
                 habitsCompleted = habitsCompleted,
                 habitsTotal = habitsTotal,
                 projects = projects,
+                financeBalance = finance.first - finance.second,
+                financeIncome = finance.first,
+                financeExpense = finance.second,
+                recentTransactions = finance.third,
                 isLoading = false
             )
         }.stateIn(viewModelScope, SharingStarted.Lazily, TodayUiState(isLoading = true))

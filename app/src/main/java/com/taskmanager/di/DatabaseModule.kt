@@ -2,6 +2,8 @@ package com.taskmanager.di
 
 import android.content.Context
 import androidx.room.Room
+import com.taskmanager.data.local.dao.AccountDao
+import com.taskmanager.data.local.dao.CategoryDao
 import com.taskmanager.data.local.dao.HabitDao
 import com.taskmanager.data.local.dao.HabitLogDao
 import com.taskmanager.data.local.dao.PomodoroSessionDao
@@ -9,6 +11,7 @@ import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.SubtaskDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.data.local.dao.TransactionDao
 import com.taskmanager.data.local.dao.UserStatsDao
 import com.taskmanager.data.local.database.AppDatabase
 import dagger.Module
@@ -55,4 +58,10 @@ object DatabaseModule {
 
     @Provides
     fun providePomodoroSessionDao(db: AppDatabase): PomodoroSessionDao = db.pomodoroSessionDao()
+    @Provides
+    fun provideTransactionDao(db: AppDatabase): TransactionDao = db.transactionDao()
+    @Provides
+    fun provideCategoryDao(db: AppDatabase): CategoryDao = db.categoryDao()
+    @Provides
+    fun provideAccountDao(db: AppDatabase): AccountDao = db.accountDao()
 }

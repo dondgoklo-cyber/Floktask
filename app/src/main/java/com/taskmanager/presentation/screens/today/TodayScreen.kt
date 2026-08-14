@@ -55,6 +55,9 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.domain.model.TransactionType
+import com.taskmanager.presentation.screens.finance.formatMoney
+import com.taskmanager.presentation.screens.finance.formatSignedMoney
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -65,7 +68,8 @@ fun TodayScreen(
     viewModel: TodayViewModel = hiltViewModel(),
     onTaskClick: (Long) -> Unit,
     onAddTaskClick: () -> Unit,
-    onStartFocus: (Long) -> Unit = {}
+    onStartFocus: (Long) -> Unit = {},
+    onAllFinance: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
@@ -115,6 +119,9 @@ fun TodayScreen(
                 item { GreetingHeader() }
                 item { ProgressCard(state) }
                 item { SummaryRow(state) }
+                if (state.recentTransactions.isNotEmpty() || state.financeBalance != 0.0) {
+                    item { FinanceSummaryCard(state, onAllFinance) }
+                }
                 if (state.nextTasks.isNotEmpty()) {
                     item { SectionHeader(stringResource(R.string.next_tasks)) }
                     items(state.nextTasks, key = { it.id ?: 0 }) { task ->
@@ -391,6 +398,94 @@ private fun HabitsCard(state: TodayUiState) {
                                 else AppTheme.colors.surfaceVariant
                             )
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FinanceSummaryCard(state: TodayUiState, onAllFinance: () -> Unit) {
+    androidx.compose.material3.Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onAllFinance,
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.lg),
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f)
+        )
+    ) {
+        androidx.compose.foundation.layout.Column(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg)
+        ) {
+            androidx.compose.material3.Text(
+                "Финансы",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+            )
+            androidx.compose.foundation.layout.Spacer(Modifier.height(Spacing.sm))
+            androidx.compose.material3.Text(
+                formatMoney(state.financeBalance),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                color = AppTheme.colors.primary
+            )
+            androidx.compose.foundation.layout.Spacer(Modifier.height(Spacing.sm))
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+            ) {
+                androidx.compose.foundation.layout.Column {
+                    androidx.compose.material3.Text(
+                        "Доходы",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppTheme.colors.onSurfaceVariant
+                    )
+                    androidx.compose.material3.Text(
+                        formatSignedMoney(state.financeIncome),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                        color = AppTheme.colors.success
+                    )
+                }
+                androidx.compose.foundation.layout.Column {
+                    androidx.compose.material3.Text(
+                        "Расходы",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppTheme.colors.onSurfaceVariant
+                    )
+                    androidx.compose.material3.Text(
+                        formatSignedMoney(-state.financeExpense),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                        color = AppTheme.colors.danger
+                    )
+                }
+            }
+            // Последние операции
+            if (state.recentTransactions.isNotEmpty()) {
+                androidx.compose.foundation.layout.Spacer(Modifier.height(Spacing.md))
+                state.recentTransactions.forEach { tx ->
+                    androidx.compose.foundation.layout.Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+                    ) {
+                        androidx.compose.material3.Text(
+                            tx.note ?: (if (tx.type == TransactionType.INCOME) "Доход" else "Расход"),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppTheme.colors.onSurface,
+                            modifier = Modifier.weight(1f)
+                        )
+                        androidx.compose.material3.Text(
+                            formatSignedMoney(if (tx.type == TransactionType.INCOME) tx.amount else -tx.amount),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
+                            color = if (tx.type == TransactionType.INCOME) AppTheme.colors.success else AppTheme.colors.danger
+                        )
+                    }
+                }
+                androidx.compose.material3.TextButton(onClick = onAllFinance) {
+                    androidx.compose.material3.Text("Все финансы →")
                 }
             }
         }

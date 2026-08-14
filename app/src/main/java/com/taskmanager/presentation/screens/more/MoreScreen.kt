@@ -72,6 +72,7 @@ fun MoreScreen(
         MoreSection("Обзор", listOf(
             MoreItem(Icons.Filled.Search, R.string.search, Screen.Search.route),
             MoreItem(Icons.Filled.Inbox, R.string.inbox, Screen.Inbox.route),
+            MoreItem(Icons.Filled.CalendarMonth, R.string.calendar, Screen.Calendar.route),
             MoreItem(Icons.Filled.CalendarMonth, R.string.upcoming, Screen.Upcoming.route)
         )),
         MoreSection("Рабочее пространство", listOf(

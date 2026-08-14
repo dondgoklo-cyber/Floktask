@@ -85,6 +85,23 @@
     <string name="next_tasks">Далее</string>
     <string name="focus_time_today">Время фокуса сегодня</string>
     <string name="habits_today">Привычки сегодня</string>
+    <!-- Финансы -->
+    <string name="finance">Финансы</string>
+    <string name="add_transaction">Добавить операцию</string>
+    <string name="add_expense">Добавить расход</string>
+    <string name="add_income">Добавить доход</string>
+    <string name="current_balance">Текущий баланс</string>
+    <string name="income">Доходы</string>
+    <string name="expense">Расходы</string>
+    <string name="net">Разница</string>
+    <string name="transactions">Операции</string>
+    <string name="amount">Сумма</string>
+    <string name="category">Категория</string>
+    <string name="account">Счёт</string>
+    <string name="note">Комментарий</string>
+    <string name="no_transactions">Пока нет операций</string>
+    <string name="expenses_by_category">Расходы по категориям</string>
+    <string name="all_finance">Все финансы</string>
     <string name="today_summary">Сегодня</string>
     <string name="tasks_total">всего задач</string>
     <string name="tasks_completed">выполнено</string>

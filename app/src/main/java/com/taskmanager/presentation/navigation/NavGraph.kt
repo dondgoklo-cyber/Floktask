@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Checklist
@@ -38,6 +39,7 @@ import androidx.navigation.navArgument
 import com.taskmanager.R
 import com.taskmanager.presentation.screens.calendar.CalendarScreen
 import com.taskmanager.presentation.screens.eisenhower.EisenhowerScreen
+import com.taskmanager.presentation.screens.finance.FinanceScreen
 import com.taskmanager.presentation.screens.focus.FocusScreen
 import com.taskmanager.presentation.screens.habits.HabitsScreen
 import com.taskmanager.presentation.screens.inbox.InboxScreen
@@ -159,7 +161,8 @@ fun NavGraph() {
                         navController.navigate(Screen.TaskEdit.buildRoute(taskId))
                     },
                     onAddTaskClick = { navController.navigate(Screen.TaskEditNew.buildRoute()) },
-                    onStartFocus = { taskId -> navController.navigate(Screen.Focus.buildRoute(taskId)) }
+                    onStartFocus = { taskId -> navController.navigate(Screen.Focus.buildRoute(taskId)) },
+                    onAllFinance = { navController.navigate(Screen.Finance.route) }
                 )
             }
             composable(Screen.Projects.route) {
@@ -182,6 +185,7 @@ fun NavGraph() {
                 )
             }
             composable(Screen.Calendar.route) { CalendarScreen() }
+            composable(Screen.Finance.route) { FinanceScreen() }
             composable(Screen.Habits.route) { HabitsScreen() }
             composable(Screen.Focus.route) { FocusScreen() }
             composable(
@@ -255,6 +259,7 @@ private val Screen.icon: ImageVector
         Screen.Today -> Icons.Filled.Checklist
         Screen.Projects -> Icons.Filled.Folder
         Screen.Calendar -> Icons.Filled.CalendarMonth
+        Screen.Finance -> Icons.Filled.AccountBalanceWallet
         Screen.Habits -> Icons.Filled.Checklist
         Screen.Focus -> Icons.Filled.Bolt
         Screen.More,

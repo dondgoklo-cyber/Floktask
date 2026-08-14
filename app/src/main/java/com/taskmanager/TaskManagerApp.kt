@@ -2,6 +2,7 @@ package com.taskmanager
 
 import android.app.Application
 import android.os.Build
+import com.taskmanager.data.repository.FinanceDataSeeder
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import java.io.File
@@ -11,8 +12,12 @@ import java.io.StringWriter
 @HiltAndroidApp
 class TaskManagerApp : Application() {
 
+    @javax.inject.Inject
+    lateinit var financeDataSeeder: FinanceDataSeeder
+
     override fun onCreate() {
         super.onCreate()
+        financeDataSeeder.seedIfNeeded()
         // Глобальный перехватчик крашей — записывает стек в файл
         val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
