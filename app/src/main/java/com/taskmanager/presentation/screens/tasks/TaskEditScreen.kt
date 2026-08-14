@@ -12,9 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,13 +28,13 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -50,6 +54,7 @@ import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.TaskStatus
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
 import java.time.Instant
 import java.time.LocalDate
@@ -68,7 +73,6 @@ fun TaskEditScreen(
     val projects by viewModel.projects.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-    var newTagText by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -78,10 +82,10 @@ fun TaskEditScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.surface
                 )
             )
@@ -124,49 +128,50 @@ fun TaskEditScreen(
                 onProjectChange = viewModel::onProjectChange
             )
 
-            // Дата и время
-            Row(
+            // Дата и время — кликабельные карточки
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(Radius.md)
             ) {
-                OutlinedTextField(
-                    value = form.deadlineDate?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)) ?: "",
-                    onValueChange = {},
-                    label = { Text(stringResource(R.string.date)) },
-                    readOnly = true,
-                    enabled = true,
-                    modifier = Modifier.weight(1f),
-                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-                        .also { source ->
-                            androidx.compose.runtime.LaunchedEffect(source) { }
+                Column(Modifier.padding(Spacing.md)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+                    ) {
+                        Icon(Icons.Filled.CalendarMonth, contentDescription = null, tint = AppTheme.colors.outline)
+                        TextButton(onClick = { showDatePicker = true }) {
+                            Text(
+                                form.deadlineDate?.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+                                    ?: stringResource(R.string.date),
+                                color = if (form.deadlineDate != null) AppTheme.colors.onSurface
+                                else AppTheme.colors.onSurfaceVariant
+                            )
                         }
-                )
-                // TODO: кнопка для открытия DatePicker — см. ниже
-                
-                OutlinedTextField(
-                    value = form.startTime?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "",
-                    onValueChange = {},
-                    label = { Text(stringResource(R.string.time)) },
-                    readOnly = true,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.md)
-            ) {
-                TextButton(onClick = { showDatePicker = true }) {
-                    Text(form.deadlineDate?.let { "📅 $it" } ?: stringResource(R.string.date))
-                }
-                TextButton(onClick = { showTimePicker = true }) {
-                    Text(form.startTime?.let { "🕐 $it" } ?: stringResource(R.string.time))
-                }
-                if (form.deadlineDate != null || form.startTime != null) {
-                    TextButton(onClick = {
-                        viewModel.onDeadlineChange(null)
-                        viewModel.onStartTimeChange(null)
-                    }) {
-                        Text(stringResource(R.string.none))
+                        if (form.deadlineDate != null) {
+                            IconButton(onClick = { viewModel.onDeadlineChange(null) }) {
+                                Icon(Icons.Filled.Close, contentDescription = null, tint = AppTheme.colors.outline)
+                            }
+                        }
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+                    ) {
+                        Icon(Icons.Filled.Schedule, contentDescription = null, tint = AppTheme.colors.outline)
+                        TextButton(onClick = { showTimePicker = true }) {
+                            Text(
+                                form.startTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
+                                    ?: stringResource(R.string.time),
+                                color = if (form.startTime != null) AppTheme.colors.onSurface
+                                else AppTheme.colors.onSurfaceVariant
+                            )
+                        }
+                        if (form.startTime != null) {
+                            IconButton(onClick = { viewModel.onStartTimeChange(null) }) {
+                                Icon(Icons.Filled.Close, contentDescription = null, tint = AppTheme.colors.outline)
+                            }
+                        }
                     }
                 }
             }
@@ -184,9 +189,7 @@ fun TaskEditScreen(
 
             // Приоритет
             Text(stringResource(R.string.priority), style = MaterialTheme.typography.titleSmall)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 Priority.entries.forEach { priority ->
                     val label = when (priority) {
                         Priority.HIGH -> "Высокий"
@@ -204,9 +207,7 @@ fun TaskEditScreen(
 
             // Статус
             Text(stringResource(R.string.status), style = MaterialTheme.typography.titleSmall)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 TaskStatus.entries.forEach { status ->
                     val label = when (status) {
                         TaskStatus.TODO -> "К выполнению"
@@ -235,9 +236,7 @@ fun TaskEditScreen(
             // Теги
             Text(stringResource(R.string.tags), style = MaterialTheme.typography.titleSmall)
             if (form.tags.isNotEmpty()) {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
-                ) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                     form.tags.forEach { tag ->
                         FilterChip(
                             selected = true,
@@ -262,9 +261,7 @@ fun TaskEditScreen(
 
             // Повтор
             Text(stringResource(R.string.recurrence), style = MaterialTheme.typography.titleSmall)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 FilterChip(
                     selected = form.recurrenceRule == null,
                     onClick = { viewModel.onRecurrenceChange(null) },
@@ -297,7 +294,6 @@ fun TaskEditScreen(
         }
     }
 
-    // DatePicker
     if (showDatePicker) {
         val initialDate = form.deadlineDate ?: LocalDate.now()
         val datePickerState = rememberDatePickerState(
@@ -327,7 +323,6 @@ fun TaskEditScreen(
         ) { DatePicker(state = datePickerState) }
     }
 
-    // TimePicker
     if (showTimePicker) {
         val initialTime = form.startTime ?: LocalTime.now()
         val timePickerState = rememberTimePickerState(
@@ -356,7 +351,7 @@ fun TaskEditScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProjectDropdown(
     selectedProjectId: Long?,

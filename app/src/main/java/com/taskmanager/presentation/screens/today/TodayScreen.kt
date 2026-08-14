@@ -48,6 +48,7 @@ import com.taskmanager.R
 import com.taskmanager.domain.model.Task
 import com.taskmanager.presentation.components.priorityColor
 import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
+import com.taskmanager.presentation.screens.tasks.QuickAddSheet
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
@@ -61,10 +62,12 @@ import java.time.format.DateTimeFormatter
 fun TodayScreen(
     viewModel: TodayViewModel = hiltViewModel(),
     onTaskClick: (Long) -> Unit,
-    onAddTaskClick: () -> Unit
+    onAddTaskClick: () -> Unit,
+    onStartFocus: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
+    var showQuickAdd by remember { mutableStateOf(false) }
 
     if (detailTaskId != null) {
         TaskDetailSheet(
@@ -74,13 +77,22 @@ fun TodayScreen(
                 detailTaskId = null
                 onTaskClick(id)
             },
-            onStartFocus = { /* Итерация 6: переход на Focus с задачей */ }
+            onStartFocus = onStartFocus
+        )
+    }
+
+    if (showQuickAdd) {
+        QuickAddSheet(
+            onDismiss = { showQuickAdd = false },
+            onCreated = { _ ->
+                showQuickAdd = false
+            }
         )
     }
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddTaskClick) {
+            FloatingActionButton(onClick = { showQuickAdd = true }) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_task))
             }
         }

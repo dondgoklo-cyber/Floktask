@@ -3,6 +3,8 @@ package com.taskmanager.presentation.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
@@ -17,10 +19,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -35,6 +37,7 @@ import com.taskmanager.presentation.screens.eisenhower.EisenhowerScreen
 import com.taskmanager.presentation.screens.focus.FocusScreen
 import com.taskmanager.presentation.screens.habits.HabitsScreen
 import com.taskmanager.presentation.screens.more.MoreScreen
+import com.taskmanager.presentation.screens.profile.ProfileScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
@@ -70,7 +73,6 @@ fun NavGraph() {
                             label = { Text(stringResource(screen.labelRes)) }
                         )
                     }
-                    // Кнопка "More" — всегда последняя
                     NavigationBarItem(
                         selected = currentRoute == Screen.More.route,
                         onClick = { navController.navigate(Screen.More.route) },
@@ -92,8 +94,11 @@ fun NavGraph() {
         ) {
             composable(Screen.Today.route) {
                 TodayScreen(
-                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) },
-                    onAddTaskClick = { navController.navigate(Screen.TaskEditNew.route) }
+                    onTaskClick = { taskId ->
+                        navController.navigate(Screen.TaskEdit.buildRoute(taskId))
+                    },
+                    onAddTaskClick = { navController.navigate(Screen.TaskEditNew.route) },
+                    onStartFocus = { navController.navigate(Screen.Focus.route) }
                 )
             }
             composable(Screen.Projects.route) { ProjectsScreen() }
@@ -101,22 +106,43 @@ fun NavGraph() {
             composable(Screen.Habits.route) { HabitsScreen() }
             composable(Screen.Focus.route) { FocusScreen() }
             composable(Screen.More.route) {
-                MoreScreen(
-                    onNavigate = { route -> navController.navigate(route) }
-                )
+                MoreScreen(onNavigate = { route -> navController.navigate(route) })
+            }
+            composable(Screen.Profile.route) {
+                ProfileScreen(onBack = { navController.popBackStack() })
             }
             composable(Screen.Eisenhower.route) { EisenhowerScreen() }
-
+            composable(Screen.Inbox.route) {
+                SimplePlaceholder(stringResource(R.string.inbox))
+            }
+            composable(Screen.Upcoming.route) {
+                SimplePlaceholder(stringResource(R.string.upcoming))
+            }
+            composable(Screen.Settings.route) {
+                ProfileScreen(onBack = { navController.popBackStack() })
+            }
             composable(Screen.TaskEditNew.route) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
             composable(
                 route = Screen.TaskEdit.route,
-                arguments = listOf(navArgument(Screen.TaskEdit.ARG_TASK_ID) { type = NavType.LongType })
+                arguments = listOf(
+                    navArgument(Screen.TaskEdit.ARG_TASK_ID) { type = NavType.LongType }
+                )
             ) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
         }
+    }
+}
+
+@Composable
+private fun SimplePlaceholder(title: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(title)
     }
 }
 
@@ -133,6 +159,7 @@ private val Screen.icon: ImageVector
         Screen.Eisenhower,
         Screen.Statistics,
         Screen.Settings,
+        Screen.Profile,
         Screen.TaskEditNew,
         Screen.TaskEdit -> Icons.Filled.MoreHoriz
     }

@@ -12,16 +12,16 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,14 +46,15 @@ fun MoreScreen(
         MoreItem(Icons.Filled.Inbox, R.string.inbox, Screen.Inbox.route),
         MoreItem(Icons.Filled.CalendarMonth, R.string.upcoming, Screen.Upcoming.route),
         MoreItem(Icons.Filled.GridView, R.string.eisenhower_matrix, Screen.Eisenhower.route),
-        MoreItem(Icons.Filled.Settings, R.string.settings, Screen.Settings.route)
+        MoreItem(Icons.Filled.Person, R.string.profile, Screen.Profile.route),
+        MoreItem(Icons.Filled.Person, R.string.settings, Screen.Settings.route)
     )
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.more)) },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.surface
                 )
             )
@@ -69,7 +70,10 @@ fun MoreScreen(
                     leadingContent = { Icon(item.icon, contentDescription = null) },
                     trailingContent = {
                         IconButton(onClick = { onNavigate(item.route) }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null
+                            )
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
