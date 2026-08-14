@@ -58,6 +58,12 @@ import com.taskmanager.presentation.theme.Spacing
 import com.taskmanager.domain.model.TransactionType
 import com.taskmanager.presentation.screens.finance.formatMoney
 import com.taskmanager.presentation.screens.finance.formatSignedMoney
+import com.taskmanager.presentation.screens.finance.AddTransactionSheet
+import com.taskmanager.presentation.screens.finance.FinanceViewModel
+import com.taskmanager.presentation.components.AppFloatingActionButton
+import com.taskmanager.presentation.components.CreateMenuSheet
+import com.taskmanager.domain.model.Category
+import com.taskmanager.domain.model.Account
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -69,11 +75,17 @@ fun TodayScreen(
     onTaskClick: (Long) -> Unit,
     onAddTaskClick: () -> Unit,
     onStartFocus: (Long) -> Unit = {},
-    onAllFinance: () -> Unit = {}
+    onAllFinance: () -> Unit = {},
+    onAddHabit: () -> Unit = {},
+    onAddProject: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
     var showQuickAdd by remember { mutableStateOf(false) }
+    var showCreateMenu by remember { mutableStateOf(false) }
+    var addTransactionType by remember { mutableStateOf<TransactionType?>(null) }
+    val financeViewModel: FinanceViewModel = hiltViewModel()
+    val financeState by financeViewModel.state.collectAsState()
 
     if (detailTaskId != null) {
         TaskDetailSheet(
@@ -96,12 +108,36 @@ fun TodayScreen(
         )
     }
 
+    if (showCreateMenu) {
+        CreateMenuSheet(
+            onDismiss = { showCreateMenu = false },
+            onTask = { showQuickAdd = true },
+            onHabit = onAddHabit,
+            onIncome = { addTransactionType = TransactionType.INCOME },
+            onExpense = { addTransactionType = TransactionType.EXPENSE },
+            onProject = onAddProject
+        )
+    }
+
+    addTransactionType?.let { txType ->
+        AddTransactionSheet(
+            categories = financeState.categories,
+            accounts = financeState.accounts,
+            onDismiss = { addTransactionType = null },
+            onCreate = { amount, type, categoryId, accountId, date, note ->
+                financeViewModel.createTransaction(amount, type, categoryId, accountId, date, note)
+                addTransactionType = null
+            },
+            initialType = txType
+        )
+    }
+
     Scaffold(
         floatingActionButton = {
-            com.taskmanager.presentation.components.AppFloatingActionButton(
+            AppFloatingActionButton(
                 icon = Icons.Filled.Add,
-                contentDescription = stringResource(R.string.add_task),
-                onClick = { showQuickAdd = true }
+                contentDescription = stringResource(R.string.create),
+                onClick = { showCreateMenu = true }
             )
         }
     ) { padding ->

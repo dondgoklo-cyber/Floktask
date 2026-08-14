@@ -162,7 +162,9 @@ fun NavGraph() {
                     },
                     onAddTaskClick = { navController.navigate(Screen.TaskEditNew.buildRoute()) },
                     onStartFocus = { taskId -> navController.navigate(Screen.Focus.buildRoute(taskId)) },
-                    onAllFinance = { navController.navigate(Screen.Finance.route) }
+                    onAllFinance = { navController.navigate(Screen.Finance.route) },
+                    onAddHabit = { navController.navigate(Screen.Habits.route) },
+                    onAddProject = { navController.navigate(Screen.Projects.route) }
                 )
             }
             composable(Screen.Projects.route) {

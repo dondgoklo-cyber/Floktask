@@ -17,6 +17,7 @@
     <string name="profile">Профиль</string>
 
     <!-- Действия -->
+    <string name="create">Создать</string>
     <string name="add_task">Добавить задачу</string>
     <string name="edit_task">Редактировать задачу</string>
     <string name="save">Сохранить</string>

@@ -72,10 +72,11 @@ fun AddTransactionSheet(
     categories: List<Category>,
     accounts: List<Account>,
     onDismiss: () -> Unit,
-    onCreate: (Double, TransactionType, Long?, Long?, Instant, String?) -> Unit
+    onCreate: (Double, TransactionType, Long?, Long?, Instant, String?) -> Unit,
+    initialType: TransactionType = TransactionType.EXPENSE
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var type by remember { mutableStateOf(TransactionType.EXPENSE) }
+    var type by remember { mutableStateOf(initialType) }
     var amountText by remember { mutableStateOf("") }
     var selectedCategoryId by remember { mutableStateOf<Long?>(null) }
     var selectedAccountId by remember { mutableStateOf<Long?>(accounts.firstOrNull()?.id) }
