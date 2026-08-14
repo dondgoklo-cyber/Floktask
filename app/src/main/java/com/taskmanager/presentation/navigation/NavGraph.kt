@@ -39,6 +39,7 @@ import com.taskmanager.presentation.screens.more.MoreScreen
 import com.taskmanager.presentation.screens.profile.ProfileScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.search.SearchScreen
+import com.taskmanager.presentation.screens.settings.SettingsScreen
 import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
 import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
@@ -144,7 +145,7 @@ fun NavGraph() {
                 )
             }
             composable(Screen.Settings.route) {
-                ProfileScreen(onBack = { navController.popBackStack() })
+                SettingsScreen(onBack = { navController.popBackStack() })
             }
             composable(Screen.TaskEditNew.route) {
                 TaskEditScreen(onBack = { navController.popBackStack() })

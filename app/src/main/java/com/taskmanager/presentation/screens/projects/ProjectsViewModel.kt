@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.usecase.project.CreateProjectUseCase
+import com.taskmanager.domain.repository.TaskRepository
 import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -47,8 +49,10 @@ class ProjectsViewModel @Inject constructor(
     }
 }
 
+data class ProjectStats(val total: Int, val completed: Int)
+
 sealed class ProjectsState {
     data object Loading : ProjectsState()
-    data class Success(val projects: List<Project>) : ProjectsState()
+    data class Success(val projects: List<Pair<Project, ProjectStats>>) : ProjectsState()
     data class Error(val message: String) : ProjectsState()
 }

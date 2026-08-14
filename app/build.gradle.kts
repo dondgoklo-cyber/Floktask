@@ -97,12 +97,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
 
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
 
     // Coil
-    implementation(libs.coil.compose)
 
     // Timber
     implementation(libs.timber)

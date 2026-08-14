@@ -11,6 +11,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -103,11 +106,25 @@ fun InboxScreen(
                     verticalArrangement = Arrangement.spacedBy(Spacing.md)
                 ) {
                     items(state.tasks, key = { it.id ?: 0 }) { task ->
-                        TaskCard(
-                            task = task,
-                            onClick = { detailTaskId = task.id ?: 0 },
-                            onCheckedChange = { /* обновится через Flow из БД при toggle в TaskDetail */ }
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = { value ->
+                                if (value == SwipeToDismissBoxValue.EndToEnd) {
+                                    viewModel.completeTask(task.id ?: 0)
+                                    true
+                                } else false
+                            }
                         )
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            backgroundContent = {},
+                            enableDismissFromStartToEnd = false
+                        ) {
+                            TaskCard(
+                                task = task,
+                                onClick = { detailTaskId = task.id ?: 0 },
+                                onCheckedChange = { }
+                            )
+                        }
                     }
                 }
             }

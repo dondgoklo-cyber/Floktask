@@ -95,8 +95,8 @@ fun ProjectsScreen(
                         contentPadding = PaddingValues(Spacing.lg),
                         verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
-                        items(s.projects, key = { it.id ?: 0 }) { project ->
-                            ProjectCard(project)
+                        items(s.projects, key = { it.first.id ?: 0 }) { (project, stats) ->
+                            ProjectCard(project, stats)
                         }
                     }
                 }
@@ -118,7 +118,7 @@ fun ProjectsScreen(
 }
 
 @Composable
-private fun ProjectCard(project: Project) {
+private fun ProjectCard(project: Project, stats: ProjectStats) {
     val accentColor = project.color?.let { parseColor(it) } ?: Color(0xFFFF6D00)
 
     Card(
@@ -126,6 +126,7 @@ private fun ProjectCard(project: Project) {
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
         shape = RoundedCornerShape(Radius.lg)
     ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(Spacing.lg)) {
         androidx.compose.foundation.layout.Row(
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
             verticalAlignment = Alignment.CenterVertically,
@@ -155,6 +156,15 @@ private fun ProjectCard(project: Project) {
                     )
                 }
             }
+        }
+        if (stats.total > 0) {
+            androidx.compose.foundation.layout.Spacer(Modifier.size(Spacing.sm))
+            androidx.compose.material3.LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(Radius.full)),
+                color = accentColor,
+                trackColor = AppTheme.colors.surfaceVariant
+            )
         }
     }
 }

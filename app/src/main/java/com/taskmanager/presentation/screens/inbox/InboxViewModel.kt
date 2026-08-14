@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class InboxUiState(
@@ -24,4 +25,10 @@ class InboxViewModel @Inject constructor(
     val state: StateFlow<InboxUiState> = taskRepository.getInboxTasks()
         .map { tasks -> InboxUiState(tasks = tasks, isLoading = false) }
         .stateIn(viewModelScope, SharingStarted.Lazily, InboxUiState(isLoading = true))
+
+    fun completeTask(taskId: Long) {
+        viewModelScope.launch {
+            taskRepository.setCompleted(taskId, true)
+        }
+    }
 }

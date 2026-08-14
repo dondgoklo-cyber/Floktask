@@ -7,6 +7,7 @@ import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
 import java.time.Instant
+import org.json.JSONArray
 
 fun Task.toEntity(): TaskEntity = TaskEntity(
     id = id ?: 0,
@@ -61,3 +62,12 @@ fun TaskEntity.toDomain(): Task = Task(
     reminderDate = reminderDate?.let { Instant.ofEpochMilli(it) },
     recurrenceRule = recurrenceRule?.toRecurrenceRule()
 )
+
+
+private fun parseTags(json: String?): List<String> {
+    if (json.isNullOrBlank()) return emptyList()
+    return runCatching {
+        val arr = JSONArray(json)
+        (0 until arr.length()).map { arr.getString(it) }
+    }.getOrDefault(emptyList())
+}
