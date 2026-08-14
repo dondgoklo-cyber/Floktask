@@ -15,7 +15,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -73,7 +73,7 @@ fun ProjectsScreen(
                     ) {
                         items(s.projects, key = { it.id ?: 0 }) { project ->
                             ProjectRow(project)
-                            HorizontalDivider()
+                            Divider()
                         }
                     }
                 }

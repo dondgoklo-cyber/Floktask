@@ -11,7 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -62,7 +62,7 @@ fun CalendarScreen(
                         items(s.days, key = { it.date.toString() }) { day ->
                             DayHeader(day.date)
                             day.tasks.forEach { task -> CalendarTaskRow(task) }
-                            HorizontalDivider()
+                            Divider()
                         }
                     }
                 }
