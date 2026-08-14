@@ -15,16 +15,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Tag
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -103,7 +107,11 @@ fun TaskDetailSheet(
                     onStartFocus = { onStartFocus(task.id ?: 0) },
                     onAddSubtask = { title -> viewModel.addSubtask(task.id ?: 0, title) },
                     onToggleSubtask = { viewModel.toggleSubtask(it) },
-                    onDeleteSubtask = { viewModel.deleteSubtask(it) }
+                    onDeleteSubtask = { viewModel.deleteSubtask(it) },
+                    onRenameSubtask = { subtask, title -> viewModel.renameSubtask(subtask, title) },
+                    onReorderSubtask = { from, to ->
+                        viewModel.reorderSubtask(task.id ?: 0, from, to)
+                    }
                 )
             }
         }
@@ -120,7 +128,9 @@ private fun TaskDetailContent(
     onStartFocus: () -> Unit,
     onAddSubtask: (String) -> Unit,
     onToggleSubtask: (Subtask) -> Unit,
-    onDeleteSubtask: (Subtask) -> Unit
+    onDeleteSubtask: (Subtask) -> Unit,
+    onRenameSubtask: (Subtask, String) -> Unit,
+    onReorderSubtask: (Int, Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -248,13 +258,20 @@ private fun TaskDetailContent(
             }
         }
 
+        // Прогресс подзадач
+        if (subtasks.isNotEmpty()) {
+            item { SubtaskProgress(subtasks) }
+        }
+
         // Подзадачи
         item {
             SubtaskSection(
                 subtasks = subtasks,
                 onAdd = onAddSubtask,
                 onToggle = onToggleSubtask,
-                onDelete = onDeleteSubtask
+                onDelete = onDeleteSubtask,
+                onRename = onRenameSubtask,
+                onReorder = onReorderSubtask
             )
         }
 
@@ -319,13 +336,53 @@ private fun TagChip(name: String) {
 }
 
 @Composable
+private fun SubtaskProgress(subtasks: List<Subtask>) {
+    val completed = subtasks.count { it.isCompleted }
+    val total = subtasks.size
+    val progress = if (total > 0) completed.toFloat() / total else 0f
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+    ) {
+        Text(
+            stringResource(R.string.subtask_progress),
+            style = MaterialTheme.typography.labelLarge,
+            color = AppTheme.colors.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            stringResource(R.string.completed_subtasks, completed, total),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = AppTheme.colors.primary
+        )
+    }
+    androidx.compose.material3.LinearProgressIndicator(
+        progress = { progress },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Spacing.xs)
+            .height(6.dp)
+            .clip(RoundedCornerShape(Radius.full)),
+        color = AppTheme.colors.primary,
+        trackColor = AppTheme.colors.surfaceVariant
+    )
+}
+
+@Composable
 private fun SubtaskSection(
     subtasks: List<Subtask>,
     onAdd: (String) -> Unit,
     onToggle: (Subtask) -> Unit,
-    onDelete: (Subtask) -> Unit
+    onDelete: (Subtask) -> Unit,
+    onRename: (Subtask, String) -> Unit,
+    onReorder: (Int, Int) -> Unit
 ) {
     var newSubtaskTitle by remember { mutableStateOf("") }
+    var editingSubtask by remember { mutableStateOf<Subtask?>(null) }
+    var editingTitle by remember { mutableStateOf("") }
+    var draggedFrom by remember { mutableStateOf<Int?>(null) }
 
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
         Text(
@@ -333,29 +390,90 @@ private fun SubtaskSection(
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
-        subtasks.forEach { subtask ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
-                IconButton(onClick = { onToggle(subtask) }) {
-                    Icon(
-                        imageVector = if (subtask.isCompleted) Icons.Filled.CheckCircle
-                        else Icons.Filled.RadioButtonUnchecked,
-                        contentDescription = null,
-                        tint = if (subtask.isCompleted) AppTheme.colors.success else AppTheme.colors.outline
-                    )
-                }
-                Text(
-                    subtask.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f),
-                    color = if (subtask.isCompleted) AppTheme.colors.onSurfaceVariant
-                    else AppTheme.colors.onSurface
+        subtasks.forEachIndexed { index, subtask ->
+            if (editingSubtask?.id == subtask.id) {
+                OutlinedTextField(
+                    value = editingTitle,
+                    onValueChange = { editingTitle = it },
+                    singleLine = true,
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                onRename(subtask, editingTitle)
+                                editingSubtask = null
+                            },
+                            enabled = editingTitle.isNotBlank()
+                        ) { Icon(Icons.Filled.Check, contentDescription = null) }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
-                IconButton(onClick = { onDelete(subtask) }) {
-                    Icon(Icons.Filled.Delete, contentDescription = null, tint = AppTheme.colors.outline)
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .pointerInput(subtask.id) {
+                            detectDragGesturesAfterLongPress(
+                                onDragStart = { draggedFrom = index },
+                                onDragEnd = { draggedFrom = null },
+                                onDrag = { change, _ -> change.consume() }
+                            )
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                ) {
+                    Icon(
+                        Icons.Filled.DragHandle,
+                        contentDescription = stringResource(R.string.drag_to_reorder),
+                        tint = AppTheme.colors.outline,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    IconButton(onClick = { onToggle(subtask) }) {
+                        Icon(
+                            imageVector = if (subtask.isCompleted) Icons.Filled.CheckCircle
+                            else Icons.Filled.RadioButtonUnchecked,
+                            contentDescription = null,
+                            tint = if (subtask.isCompleted) AppTheme.colors.success
+                            else AppTheme.colors.outline
+                        )
+                    }
+                    Text(
+                        subtask.title,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f),
+                        color = if (subtask.isCompleted) AppTheme.colors.onSurfaceVariant
+                        else AppTheme.colors.onSurface
+                    )
+                    IconButton(onClick = {
+                        editingSubtask = subtask
+                        editingTitle = subtask.title
+                    }) {
+                        Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.edit_subtask), tint = AppTheme.colors.outline)
+                    }
+                    IconButton(onClick = { onDelete(subtask) }) {
+                        Icon(Icons.Filled.Delete, contentDescription = null, tint = AppTheme.colors.outline)
+                    }
                 }
+            }
+        }
+        // Drop zones between items
+        if (subtasks.isNotEmpty()) {
+            subtasks.indices.forEach { i ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .pointerInput(i) {
+                            detectDragGesturesAfterLongPress(
+                                onDrag = { change, _ -> change.consume() },
+                                onDragEnd = {
+                                    draggedFrom?.let { from ->
+                                        if (from != i) onReorder(from, i)
+                                    }
+                                    draggedFrom = null
+                                }
+                            )
+                        }
+                )
             }
         }
         OutlinedTextField(

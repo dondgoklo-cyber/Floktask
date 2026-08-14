@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
@@ -43,6 +44,7 @@ fun MoreScreen(
     onNavigate: (String) -> Unit
 ) {
     val items = listOf(
+        MoreItem(Icons.Filled.Search, R.string.search, Screen.Search.route),
         MoreItem(Icons.Filled.Inbox, R.string.inbox, Screen.Inbox.route),
         MoreItem(Icons.Filled.CalendarMonth, R.string.upcoming, Screen.Upcoming.route),
         MoreItem(Icons.Filled.GridView, R.string.eisenhower_matrix, Screen.Eisenhower.route),

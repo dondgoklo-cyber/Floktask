@@ -78,6 +78,21 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
+    fun renameSubtask(subtask: Subtask, newTitle: String) {
+        if (newTitle.isBlank()) return
+        viewModelScope.launch {
+            subtaskRepository.updateSubtask(subtask.copy(title = newTitle.trim()))
+            loadSubtasks(subtask.taskId)
+        }
+    }
+
+    fun reorderSubtask(taskId: Long, fromIndex: Int, toIndex: Int) {
+        viewModelScope.launch {
+            subtaskRepository.reorderSubtasks(taskId, fromIndex, toIndex)
+            loadSubtasks(taskId)
+        }
+    }
+
     private fun loadSubtasks(taskId: Long) {
         viewModelScope.launch {
             val subtasks = subtaskRepository.getByTask(taskId)

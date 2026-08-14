@@ -37,6 +37,7 @@ import com.taskmanager.presentation.screens.inbox.InboxScreen
 import com.taskmanager.presentation.screens.more.MoreScreen
 import com.taskmanager.presentation.screens.profile.ProfileScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
+import com.taskmanager.presentation.screens.search.SearchScreen
 import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
 import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
@@ -116,6 +117,12 @@ fun NavGraph() {
             composable(Screen.More.route) {
                 MoreScreen(onNavigate = { route -> navController.navigate(route) })
             }
+            composable(Screen.Search.route) {
+                SearchScreen(
+                    onBack = { navController.popBackStack() },
+                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) }
+                )
+            }
             composable(Screen.Profile.route) {
                 ProfileScreen(onBack = { navController.popBackStack() })
             }
@@ -156,6 +163,7 @@ private val Screen.icon: ImageVector
         Screen.Habits -> Icons.Filled.Checklist
         Screen.Focus -> Icons.Filled.Bolt
         Screen.More,
+        Screen.Search,
         Screen.Inbox,
         Screen.Upcoming,
         Screen.Eisenhower,

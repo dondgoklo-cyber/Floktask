@@ -31,4 +31,16 @@ class SubtaskRepositoryImpl @Inject constructor(
 
     override suspend fun getByTask(taskId: Long): List<Subtask> =
         subtaskDao.getListByTask(taskId).map { it.toDomain() }
+
+    override suspend fun reorderSubtasks(taskId: Long, fromIndex: Int, toIndex: Int) {
+        val list = subtaskDao.getListByTask(taskId).toMutableList()
+        if (fromIndex !in list.indices || toIndex !in list.indices) return
+        val moved = list.removeAt(fromIndex)
+        list.add(toIndex, moved)
+        list.forEachIndexed { index, entity ->
+            if (entity.orderIndex != index) {
+                subtaskDao.update(entity.copy(orderIndex = index))
+            }
+        }
+    }
 }
