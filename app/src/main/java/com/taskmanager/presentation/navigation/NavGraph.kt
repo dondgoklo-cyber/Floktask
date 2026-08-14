@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -56,7 +57,11 @@ fun NavGraph() {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = AppTheme.colors.surface,
+                    tonalElevation = Elevation.none,
+                    modifier = Modifier.height(64.dp)
+                ) {
                     Screen.bottomNavItems.forEach { screen ->
                         val selected =
                             currentDestination?.hierarchy?.any { it.route == screen.route } == true
@@ -71,15 +76,61 @@ fun NavGraph() {
                                     restoreState = true
                                 }
                             },
-                            icon = { Icon(screen.icon, contentDescription = null) },
-                            label = { Text(stringResource(screen.labelRes)) }
+                            icon = {
+                                Icon(
+                                    screen.icon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(if (selected) 26.dp else 22.dp),
+                                    tint = if (selected) AppTheme.colors.primary
+                                    else AppTheme.colors.onSurfaceVariant
+                                )
+                            },
+                            label = {
+                                Text(
+                                    stringResource(screen.labelRes),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                                    color = if (selected) AppTheme.colors.primary
+                                    else AppTheme.colors.onSurfaceVariant
+                                )
+                            },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = AppTheme.colors.primary,
+                                selectedTextColor = AppTheme.colors.primary,
+                                unselectedIconColor = AppTheme.colors.onSurfaceVariant,
+                                unselectedTextColor = AppTheme.colors.onSurfaceVariant,
+                                indicatorColor = AppTheme.colors.primaryContainer.copy(alpha = 0.25f)
+                            )
                         )
                     }
                     NavigationBarItem(
                         selected = currentRoute == Screen.More.route,
                         onClick = { navController.navigate(Screen.More.route) },
-                        icon = { Icon(Icons.Filled.MoreHoriz, contentDescription = null) },
-                        label = { Text(stringResource(R.string.more)) }
+                        icon = {
+                            Icon(
+                                Icons.Filled.MoreHoriz,
+                                contentDescription = null,
+                                modifier = Modifier.size(if (currentRoute == Screen.More.route) 26.dp else 22.dp),
+                                tint = if (currentRoute == Screen.More.route) AppTheme.colors.primary
+                                else AppTheme.colors.onSurfaceVariant
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(R.string.more),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (currentRoute == Screen.More.route) FontWeight.SemiBold else FontWeight.Normal,
+                                color = if (currentRoute == Screen.More.route) AppTheme.colors.primary
+                                else AppTheme.colors.onSurfaceVariant
+                            )
+                        },
+                        colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                            selectedIconColor = AppTheme.colors.primary,
+                            selectedTextColor = AppTheme.colors.primary,
+                            unselectedIconColor = AppTheme.colors.onSurfaceVariant,
+                            unselectedTextColor = AppTheme.colors.onSurfaceVariant,
+                            indicatorColor = AppTheme.colors.primaryContainer.copy(alpha = 0.25f)
+                        )
                     )
                 }
             }
