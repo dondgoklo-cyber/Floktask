@@ -232,7 +232,7 @@ fun NotesScreen(
         AlertDialog(
             onDismissRequest = { pendingDeleteNote = null },
             title = { Text("Удалить заметку?") },
-            text = { Text("«${note.title.ifBlank { "Без названия" }»") },
+            text = { Text("«" + note.title.ifBlank { "Без названия" } + "»") },
             confirmButton = {
                 TextButton(onClick = {
                     note.id?.let { viewModel.deleteNote(it) }
@@ -243,7 +243,6 @@ fun NotesScreen(
                 TextButton(onClick = { pendingDeleteNote = null }) { Text(stringResource(R.string.cancel)) }
             }
         )
-    }
     }
 }
 
