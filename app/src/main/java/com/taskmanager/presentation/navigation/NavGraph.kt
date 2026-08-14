@@ -44,6 +44,7 @@ import com.taskmanager.presentation.screens.inbox.InboxScreen
 import com.taskmanager.presentation.screens.kanban.KanbanScreen
 import com.taskmanager.presentation.screens.more.MoreScreen
 import com.taskmanager.presentation.screens.profile.ProfileScreen
+import com.taskmanager.presentation.screens.projectdetail.ProjectDetailScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.search.SearchScreen
 import com.taskmanager.presentation.screens.settings.SettingsScreen
@@ -160,7 +161,25 @@ fun NavGraph() {
                     onStartFocus = { taskId -> navController.navigate(Screen.Focus.buildRoute(taskId)) }
                 )
             }
-            composable(Screen.Projects.route) { ProjectsScreen() }
+            composable(Screen.Projects.route) {
+                ProjectsScreen(
+                    onProjectClick = { projectId -> navController.navigate(Screen.ProjectDetail.buildRoute(projectId)) }
+                )
+            }
+            composable(
+                route = Screen.ProjectDetail.route,
+                arguments = listOf(
+                    navArgument(Screen.ProjectDetail.ARG_PROJECT_ID) { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val projectId = backStackEntry.arguments?.getLong(Screen.ProjectDetail.ARG_PROJECT_ID) ?: 0L
+                ProjectDetailScreen(
+                    projectId = projectId,
+                    onBack = { navController.popBackStack() },
+                    onAddTask = { navController.navigate(Screen.TaskEdit.buildRoute(0L)) },
+                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) }
+                )
+            }
             composable(Screen.Calendar.route) { CalendarScreen() }
             composable(Screen.Habits.route) { HabitsScreen() }
             composable(Screen.Focus.route) { FocusScreen() }

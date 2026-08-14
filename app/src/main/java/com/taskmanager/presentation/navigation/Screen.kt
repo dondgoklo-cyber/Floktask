@@ -27,6 +27,11 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Kanban : Screen("kanban", R.string.kanban)
     data object Profile : Screen("profile", R.string.profile)
 
+    data object ProjectDetail : Screen("project/{projectId}", R.string.projects) {
+        const val ARG_PROJECT_ID = "projectId"
+        fun buildRoute(projectId: Long): String = "project/$projectId"
+    }
+
     data object TaskEditNew : Screen("task/new", R.string.add_task)
 
     data object TaskEdit : Screen("task/{taskId}", R.string.add_task) {

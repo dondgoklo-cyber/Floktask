@@ -57,6 +57,7 @@ import com.taskmanager.presentation.theme.Spacing
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectsScreen(
+    onProjectClick: (Long) -> Unit = {},
     viewModel: ProjectsViewModel = hiltViewModel()
 ) {
     val state by viewModel.projectsState.collectAsState()
@@ -101,7 +102,7 @@ fun ProjectsScreen(
                         verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
                         items(s.projects, key = { it.first.id ?: 0 }) { (project, stats) ->
-                            ProjectCard(project, stats)
+                            ProjectCard(project, stats, onClick = { project.id?.let(onProjectClick) })
                         }
                     }
                 }
@@ -123,7 +124,7 @@ fun ProjectsScreen(
 }
 
 @Composable
-private fun ProjectCard(project: Project, stats: ProjectStats) {
+private fun ProjectCard(project: Project, stats: ProjectStats, onClick: () -> Unit = {}) {
     val accentColor = project.color?.let { parseColor(it) } ?: Color(0xFFFF6D00)
     val progress = if (stats.total > 0) stats.completed.toFloat() / stats.total else 0f
 
