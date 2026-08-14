@@ -117,6 +117,14 @@
     <string name="transfer">Перевод</string>
     <string name="to_account">В счёт</string>
     <string name="destination_amount">Сумма получения</string>
+    <!-- Voice -->
+    <string name="voice_task">Задача голосом</string>
+    <string name="voice_listen">Слушаю</string>
+    <string name="voice_listening">Слушаю…</string>
+    <string name="voice_tap_to_speak">Нажмите, чтобы говорить</string>
+    <string name="voice_start">Начать запись</string>
+    <string name="voice_try_again">Попробовать снова</string>
+    <string name="voice_edit">Изменить</string>
     <!-- Haptic -->
     <string name="haptic_feedback">Тактильный отклик</string>
     <string name="haptic_feedback_desc">Использовать тактильный отклик при взаимодействии с интерфейсом</string>

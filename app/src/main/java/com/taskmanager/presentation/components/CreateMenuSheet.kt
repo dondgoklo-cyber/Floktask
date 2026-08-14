@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,7 +63,8 @@ fun CreateMenuSheet(
     onIncome: () -> Unit,
     onExpense: () -> Unit,
     onProject: () -> Unit,
-    onNote: () -> Unit = {}
+    onNote: () -> Unit = {},
+    onVoice: () -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -71,6 +73,7 @@ fun CreateMenuSheet(
         CreateMenuItem(Icons.Filled.Spa, R.string.habits, AppTheme.colors.secondary, onHabit),
         CreateMenuItem(Icons.Filled.ArrowUpward, R.string.add_income, AppTheme.colors.success, onIncome),
         CreateMenuItem(Icons.Filled.ArrowDownward, R.string.add_expense, AppTheme.colors.danger, onExpense),
+        CreateMenuItem(Icons.Filled.Mic, R.string.voice_task, AppTheme.colors.secondary, onVoice),
         CreateMenuItem(Icons.Filled.Description, R.string.add_note, AppTheme.colors.info, onNote),
         CreateMenuItem(Icons.Filled.Folder, R.string.new_project, AppTheme.colors.info, onProject)
     )

@@ -62,6 +62,7 @@ import com.taskmanager.presentation.screens.finance.AddTransactionSheet
 import com.taskmanager.presentation.screens.finance.FinanceViewModel
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.components.CreateMenuSheet
+import com.taskmanager.presentation.screens.voice.VoiceTaskSheet
 import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.model.Account
 import java.time.LocalTime
@@ -85,6 +86,7 @@ fun TodayScreen(
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
     var showQuickAdd by remember { mutableStateOf(false) }
     var showCreateMenu by remember { mutableStateOf(false) }
+    var showVoice by remember { mutableStateOf(false) }
     var addTransactionType by remember { mutableStateOf<TransactionType?>(null) }
     val financeViewModel: FinanceViewModel = hiltViewModel()
     val financeState by financeViewModel.state.collectAsState()
@@ -122,7 +124,8 @@ fun TodayScreen(
             onIncome = { addTransactionType = TransactionType.INCOME },
             onExpense = { addTransactionType = TransactionType.EXPENSE },
             onProject = onAddProject,
-            onNote = onAddNote
+            onNote = onAddNote,
+            onVoice = { showVoice = true }
         )
     }
 
@@ -136,6 +139,16 @@ fun TodayScreen(
                 addTransactionType = null
             },
             initialType = txType
+        )
+    }
+
+    if (showVoice) {
+        VoiceTaskSheet(
+            onDismiss = { showVoice = false },
+            onCreate = { title, date, time, priority, recurrence ->
+                // Create task via QuickAddViewModel or direct creation
+                showVoice = false
+            }
         )
     }
 
