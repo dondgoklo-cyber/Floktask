@@ -196,4 +196,15 @@
     <string name="export_success">Данные экспортированы</string>
     <string name="import_success">Данные импортированы</string>
     <string name="import_error">Ошибка импорта</string>
+
+    <!-- PIN и профиль -->
+    <string name="user_name">Имя пользователя</string>
+    <string name="security">Безопасность</string>
+    <string name="pin_create">Создать PIN-код</string>
+    <string name="pin_create_subtitle">Защитите приложение 4-значным кодом</string>
+    <string name="pin_change">Сменить PIN-код</string>
+    <string name="pin_change_subtitle">Изменить текущий PIN-код</string>
+    <string name="pin_remove">Удалить PIN-код</string>
+    <string name="pin_remove_subtitle">Отключить защиту приложения</string>
+    <string name="pin_remove_confirm">Удалить PIN-код? Приложение будет открываться без защиты.</string>
 </resources>

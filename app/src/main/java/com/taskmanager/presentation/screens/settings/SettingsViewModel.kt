@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SettingsUiState(
+    val userName: String = "",
+    val hasPin: Boolean = false,
     val isExporting: Boolean = false,
     val isImporting: Boolean = false,
     val message: String? = null
@@ -26,7 +28,7 @@ class SettingsViewModel @Inject constructor(
     val state: StateFlow<SettingsUiState> = _state.asStateFlow()
 
     fun exportToUri(uri: Uri, onSuccess: () -> Unit, onError: () -> Unit) {
-        _state.value = _state.value.copy(isExporting = true, message = null)
+        _state.value = _state.value.copy(isExporting = true)
         viewModelScope.launch {
             val ok = backupManager.exportToUri(uri)
             _state.value = _state.value.copy(isExporting = false)
@@ -35,7 +37,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun importFromUri(uri: Uri, onSuccess: () -> Unit, onError: () -> Unit) {
-        _state.value = _state.value.copy(isImporting = true, message = null)
+        _state.value = _state.value.copy(isImporting = true)
         viewModelScope.launch {
             val ok = backupManager.importFromUri(uri)
             _state.value = _state.value.copy(isImporting = false)

@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -47,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Task
 import com.taskmanager.presentation.components.priorityColor
+import com.taskmanager.security.UserPrefs
 import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 import com.taskmanager.presentation.screens.tasks.QuickAddSheet
 import com.taskmanager.presentation.theme.AppTheme
@@ -130,14 +132,18 @@ fun TodayScreen(
 
 @Composable
 private fun GreetingHeader() {
+    val context = LocalContext.current
+    val userPrefs = remember { UserPrefs(context) }
     val hour = LocalTime.now().hour
+    val name = userPrefs.userName
     val greeting = when (hour) {
         in 5..11 -> stringResource(R.string.good_morning)
         in 12..17 -> stringResource(R.string.good_afternoon)
         else -> stringResource(R.string.good_evening)
     }
+    val text = if (name.isNotBlank()) "$greeting, $name!" else greeting
     Text(
-        text = greeting,
+        text = text,
         style = MaterialTheme.typography.displaySmall,
         fontWeight = FontWeight.Bold,
         color = AppTheme.colors.onBackground
