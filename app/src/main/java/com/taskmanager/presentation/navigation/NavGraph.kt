@@ -42,8 +42,8 @@ fun NavGraph() {
     val currentDestination = backStackEntry?.destination
 
     val currentRoute = currentDestination?.route
-    val showBottomBar = currentRoute != null &&
-        currentRoute in Screen.bottomNavItems.map { it.route }
+    val navRoutes = Screen.bottomNavItems.map { it.route }.toSet()
+    val showBottomBar = navRoutes.contains(currentRoute)
 
     Scaffold(
         bottomBar = {
