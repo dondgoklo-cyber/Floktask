@@ -81,6 +81,10 @@ fun TaskEditScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Button(onClick = viewModel::autoPrioritize, modifier = Modifier.fillMaxWidth()) {
+                Text("Auto-prioritize (AI)")
+            }
+
             Text("Priority")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Priority.entries.forEach { priority ->

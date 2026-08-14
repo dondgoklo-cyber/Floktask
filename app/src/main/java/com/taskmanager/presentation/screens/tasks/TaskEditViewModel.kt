@@ -8,6 +8,7 @@ import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
+import com.taskmanager.domain.usecase.ai.AutoPrioritizeTaskUseCase
 import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
@@ -26,7 +27,8 @@ class TaskEditViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    getAllProjectsUseCase: GetAllProjectsUseCase
+    getAllProjectsUseCase: GetAllProjectsUseCase,
+    private val autoPrioritizeTaskUseCase: AutoPrioritizeTaskUseCase
 ) : ViewModel() {
 
     private val taskId: Long? = savedStateHandle
@@ -78,6 +80,18 @@ class TaskEditViewModel @Inject constructor(
 
     fun onRecurrenceChange(value: RecurrenceRule?) {
         _formState.value = _formState.value.copy(recurrenceRule = value)
+    }
+
+    fun autoPrioritize() {
+        val current = _formState.value
+        val task = Task(
+            title = current.title,
+            description = current.description,
+            priority = current.priority,
+            projectId = current.projectId,
+            recurrenceRule = current.recurrenceRule
+        )
+        _formState.value = current.copy(priority = autoPrioritizeTaskUseCase(task))
     }
 
     fun save(onSaved: () -> Unit) {

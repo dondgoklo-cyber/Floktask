@@ -9,6 +9,7 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Calendar : Screen("calendar", R.string.calendar)
     data object Profile : Screen("profile", R.string.profile)
     data object Location : Screen("location", R.string.location)
+    data object AiAssistant : Screen("ai", R.string.ai_assistant)
 
     data object TaskEditNew : Screen("task/new", R.string.add_task)
 
@@ -18,6 +19,6 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     }
 
     companion object {
-        val bottomNavItems = listOf(Tasks, Projects, Calendar, Location, Profile)
+        val bottomNavItems = listOf(Tasks, Projects, Calendar, Location, AiAssistant, Profile)
     }
 }

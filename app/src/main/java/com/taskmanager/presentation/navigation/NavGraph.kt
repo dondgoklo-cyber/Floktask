@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -34,6 +35,7 @@ import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.tasks.TasksScreen
 import com.taskmanager.presentation.screens.profile.ProfileScreen
 import com.taskmanager.presentation.screens.location.LocationRemindersScreen
+import com.taskmanager.presentation.screens.ai.AiAssistantScreen
 
 @Composable
 fun NavGraph() {
@@ -96,6 +98,9 @@ fun NavGraph() {
             composable(Screen.Location.route) {
                 LocationRemindersScreen()
             }
+            composable(Screen.AiAssistant.route) {
+                AiAssistantScreen()
+            }
             composable(Screen.TaskEditNew.route) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
@@ -118,6 +123,7 @@ private val Screen.icon: ImageVector
         Screen.Calendar -> Icons.Filled.DateRange
         Screen.Profile -> Icons.Filled.Person
         Screen.Location -> Icons.Filled.LocationOn
+        Screen.AiAssistant -> Icons.Filled.AutoAwesome
         Screen.TaskEditNew,
         Screen.TaskEdit -> Icons.Filled.List
     }
