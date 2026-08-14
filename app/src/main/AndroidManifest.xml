@@ -8,6 +8,7 @@
 
     <application
         android:name=".TaskManagerApp"
+        android:enableFirebaseAutoInitialization="false"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,6 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TaskManager"
         tools:targetApi="34">
+
+        <meta-data
+            android:name="firebase_app_auto_init_disabled"
+            android:value="true" />
 
         <activity
             android:name=".presentation.MainActivity"
