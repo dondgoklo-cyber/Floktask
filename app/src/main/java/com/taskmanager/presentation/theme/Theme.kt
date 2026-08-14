@@ -10,9 +10,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // Брендовые цвета (обратная совместимость с существующими импортами)
-val Orange = Color(0xFFFF6D00)
-val OrangeLight = Color(0xFFFFAB40)
-val OrangeDark = Color(0xFFFF9100)
+val Orange = Color(0xFFFF7A00)
+val OrangeLight = Color(0xFFFFB74D)
+val OrangeDark = Color(0xFFFF8C00)
 
 /** Локальная композиция для доступа к расширенной палитре [AppColors] из любого компонента. */
 val LocalAppColors = staticCompositionLocalOf { LightAppColors }

@@ -98,9 +98,9 @@ data class AppColors(
 )
 
 val LightAppColors = AppColors(
-    primary = Color(0xFFFF6D00),
+    primary = Color(0xFFFF7A00),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFFFE0B2),
+    primaryContainer = Color(0xFFFFD54F),
     onPrimaryContainer = Color(0xFF3E2700),
     secondary = Color(0xFF00897B),
     onSecondary = Color.White,
@@ -136,10 +136,10 @@ val LightAppColors = AppColors(
 )
 
 val DarkAppColors = AppColors(
-    primary = Color(0xFFFF9100),
+    primary = Color(0xFFFF8C00),
     onPrimary = Color(0xFF1A0A00),
-    primaryContainer = Color(0xFF4E2C00),
-    onPrimaryContainer = Color(0xFFFFD9B0),
+    primaryContainer = Color(0xFF5D2E00),
+    onPrimaryContainer = Color(0xFFFFBE6B),
     secondary = Color(0xFF80CBC4),
     onSecondary = Color(0xFF003734),
     secondaryContainer = Color(0xFF004D40),
