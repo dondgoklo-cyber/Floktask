@@ -43,37 +43,24 @@ jobs:
           target: default
           arch: x86_64
           script: |
-            echo "=== Устанавливаю APK ==="
             adb install -r app/build/outputs/apk/debug/app-debug.apk
-
-            echo "=== Очищаю logcat ==="
             adb logcat -c
-
-            echo "=== Запускаю приложение ==="
             adb shell am start -n com.taskmanager.debug/com.taskmanager.presentation.MainActivity
-
-            echo "=== Жду 10 секунд ==="
             sleep 10
-
-            echo "=== Проверяю краши ==="
-            CRASH=$(adb logcat -d | grep -E "FATAL EXCEPTION|AndroidRuntime.*CRASH|E AndroidRuntime" || true)
-            if [ -n "$CRASH" ]; then
-              echo "=== КРАШ ОБНАРУЖЕН ==="
-              echo "$CRASH"
-              echo "=== Полный стек ==="
-              adb logcat -d | grep -A 30 "FATAL EXCEPTION" || true
+            adb logcat -d > /tmp/full-logcat.txt
+            echo "=== Проверка крашей ==="
+            if adb logcat -d | grep -qE "FATAL EXCEPTION"; then
+              echo "КРАШ ОБНАРУЖЕН"
+              adb logcat -d | grep -A 30 "FATAL EXCEPTION"
               exit 1
-            else
-              echo "=== КРАШЕЙ НЕТ — приложение запустилось успешно ==="
-              echo "=== Проверяю что процесс жив ==="
-              adb shell ps | grep taskmanager && echo "ПРОЦЕСС ЖИВ" || echo "ПРОЦЕСС НЕ НАЙДЕН"
             fi
+            echo "КРАШЕЙ НЕТ"
+            adb shell ps | grep taskmanager && echo "ПРОЦЕСС ЖИВ" || echo "ПРОЦЕСС НЕ НАЙДЕН"
 
-      - name: Upload logcat on failure
+      - name: Upload logcat
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: logcat-output
-          path: |
-            ${{ env.HOME }}/.android/avd/*.avd/outputs/logcat.txt
+          path: /tmp/full-logcat.txt
           if-no-files-found: warn
