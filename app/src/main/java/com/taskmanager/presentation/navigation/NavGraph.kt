@@ -1,8 +1,10 @@
 package com.taskmanager.presentation.navigation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -38,15 +40,14 @@ fun NavGraph() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
-    val showBottomBar = currentDestination?.route in Screen.bottomNavItems.map { it.route }
+
+    val currentRoute = currentDestination?.route
+    val showBottomBar = currentRoute != null &&
+        currentRoute in Screen.bottomNavItems.map { it.route }
 
     Scaffold(
         bottomBar = {
-            AnimatedVisibility(
-                visible = showBottomBar,
-                enter = slideInVertically { it },
-                exit = slideOutVertically { it }
-            ) {
+            if (showBottomBar) {
                 NavigationBar {
                     Screen.bottomNavItems.forEach { screen ->
                         val selected =
@@ -73,7 +74,21 @@ fun NavGraph() {
         NavHost(
             navController = navController,
             startDestination = Screen.Tasks.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = {
+                fadeIn(animationSpec = tween(200)) +
+                    slideInHorizontally(initialOffsetX = { it / 8 }, animationSpec = tween(200))
+            },
+            exitTransition = {
+                fadeOut(animationSpec = tween(150))
+            },
+            popEnterTransition = {
+                fadeIn(animationSpec = tween(200))
+            },
+            popExitTransition = {
+                fadeOut(animationSpec = tween(150)) +
+                    slideOutHorizontally(targetOffsetX = { it / 8 }, animationSpec = tween(200))
+            }
         ) {
             composable(Screen.Tasks.route) {
                 TasksScreen(
