@@ -1,29 +1,66 @@
 <resources>
     <string name="app_name">TaskManager</string>
+
+    <!-- Навигация -->
+    <string name="nav_today">Сегодня</string>
     <string name="tasks">Задачи</string>
     <string name="projects">Проекты</string>
     <string name="calendar">Календарь</string>
+    <string name="habits">Привычки</string>
+    <string name="focus">Фокус</string>
+    <string name="more">Ещё</string>
+    <string name="inbox">Входящие</string>
+    <string name="upcoming">Предстоящие</string>
+    <string name="eisenhower_matrix">Матрица Эйзенхауэра</string>
+    <string name="statistics">Статистика</string>
+    <string name="settings">Настройки</string>
     <string name="profile">Профиль</string>
+
+    <!-- Действия -->
     <string name="add_task">Добавить задачу</string>
     <string name="edit_task">Редактировать задачу</string>
     <string name="save">Сохранить</string>
     <string name="back">Назад</string>
     <string name="cancel">Отмена</string>
+    <string name="delete">Удалить</string>
+    <string name="done">Готово</string>
+    <string name="complete">Выполнить</string>
+
+    <!-- Пустые состояния -->
     <string name="no_tasks">Пока нет задач</string>
     <string name="no_projects">Пока нет проектов</string>
+    <string name="no_habits">Пока нет привычек</string>
     <string name="no_scheduled_tasks">Нет запланированных задач</string>
     <string name="error_loading">Ошибка загрузки</string>
+
+    <!-- Приоритет -->
     <string name="priority_high">Высокий</string>
     <string name="priority_medium">Средний</string>
     <string name="priority_low">Низкий</string>
     <string name="priority_none">Без приоритета</string>
+    <string name="priority">Приоритет</string>
+
+    <!-- Задача -->
     <string name="new_project">Новый проект</string>
     <string name="title">Название</string>
     <string name="description">Описание</string>
     <string name="description_optional">Описание (необязательно)</string>
-    <string name="priority">Приоритет</string>
     <string name="recurrence">Повтор</string>
     <string name="none">Нет</string>
+    <string name="project">Проект</string>
+    <string name="deadline">Срок</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="duration">Длительность</string>
+    <string name="tags">Теги</string>
+    <string name="subtasks">Подзадачи</string>
+    <string name="pomodoro_estimate">Оценка Pomodoro</string>
+    <string name="eisenhower_quadrant">Квадрант Эйзенхауэра</string>
+    <string name="status">Статус</string>
+    <string name="select_project">Выбрать проект</string>
+    <string name="no_project">Без проекта</string>
+
+    <!-- Геймификация -->
     <string name="level">Уровень</string>
     <string name="points">очки</string>
     <string name="completed">Выполнено</string>
@@ -32,4 +69,51 @@
     <string name="achievements">Достижения</string>
     <string name="task_id">ID задачи</string>
     <string name="label">Метка</string>
+
+    <!-- Dashboard -->
+    <string name="good_morning">Доброе утро</string>
+    <string name="good_afternoon">Добрый день</string>
+    <string name="good_evening">Добрый вечер</string>
+    <string name="todays_progress">Прогресс за день</string>
+    <string name="next_tasks">Далее</string>
+    <string name="focus_time_today">Время фокуса сегодня</string>
+    <string name="habits_today">Привычки сегодня</string>
+    <string name="today_summary">Сегодня</string>
+    <string name="tasks_total">всего задач</string>
+    <string name="tasks_completed">выполнено</string>
+    <string name="tasks_overdue">просрочено</string>
+
+    <!-- Привычки -->
+    <string name="new_habit">Новая привычка</string>
+    <string name="current_streak">Текущая серия</string>
+    <string name="best_streak">Лучшая серия</string>
+    <string name="completion_rate">Процент выполнения</string>
+    <string name="weekly_stats">Недельная статистика</string>
+    <string name="monthly_stats">Месячная статистика</string>
+    <string name="frequency">Частота</string>
+    <string name="daily">Ежедневно</string>
+    <string name="weekly">Еженедельно</string>
+    <string name="target_count">Цель на день</string>
+    <string name="reminder_time">Время напоминания</string>
+
+    <!-- Pomodoro -->
+    <string name="focus_mode">Режим фокуса</string>
+    <string name="start_pomodoro">Запустить Pomodoro</string>
+    <string name="pause">Пауза</string>
+    <string name="resume">Продолжить</string>
+    <string name="reset">Сбросить</string>
+    <string name="work_session">Работа</string>
+    <string name="short_break">Короткий перерыв</string>
+    <string name="long_break">Длинный перерыв</string>
+    <string name="pomodoros_today">Pomodoro сегодня</string>
+
+    <!-- Eisenhower -->
+    <string name="do_now">Сделать сейчас</string>
+    <string name="schedule">Запланировать</string>
+    <string name="delegate">Делегировать</string>
+    <string name="eliminate">Удалить</string>
+    <string name="important_urgent">Важное и срочное</string>
+    <string name="important_not_urgent">Важное, не срочное</string>
+    <string name="not_important_urgent">Не важное, срочное</string>
+    <string name="not_important_not_urgent">Не важное, не срочное</string>
 </resources>

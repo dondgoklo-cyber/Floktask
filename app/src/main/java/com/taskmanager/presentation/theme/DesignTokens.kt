@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.sp
 /**
  * Централизованная система design tokens.
  * Все цвета, отступы, радиусы и типографика определены здесь и переиспользуются во всём приложении.
- * Hardcoded цвета в отдельных компонентах запрещены — используйте [AppColors] / [LocalAppColors].
+ * Hardcoded цвета в отдельных компонентах запрещены — используйте [AppColors] / [AppTheme.colors].
  */
 
 // ───────────────────────── Spacing ─────────────────────────
@@ -97,7 +97,7 @@ data class AppColors(
     val onError: Color
 )
 
-object LightAppColors : AppColors(
+val LightAppColors = AppColors(
     primary = Color(0xFFFF6D00),
     onPrimary = Color.White,
     primaryContainer = Color(0xFFFFE0B2),
@@ -135,7 +135,7 @@ object LightAppColors : AppColors(
     onError = Color.White
 )
 
-object DarkAppColors : AppColors(
+val DarkAppColors = AppColors(
     primary = Color(0xFFFF9100),
     onPrimary = Color(0xFF1A0A00),
     primaryContainer = Color(0xFF4E2C00),
