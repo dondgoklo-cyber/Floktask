@@ -158,7 +158,7 @@ fun NavGraph() {
                     onTaskClick = { taskId ->
                         navController.navigate(Screen.TaskEdit.buildRoute(taskId))
                     },
-                    onAddTaskClick = { navController.navigate(Screen.TaskEditNew.route) },
+                    onAddTaskClick = { navController.navigate(Screen.TaskEditNew.buildRoute()) },
                     onStartFocus = { taskId -> navController.navigate(Screen.Focus.buildRoute(taskId)) }
                 )
             }
@@ -177,7 +177,7 @@ fun NavGraph() {
                 ProjectDetailScreen(
                     projectId = projectId,
                     onBack = { navController.popBackStack() },
-                    onAddTask = { navController.navigate(Screen.TaskEdit.buildRoute(0L)) },
+                    onAddTask = { navController.navigate(Screen.TaskEditNew.buildRoute(projectId)) },
                     onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) }
                 )
             }
@@ -227,7 +227,15 @@ fun NavGraph() {
             composable(Screen.Settings.route) {
                 SettingsScreen(onBack = { navController.popBackStack() })
             }
-            composable(Screen.TaskEditNew.route) {
+            composable(
+                route = Screen.TaskEditNew.route,
+                arguments = listOf(
+                    navArgument(Screen.TaskEditNew.ARG_PROJECT_ID) {
+                        type = NavType.LongType
+                        defaultValue = 0L
+                    }
+                )
+            ) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
             composable(

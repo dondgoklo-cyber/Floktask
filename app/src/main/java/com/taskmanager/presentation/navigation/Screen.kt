@@ -33,7 +33,13 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
         fun buildRoute(projectId: Long): String = "project/$projectId"
     }
 
-    data object TaskEditNew : Screen("task/new", R.string.add_task)
+    data object TaskEditNew : Screen("task/new?projectId={projectId}", R.string.add_task) {
+        const val ARG_PROJECT_ID = "projectId"
+        const val ROUTE_BASE = "task/new"
+        fun buildRoute(projectId: Long? = null): String =
+            if (projectId != null && projectId > 0) "task/new?projectId=$projectId"
+            else "task/new?projectId=0"
+    }
 
     data object TaskEdit : Screen("task/{taskId}", R.string.add_task) {
         const val ARG_TASK_ID = "taskId"

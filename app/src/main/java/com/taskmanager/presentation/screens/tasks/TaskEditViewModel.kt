@@ -48,6 +48,10 @@ class TaskEditViewModel @Inject constructor(
         .get<Long>("taskId")
         ?.takeIf { it > 0 }
 
+    private val projectIdArg: Long? = savedStateHandle
+        .get<Long>("projectId")
+        ?.takeIf { it > 0 }
+
     val isEditing: Boolean get() = taskId != null
 
     private val _formState = MutableStateFlow(TaskFormState())
@@ -63,6 +67,10 @@ class TaskEditViewModel @Inject constructor(
 
     init {
         taskId?.let { loadTask(it) }
+        // При создании из Project — предзаполнить projectId
+        if (taskId == null && projectIdArg != null) {
+            _formState.value = _formState.value.copy(projectId = projectIdArg)
+        }
     }
 
     private fun loadTask(id: Long) {
