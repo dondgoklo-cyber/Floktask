@@ -27,13 +27,6 @@ jobs:
         with:
           gradle-version: "8.4"
 
-      - name: Provide google-services.json
-        shell: bash
-        run: |
-          if [ ! -f app/google-services.json ]; then
-            cp app/google-services.json.example app/google-services.json
-          fi
-
       - name: Build debug APK
         run: gradle assembleDebug --stacktrace --no-daemon
 
@@ -50,20 +43,12 @@ jobs:
           body: |
             ## TaskManager debug build
 
-            Smart Android task manager with AI assistant, geolocation reminders, and gamification.
+            Smart Android task manager with gamification.
 
             ### Установка
             1. Скачай файл TaskManager-debug.apk ниже
             2. Открой его на телефоне (Android 7.0+)
             3. Разреши установку из неизвестных источников
             4. Готово
-
-            ### Возможности
-            - Задачи с приоритетами, дедлайнами, повторами
-            - Проекты и теги
-            - Календарь
-            - Геймификация (очки, уровни, достижения)
-            - Геолокационные напоминания
-            - AI-ассистент автоприоритизации
           prerelease: true
           files: app/build/outputs/apk/debug/TaskManager-debug.apk

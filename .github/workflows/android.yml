@@ -30,14 +30,6 @@ jobs:
         with:
           gradle-version: "8.4"
 
-      - name: Provide google-services.json
-        shell: bash
-        run: |
-          if [ ! -f app/google-services.json ]; then
-            echo "google-services.json not found; copying redacted example so the google-services plugin does not fail."
-            cp app/google-services.json.example app/google-services.json
-          fi
-
       - name: Build debug APK
         run: gradle assembleDebug --stacktrace --no-daemon
 

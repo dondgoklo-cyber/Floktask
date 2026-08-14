@@ -18,9 +18,6 @@
         android:theme="@style/Theme.TaskManager"
         tools:targetApi="34">
 
-        <meta-data
-            android:name="firebase_app_auto_init_disabled"
-            android:value="true" />
 
         <activity
             android:name=".presentation.MainActivity"
