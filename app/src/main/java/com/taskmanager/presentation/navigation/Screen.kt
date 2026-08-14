@@ -24,6 +24,7 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Statistics : Screen("statistics", R.string.statistics)
     data object Settings : Screen("settings", R.string.settings)
     data object Search : Screen("search", R.string.search)
+    data object Kanban : Screen("kanban", R.string.kanban)
     data object Profile : Screen("profile", R.string.profile)
 
     data object TaskEditNew : Screen("task/new", R.string.add_task)
