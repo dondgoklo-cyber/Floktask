@@ -53,4 +53,10 @@ class TaskRepositoryImpl @Inject constructor(
 
     override fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>> =
         taskDao.getTasksByQuadrant(quadrantName).map { list -> list.map { it.toDomain() } }
+
+    override fun getInboxTasks(): Flow<List<Task>> =
+        taskDao.getInboxTasks().map { list -> list.map { it.toDomain() } }
+
+    override fun getUpcomingTasks(fromEpoch: Long): Flow<List<Task>> =
+        taskDao.getUpcomingTasks(fromEpoch).map { list -> list.map { it.toDomain() } }
 }

@@ -24,4 +24,10 @@ interface TaskRepository {
 
     /** Задачи по квадранту Эйзенхауэра. */
     fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>>
+
+    /** Inbox: невыполненные задачи без проекта и без даты (быстрый захват). */
+    fun getInboxTasks(): Flow<List<Task>>
+
+    /** Upcoming: невыполненные задачи с дедлайном/startTime в будущем. */
+    fun getUpcomingTasks(fromEpoch: Long): Flow<List<Task>>
 }

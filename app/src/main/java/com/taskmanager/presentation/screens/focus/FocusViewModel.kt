@@ -3,6 +3,7 @@ package com.taskmanager.presentation.screens.focus
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.PomodoroType
+import com.taskmanager.domain.repository.TaskRepository
 import com.taskmanager.domain.usecase.pomodoro.GetPomodoroStatsUseCase
 import com.taskmanager.domain.usecase.pomodoro.PomodoroStats
 import com.taskmanager.domain.usecase.pomodoro.SavePomodoroSessionUseCase
@@ -22,6 +23,7 @@ data class FocusUiState(
     val totalSeconds: Int = 25 * 60,
     val isRunning: Boolean = false,
     val taskId: Long? = null,
+    val taskTitle: String? = null,
     val completedPomodoros: Int = 0,
     val stats: PomodoroStats? = null
 )
@@ -29,7 +31,8 @@ data class FocusUiState(
 @HiltViewModel
 class FocusViewModel @Inject constructor(
     private val savePomodoroSessionUseCase: SavePomodoroSessionUseCase,
-    private val getPomodoroStatsUseCase: GetPomodoroStatsUseCase
+    private val getPomodoroStatsUseCase: GetPomodoroStatsUseCase,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FocusUiState())
@@ -55,7 +58,13 @@ class FocusViewModel @Inject constructor(
     }
 
     fun setTask(taskId: Long?) {
-        _state.value = _state.value.copy(taskId = taskId)
+        _state.value = _state.value.copy(taskId = taskId, taskTitle = null)
+        if (taskId != null) {
+            viewModelScope.launch {
+                val title = taskRepository.getTaskById(taskId)?.title
+                _state.value = _state.value.copy(taskTitle = title)
+            }
+        }
     }
 
     fun start() {

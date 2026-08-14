@@ -3,8 +3,6 @@ package com.taskmanager.presentation.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
@@ -19,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -36,11 +33,13 @@ import com.taskmanager.presentation.screens.calendar.CalendarScreen
 import com.taskmanager.presentation.screens.eisenhower.EisenhowerScreen
 import com.taskmanager.presentation.screens.focus.FocusScreen
 import com.taskmanager.presentation.screens.habits.HabitsScreen
+import com.taskmanager.presentation.screens.inbox.InboxScreen
 import com.taskmanager.presentation.screens.more.MoreScreen
 import com.taskmanager.presentation.screens.profile.ProfileScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
+import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
 
 @Composable
 fun NavGraph() {
@@ -98,13 +97,22 @@ fun NavGraph() {
                         navController.navigate(Screen.TaskEdit.buildRoute(taskId))
                     },
                     onAddTaskClick = { navController.navigate(Screen.TaskEditNew.route) },
-                    onStartFocus = { _ -> navController.navigate(Screen.Focus.route) }
+                    onStartFocus = { taskId -> navController.navigate(Screen.Focus.buildRoute(taskId)) }
                 )
             }
             composable(Screen.Projects.route) { ProjectsScreen() }
             composable(Screen.Calendar.route) { CalendarScreen() }
             composable(Screen.Habits.route) { HabitsScreen() }
             composable(Screen.Focus.route) { FocusScreen() }
+            composable(
+                route = Screen.Focus.ROUTE_WITH_TASK,
+                arguments = listOf(
+                    navArgument(Screen.Focus.ARG_TASK_ID) { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val taskId = backStackEntry.arguments?.getLong(Screen.Focus.ARG_TASK_ID)
+                FocusScreen(taskId = taskId)
+            }
             composable(Screen.More.route) {
                 MoreScreen(onNavigate = { route -> navController.navigate(route) })
             }
@@ -113,10 +121,14 @@ fun NavGraph() {
             }
             composable(Screen.Eisenhower.route) { EisenhowerScreen() }
             composable(Screen.Inbox.route) {
-                SimplePlaceholder(stringResource(R.string.inbox))
+                InboxScreen(
+                    onEditTask = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) }
+                )
             }
             composable(Screen.Upcoming.route) {
-                SimplePlaceholder(stringResource(R.string.upcoming))
+                UpcomingScreen(
+                    onEditTask = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) }
+                )
             }
             composable(Screen.Settings.route) {
                 ProfileScreen(onBack = { navController.popBackStack() })
@@ -133,16 +145,6 @@ fun NavGraph() {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
         }
-    }
-}
-
-@Composable
-private fun SimplePlaceholder(title: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(title)
     }
 }
 

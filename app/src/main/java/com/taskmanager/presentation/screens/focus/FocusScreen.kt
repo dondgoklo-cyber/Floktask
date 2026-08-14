@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,9 +55,14 @@ import androidx.compose.foundation.layout.PaddingValues
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FocusScreen(
+    taskId: Long? = null,
     viewModel: FocusViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(taskId) {
+        viewModel.setTask(taskId)
+    }
 
     Scaffold(
         topBar = {
@@ -127,6 +133,16 @@ fun FocusScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppTheme.colors.onSurfaceVariant
                     )
+                    state.taskTitle?.let { title ->
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = AppTheme.colors.primary,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
 

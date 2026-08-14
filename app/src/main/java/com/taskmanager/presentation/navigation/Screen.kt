@@ -8,7 +8,11 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Projects : Screen("projects", R.string.projects)
     data object Calendar : Screen("calendar", R.string.calendar)
     data object Habits : Screen("habits", R.string.habits)
-    data object Focus : Screen("focus", R.string.focus)
+    data object Focus : Screen("focus", R.string.focus) {
+        const val ARG_TASK_ID = "taskId"
+        const val ROUTE_WITH_TASK = "focus/{$ARG_TASK_ID}"
+        fun buildRoute(taskId: Long?): String = if (taskId != null) "focus/$taskId" else "focus"
+    }
 
     // Раздел "More" — открывается как отдельный экран
     data object More : Screen("more", R.string.more)
