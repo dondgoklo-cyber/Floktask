@@ -156,8 +156,9 @@ private fun GreetingHeader() {
 private fun ProgressCard(state: TodayUiState) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
-        shape = RoundedCornerShape(Radius.lg)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
     ) {
         Column(Modifier.padding(Spacing.xl)) {
             Row(
@@ -224,8 +225,9 @@ private fun SummaryStat(
 ) {
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.xs),
-        shape = RoundedCornerShape(Radius.md)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.md),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
     ) {
         Column(
             modifier = Modifier.padding(Spacing.md),
@@ -265,8 +267,9 @@ private fun NextTaskRow(task: Task, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.xs),
-        shape = RoundedCornerShape(Radius.md)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
@@ -312,8 +315,9 @@ private fun NextTaskRow(task: Task, onClick: () -> Unit) {
 private fun FocusCard(state: TodayUiState) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
-        shape = RoundedCornerShape(Radius.lg)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
     ) {
         Row(
             modifier = Modifier.padding(Spacing.xl),
@@ -350,8 +354,9 @@ private fun FocusCard(state: TodayUiState) {
 private fun HabitsCard(state: TodayUiState) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
-        shape = RoundedCornerShape(Radius.lg)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
     ) {
         Column(Modifier.padding(Spacing.xl)) {
             Row(
