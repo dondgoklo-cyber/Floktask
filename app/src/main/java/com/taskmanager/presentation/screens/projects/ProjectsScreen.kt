@@ -120,6 +120,7 @@ fun ProjectsScreen(
 @Composable
 private fun ProjectCard(project: Project, stats: ProjectStats) {
     val accentColor = project.color?.let { parseColor(it) } ?: Color(0xFFFF6D00)
+    val progress = if (stats.total > 0) stats.completed.toFloat() / stats.total else 0f
 
     Card(
         modifier = Modifier.fillMaxWidth(),
