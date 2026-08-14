@@ -61,6 +61,29 @@
   - Strings: new_tag, edit_tag, delete_tag_title/message, tag_name, select_color, no_tags
   - CI: Build & Test — success (6c79ac2)
 
+### Сессия 8 (продолжение)
+- **Add Task из Project** (ГОТОВО — Приоритет 2):
+  - Screen.TaskEditNew: опциональный projectId аргумент
+  - TaskEditViewModel: чтение projectId из SavedStateHandle, предзаполнение form.projectId
+  - NavGraph: ProjectDetail onAddTask → TaskEditNew.buildRoute(projectId)
+  - CI: Build & Test — success (583beb0)
+
+- **Личные финансы — core-модуль** (ГОТОВО — Приоритет 4):
+  - Domain: Transaction, Category, Account models + TransactionType/CategoryType enums
+  - Data: TransactionEntity/CategoryEntity/AccountEntity, DAOs, Mappers, Repositories
+  - UseCases: Create/Update/Delete/GetAll/GetRecent Transaction, GetFinanceSummary,
+    Create/GetByType/Update/Delete Category, Create/Get Account
+  - FinanceDataSeeder: 16 категорий по умолчанию + Основной счёт (RUB)
+  - AppDatabase v8, DI: 3 DAO + 3 binding + seeder в TaskManagerApp
+  - FinanceScreen: BalanceCard, PeriodSelector (Сегодня/Неделя/Месяц/Год),
+    PeriodSummary (income/expense/net), CategoryBreakdown, TransactionRow
+  - FinanceViewModel: nested combine, balance, period summary, grouped transactions
+  - AddTransactionSheet: быстрая форма (сумма → категория → дата → счёт → note),
+    авто-фокус на сумме, type toggle (Доход/Расход)
+  - Dashboard: FinanceSummaryCard в TodayScreen (баланс + доходы + расходы + 3 операции)
+  - Navigation: Finance в bottomNav (заменил Calendar), Calendar в More
+  - CI: Build & Test — success (66158bb)
+
 ---
 
 ## 2. ЧТО НУЖНО СДЕЛАТЬ (по приоритетам)
@@ -77,13 +100,12 @@
   - [x] Цвет тега отображается в TaskCard (TagMiniChip)
   - [x] Цвет сохраняется в БД, переживает перезапуск
 
-### ПРИОРИТЕТ 2 — Add Task из Project (с авто-выбором проекта)
-- Сейчас ProjectDetail FAB → `task/new` (без project context)
-- Нужно:
-  - [ ] Добавить маршрут `task/new?projectId={projectId}` ИЛИ передавать projectId через SavedStateHandle
-  - [ ] TaskEditViewModel: при получении projectId предзаполнить form.projectId
-  - [ ] После сохранения — возврат в ProjectDetail (navController.popBackStack)
-  - [ ] Задача появляется в Project, Today (если дата), Search
+### ПРИОРИТЕТ 2 — Add Task из Project (с авто-выбором проекта) ✅ ГОТОВО (сессия 8)
+- ProjectDetail FAB → TaskEditNew.buildRoute(projectId)
+- Сделано:
+  - [x] Маршрут task/new?projectId={projectId} + SavedStateHandle
+  - [x] TaskEditViewModel: предзаполнение form.projectId
+  - [x] После сохранения — возврат в ProjectDetail (popBackStack)
 
 ### ПРИОРИТЕТ 3 — "+" универсальная кнопка создания
 - Сейчас FAB на Today → QuickAdd (только задача)
@@ -92,7 +114,7 @@
   - [ ] Или: FAB открывает QuickAdd, аlong-press → меню
   - [ ] Не перегружать — максимум 5 пунктов
 
-### ПРИОРИТЕТ 4 — Личные финансы (НОВЫЙ CORE-МОДУЛЬ)
+### ПРИОРИТЕТ 4 — Личные финансы (НОВЫЙ CORE-МОДУЛЬ) ✅ ГОТОВО (сессия 8)
 - Сущности:
   - `TransactionEntity` (id, amount, type INCOME/EXPENSE, categoryId, accountId, date, note, createdAt, updatedAt)
   - `CategoryEntity` (id, name, type INCOME/EXPENSE, color, icon, isDefault)
@@ -154,4 +176,4 @@
 *Создано для следующей сессии AI-ассистента.*
 *Проект: dondgoklo-cyber/Floktask*
 *Ветвь: vibe/taskmanager-scaffold-8c6512*
-*Последний коммит: 6c79ac2 (Tags с цветами)*
+*Последний коммит: 66158bb (Личные финансы — core-модуль)*
