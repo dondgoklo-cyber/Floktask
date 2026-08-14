@@ -50,7 +50,7 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
 
-private enum class ProjectViewMode { LIST, KANBAN }
+private enum class ProjectViewMode { LIST, KANBAN, NOTES }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +59,7 @@ fun ProjectDetailScreen(
     onBack: () -> Unit,
     onAddTask: () -> Unit,
     onTaskClick: (Long) -> Unit,
+    onNoteClick: (Long) -> Unit = {},
     viewModel: ProjectDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -91,8 +92,14 @@ fun ProjectDetailScreen(
         floatingActionButton = {
             AppFloatingActionButton(
                 icon = Icons.Filled.Add,
-                contentDescription = stringResource(R.string.add_task),
-                onClick = onAddTask
+                contentDescription = if (viewMode == ProjectViewMode.NOTES) stringResource(R.string.add_note) else stringResource(R.string.add_task),
+                onClick = {
+                    if (viewMode == ProjectViewMode.NOTES) {
+                        viewModel.createNoteForProject("") { id -> onNoteClick(id) }
+                    } else {
+                        onAddTask()
+                    }
+                }
             )
         }
     ) { padding ->
@@ -115,6 +122,11 @@ fun ProjectDetailScreen(
                     selected = viewMode == ProjectViewMode.KANBAN,
                     onClick = { viewMode = ProjectViewMode.KANBAN },
                     label = { Text(stringResource(R.string.view_kanban)) }
+                )
+                FilterChip(
+                    selected = viewMode == ProjectViewMode.NOTES,
+                    onClick = { viewMode = ProjectViewMode.NOTES },
+                    label = { Text(stringResource(R.string.notes)) }
                 )
             }
 
@@ -144,6 +156,13 @@ fun ProjectDetailScreen(
                         tagColors = state.tagColors,
                         onMoveTask = { task, status -> viewModel.moveTask(task, status) },
                         onTaskClick = onTaskClick
+                    )
+                }
+                viewMode == ProjectViewMode.NOTES -> {
+                    ProjectNotesList(
+                        notes = state.notes,
+                        onNoteClick = onNoteClick,
+                        onCreateNote = { viewModel.createNoteForProject("") { id -> onNoteClick(id) } }
                     )
                 }
             }
@@ -246,6 +265,58 @@ private fun KanbanColumn(
                 onCheckedChange = { },
                 tagColors = tagColors
             )
+        }
+    }
+}
+
+@Composable
+private fun ProjectNotesList(
+    notes: List<com.taskmanager.domain.model.Note>,
+    onNoteClick: (Long) -> Unit,
+    onCreateNote: () -> Unit
+) {
+    if (notes.isEmpty()) {
+        EmptyState(
+            icon = Icons.Filled.Add,
+            title = "В проекте пока нет заметок",
+            subtitle = "Заметки помогут хранить документацию и идеи по проекту",
+            actionText = stringResource(R.string.add_note),
+            onAction = onCreateNote
+        )
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.sm),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+        ) {
+            items(notes, key = { it.id ?: 0 }) { note ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { note.id?.let(onNoteClick) },
+                    elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+                    shape = RoundedCornerShape(Radius.lg),
+                    colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(Spacing.lg)) {
+                        Text(
+                            note.title.ifBlank { "Без названия" },
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        note.contentMarkdown.takeIf { it.isNotBlank() }?.let { content ->
+                            val preview = content.lines().filter { it.isNotBlank() }.firstOrNull() ?: ""
+                            if (preview.isNotBlank()) {
+                                Text(
+                                    preview,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = AppTheme.colors.onSurfaceVariant,
+                                    maxLines = 2
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

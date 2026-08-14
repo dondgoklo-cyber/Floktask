@@ -188,7 +188,8 @@ fun NavGraph() {
                     projectId = projectId,
                     onBack = { navController.popBackStack() },
                     onAddTask = { navController.navigate(Screen.TaskEditNew.buildRoute(projectId)) },
-                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) }
+                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) },
+                    onNoteClick = { noteId -> navController.navigate(Screen.NoteEdit.buildRoute(noteId)) }
                 )
             }
             composable(Screen.Calendar.route) { CalendarScreen() }

@@ -3,8 +3,11 @@ package com.taskmanager.presentation.screens.projectdetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Project
+import com.taskmanager.domain.model.Note
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
+import com.taskmanager.domain.repository.NoteRepository
+import com.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.TagRepository
 import com.taskmanager.domain.repository.TaskRepository
@@ -26,6 +29,7 @@ data class ProjectDetailUiState(
     val project: Project? = null,
     val tasks: List<Task> = emptyList(),
     val tagColors: Map<String, String> = emptyMap(),
+    val notes: List<Note> = emptyList(),
     val isLoading: Boolean = true
 )
 
@@ -34,7 +38,9 @@ data class ProjectDetailUiState(
 class ProjectDetailViewModel @Inject constructor(
     private val projectRepository: ProjectRepository,
     private val taskRepository: TaskRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val noteRepository: NoteRepository,
+    private val createNoteUseCase: CreateNoteUseCase
 ) : ViewModel() {
 
     private val _projectId = MutableStateFlow(0L)
@@ -46,14 +52,16 @@ class ProjectDetailViewModel @Inject constructor(
             combine(
                 flowOf(id),
                 taskRepository.getTasksByProject(id),
-                tagRepository.getAllTags()
-            ) { projectId, tasks, allTags ->
+                tagRepository.getAllTags(),
+                noteRepository.getNotesByProject(id)
+            ) { projectId, tasks, allTags, notes ->
                 val project = projectRepository.getProjectById(projectId)
                 val colors = allTags.associate { it.name to (it.color ?: "") }
                 ProjectDetailUiState(
                     project = project,
                     tasks = tasks,
                     tagColors = colors,
+                    notes = notes,
                     isLoading = false
                 )
             }
@@ -62,6 +70,17 @@ class ProjectDetailViewModel @Inject constructor(
 
     fun loadProject(id: Long) {
         _projectId.value = id
+    }
+
+    fun createNoteForProject(title: String, onCreated: (Long) -> Unit) {
+        viewModelScope.launch {
+            val id = createNoteUseCase(Note(
+                title = title,
+                contentMarkdown = "",
+                projectId = _projectId.value
+            ))
+            onCreated(id)
+        }
     }
 
     fun moveTask(task: Task, newStatus: TaskStatus) {
