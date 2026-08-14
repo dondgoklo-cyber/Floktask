@@ -6,6 +6,7 @@ import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import com.taskmanager.domain.usecase.task.DeleteTaskUseCase
 import com.taskmanager.domain.usecase.task.GetAllTasksUseCase
+import com.taskmanager.domain.usecase.gamification.RecordTaskCompletionUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,8 @@ class TasksViewModel @Inject constructor(
     private val getAllTasksUseCase: GetAllTasksUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val recordTaskCompletionUseCase: RecordTaskCompletionUseCase
 ) : ViewModel() {
 
     private val _tasksState = MutableStateFlow<TasksState>(TasksState.Loading)
@@ -45,7 +47,9 @@ class TasksViewModel @Inject constructor(
 
     fun toggleComplete(task: Task) {
         viewModelScope.launch {
-            updateTaskUseCase(task.copy(isCompleted = !task.isCompleted))
+            val willComplete = !task.isCompleted
+            updateTaskUseCase(task.copy(isCompleted = willComplete))
+            if (willComplete) recordTaskCompletionUseCase(task.priority)
         }
     }
 

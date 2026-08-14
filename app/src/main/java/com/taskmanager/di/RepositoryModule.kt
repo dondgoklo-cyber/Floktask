@@ -3,9 +3,11 @@ package com.taskmanager.di
 import com.taskmanager.data.repository.ProjectRepositoryImpl
 import com.taskmanager.data.repository.TagRepositoryImpl
 import com.taskmanager.data.repository.TaskRepositoryImpl
+import com.taskmanager.data.repository.UserStatsRepositoryImpl
 import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.TagRepository
 import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.repository.UserStatsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -27,4 +29,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTagRepository(impl: TagRepositoryImpl): TagRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserStatsRepository(impl: UserStatsRepositoryImpl): UserStatsRepository
 }

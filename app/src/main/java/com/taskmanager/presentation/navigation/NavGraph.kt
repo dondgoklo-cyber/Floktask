@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -30,6 +31,7 @@ import com.taskmanager.presentation.screens.calendar.CalendarScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.tasks.TasksScreen
+import com.taskmanager.presentation.screens.profile.ProfileScreen
 
 @Composable
 fun NavGraph() {
@@ -86,6 +88,9 @@ fun NavGraph() {
             composable(Screen.Calendar.route) {
                 CalendarScreen()
             }
+            composable(Screen.Profile.route) {
+                ProfileScreen()
+            }
             composable(Screen.TaskEditNew.route) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
@@ -106,6 +111,7 @@ private val Screen.icon: ImageVector
         Screen.Tasks -> Icons.Filled.List
         Screen.Projects -> Icons.Filled.Folder
         Screen.Calendar -> Icons.Filled.DateRange
+        Screen.Profile -> Icons.Filled.Person
         Screen.TaskEditNew,
         Screen.TaskEdit -> Icons.Filled.List
     }

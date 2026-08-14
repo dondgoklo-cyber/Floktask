@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.data.local.dao.UserStatsDao
 import com.taskmanager.data.local.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -35,4 +36,7 @@ object DatabaseModule {
 
     @Provides
     fun provideTagDao(db: AppDatabase): TagDao = db.tagDao()
+
+    @Provides
+    fun provideUserStatsDao(db: AppDatabase): UserStatsDao = db.userStatsDao()
 }
