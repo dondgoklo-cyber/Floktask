@@ -14,6 +14,10 @@ class UserPrefs(private val context: Context) {
         get() = prefs.getString(KEY_USER_NAME, "") ?: ""
         set(value) = prefs.edit().putString(KEY_USER_NAME, value).apply()
 
+    var hapticEnabled: Boolean
+        get() = prefs.getBoolean(KEY_HAPTIC_ENABLED, true)
+        set(value) = prefs.edit().putBoolean(KEY_HAPTIC_ENABLED, value).apply()
+
     val hasPin: Boolean
         get() = prefs.contains(KEY_PIN_HASH)
 
@@ -42,5 +46,6 @@ class UserPrefs(private val context: Context) {
     companion object {
         private const val KEY_PIN_HASH = "pin_hash"
         private const val KEY_USER_NAME = "user_name"
+        private const val KEY_HAPTIC_ENABLED = "haptic_enabled"
     }
 }

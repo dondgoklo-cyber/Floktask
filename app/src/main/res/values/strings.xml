@@ -103,6 +103,16 @@
     <string name="no_transactions">Пока нет операций</string>
     <string name="expenses_by_category">Расходы по категориям</string>
     <string name="all_finance">Все финансы</string>
+    <!-- Заметки -->
+    <string name="notes">Заметки</string>
+    <string name="add_note">Добавить заметку</string>
+    <string name="no_notes">Пока нет заметок</string>
+    <string name="folders">Папки</string>
+    <string name="pinned">Закреплённые</string>
+    <string name="recent">Недавние</string>
+    <!-- Haptic -->
+    <string name="haptic_feedback">Тактильный отклик</string>
+    <string name="haptic_feedback_desc">Использовать тактильный отклик при взаимодействии с интерфейсом</string>
     <string name="today_summary">Сегодня</string>
     <string name="tasks_total">всего задач</string>
     <string name="tasks_completed">выполнено</string>

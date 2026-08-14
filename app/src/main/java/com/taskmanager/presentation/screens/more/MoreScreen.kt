@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Inbox
@@ -71,6 +72,7 @@ fun MoreScreen(
     val sections = listOf(
         MoreSection("Обзор", listOf(
             MoreItem(Icons.Filled.Search, R.string.search, Screen.Search.route),
+            MoreItem(Icons.Filled.Bolt, R.string.focus, Screen.Focus.route),
             MoreItem(Icons.Filled.Inbox, R.string.inbox, Screen.Inbox.route),
             MoreItem(Icons.Filled.CalendarMonth, R.string.calendar, Screen.Calendar.route),
             MoreItem(Icons.Filled.CalendarMonth, R.string.upcoming, Screen.Upcoming.route)

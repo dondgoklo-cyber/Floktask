@@ -13,6 +13,7 @@ import com.taskmanager.presentation.theme.Elevation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Folder
@@ -42,6 +43,8 @@ import com.taskmanager.presentation.screens.eisenhower.EisenhowerScreen
 import com.taskmanager.presentation.screens.finance.FinanceScreen
 import com.taskmanager.presentation.screens.focus.FocusScreen
 import com.taskmanager.presentation.screens.habits.HabitsScreen
+import com.taskmanager.presentation.screens.notes.NotesScreen
+import com.taskmanager.presentation.screens.notes.NoteEditScreen
 import com.taskmanager.presentation.screens.inbox.InboxScreen
 import com.taskmanager.presentation.screens.kanban.KanbanScreen
 import com.taskmanager.presentation.screens.more.MoreScreen
@@ -164,7 +167,8 @@ fun NavGraph() {
                     onStartFocus = { taskId -> navController.navigate(Screen.Focus.buildRoute(taskId)) },
                     onAllFinance = { navController.navigate(Screen.Finance.route) },
                     onAddHabit = { navController.navigate(Screen.Habits.route) },
-                    onAddProject = { navController.navigate(Screen.Projects.route) }
+                    onAddProject = { navController.navigate(Screen.Projects.route) },
+                    onAddNote = { navController.navigate(Screen.NoteEditNew.route) }
                 )
             }
             composable(Screen.Projects.route) {
@@ -188,6 +192,24 @@ fun NavGraph() {
             }
             composable(Screen.Calendar.route) { CalendarScreen() }
             composable(Screen.Finance.route) { FinanceScreen() }
+            composable(Screen.Notes.route) {
+                NotesScreen(
+                    onNoteClick = { noteId -> navController.navigate(Screen.NoteEdit.buildRoute(noteId)) },
+                    onFolderClick = { _ -> /* TODO: folder view */ }
+                )
+            }
+            composable(Screen.NoteEditNew.route) {
+                NoteEditScreen(onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = Screen.NoteEdit.route,
+                arguments = listOf(
+                    navArgument(Screen.NoteEdit.ARG_NOTE_ID) { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val noteId = backStackEntry.arguments?.getLong(Screen.NoteEdit.ARG_NOTE_ID) ?: 0L
+                NoteEditScreen(onBack = { navController.popBackStack() })
+            }
             composable(Screen.Habits.route) { HabitsScreen() }
             composable(Screen.Focus.route) { FocusScreen() }
             composable(
@@ -264,6 +286,9 @@ private val Screen.icon: ImageVector
         Screen.Finance -> Icons.Filled.AccountBalanceWallet
         Screen.Habits -> Icons.Filled.Checklist
         Screen.Focus -> Icons.Filled.Bolt
+        Screen.Notes -> Icons.Filled.Description
+        Screen.NoteEdit,
+        Screen.NoteEditNew -> Icons.Filled.Description
         Screen.More,
         Screen.Search,
         Screen.Kanban,

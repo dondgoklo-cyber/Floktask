@@ -77,7 +77,8 @@ fun TodayScreen(
     onStartFocus: (Long) -> Unit = {},
     onAllFinance: () -> Unit = {},
     onAddHabit: () -> Unit = {},
-    onAddProject: () -> Unit = {}
+    onAddProject: () -> Unit = {},
+    onAddNote: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
@@ -115,7 +116,8 @@ fun TodayScreen(
             onHabit = onAddHabit,
             onIncome = { addTransactionType = TransactionType.INCOME },
             onExpense = { addTransactionType = TransactionType.EXPENSE },
-            onProject = onAddProject
+            onProject = onAddProject,
+            onNote = onAddNote
         )
     }
 

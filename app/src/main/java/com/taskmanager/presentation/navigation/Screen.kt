@@ -17,6 +17,7 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     // Раздел "More" — открывается как отдельный экран
     data object More : Screen("more", R.string.more)
     data object Finance : Screen("finance", R.string.finance)
+    data object Notes : Screen("notes", R.string.notes)
 
     // Дополнительные экраны (не в bottom nav)
     data object Inbox : Screen("inbox", R.string.inbox)
@@ -34,6 +35,13 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
         fun buildRoute(projectId: Long): String = "project/$projectId"
     }
 
+    data object NoteEdit : Screen("note/{noteId}", R.string.add_note) {
+        const val ARG_NOTE_ID = "noteId"
+        fun buildRoute(noteId: Long): String = "note/$noteId"
+    }
+
+    data object NoteEditNew : Screen("note/new", R.string.add_note)
+
     data object TaskEditNew : Screen("task/new?projectId={projectId}", R.string.add_task) {
         const val ARG_PROJECT_ID = "projectId"
         const val ROUTE_BASE = "task/new"
@@ -49,6 +57,6 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
 
     companion object {
         /** Основная нижняя навигация: 5 ключевых разделов + More. */
-        val bottomNavItems = listOf(Today, Projects, Finance, Habits, Focus)
+        val bottomNavItems = listOf(Today, Projects, Finance, Notes, Habits)
     }
 }

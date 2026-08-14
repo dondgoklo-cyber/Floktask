@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -65,6 +67,7 @@ fun SettingsScreen(
     var nameInput by remember { mutableStateOf(userPrefs.userName) }
     var showPinScreen by remember { mutableStateOf<PinMode?>(null) }
     var showRemovePinDialog by remember { mutableStateOf(false) }
+    var hapticEnabled by remember { mutableStateOf(userPrefs.hapticEnabled) }
 
     if (showPinScreen != null) {
         PinScreen(
@@ -189,6 +192,46 @@ fun SettingsScreen(
                     icon = Icons.Filled.Lock,
                     onClick = { showPinScreen = PinMode.CREATE }
                 )
+            }
+
+            // Тактильный отклик
+            Text(
+                stringResource(R.string.haptic_feedback),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = Spacing.sm)
+            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                shape = RoundedCornerShape(Radius.md)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+                ) {
+                    Icon(Icons.Filled.Vibration, contentDescription = null, tint = AppTheme.colors.primary)
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.haptic_feedback),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = AppTheme.colors.onSurface
+                        )
+                        Text(
+                            stringResource(R.string.haptic_feedback_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppTheme.colors.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = hapticEnabled,
+                        onCheckedChange = { value ->
+                            hapticEnabled = value
+                            userPrefs.hapticEnabled = value
+                        }
+                    )
+                }
             }
 
             // Данные

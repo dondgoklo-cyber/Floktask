@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.taskmanager.data.local.dao.AccountDao
 import com.taskmanager.data.local.dao.CategoryDao
 import com.taskmanager.data.local.dao.HabitDao
+import com.taskmanager.data.local.dao.NoteDao
+import com.taskmanager.data.local.dao.NoteFolderDao
 import com.taskmanager.data.local.dao.HabitLogDao
 import com.taskmanager.data.local.dao.PomodoroSessionDao
 import com.taskmanager.data.local.dao.ProjectDao
@@ -64,4 +66,8 @@ object DatabaseModule {
     fun provideCategoryDao(db: AppDatabase): CategoryDao = db.categoryDao()
     @Provides
     fun provideAccountDao(db: AppDatabase): AccountDao = db.accountDao()
+    @Provides
+    fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
+    @Provides
+    fun provideNoteFolderDao(db: AppDatabase): NoteFolderDao = db.noteFolderDao()
 }
