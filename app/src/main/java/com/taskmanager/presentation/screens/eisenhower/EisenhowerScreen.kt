@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -139,10 +138,8 @@ private fun Quadrant(
             .padding(Spacing.sm)
             .pointerInput(quadrant) {
                 detectDragGesturesAfterLongPress(
-                    onDragEnd = {
-                        // Упрощённая drop-логика: в реальном приложении здесь отслеживается
-                        // позиция drop и вызывается onDrop с ID перетаскиваемой задачи
-                    }
+                    onDragEnd = {},
+                    onDrag = { _, _ -> }
                 )
             }
     ) {
@@ -183,7 +180,8 @@ private fun TaskQuadrantItem(
             .fillMaxWidth()
             .pointerInput(task.id) {
                 detectDragGesturesAfterLongPress(
-                    onDragStart = { onDragStart() }
+                    onDragStart = { onDragStart() },
+                    onDrag = { _, _ -> }
                 )
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),

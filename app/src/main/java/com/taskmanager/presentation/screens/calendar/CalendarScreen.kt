@@ -470,7 +470,8 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                             )
                             .pointerInput(date) {
                                 detectDragGesturesAfterLongPress(
-                                    onDragStart = { viewModel.selectDate(date) }
+                                    onDragStart = { viewModel.selectDate(date) },
+                                    onDrag = { _, _ -> }
                                 )
                             },
                         contentAlignment = Alignment.TopCenter

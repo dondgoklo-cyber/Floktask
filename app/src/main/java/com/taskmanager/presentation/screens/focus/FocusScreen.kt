@@ -47,6 +47,7 @@ import com.taskmanager.domain.model.PomodoroType
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.domain.usecase.pomodoro.PomodoroStats
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.PaddingValues
 
@@ -107,7 +108,8 @@ fun FocusScreen(
                         PomodoroType.WORK -> AppTheme.colors.primary
                         PomodoroType.SHORT_BREAK -> AppTheme.colors.success
                         PomodoroType.LONG_BREAK -> AppTheme.colors.info
-                    }
+                    },
+                    trackColor = AppTheme.colors.surfaceVariant
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -166,6 +168,7 @@ fun FocusScreen(
 private fun CircularProgressIndicatorTimer(
     progress: Float,
     color: Color,
+    trackColor: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -176,14 +179,14 @@ private fun CircularProgressIndicatorTimer(
             val stroke = 12.dp.toPx()
             // Фон
             drawCircle(
-                color = AppTheme.colors.surfaceVariant.toArgbColor(),
+                color = trackColor,
                 radius = (size.minDimension - stroke) / 2,
                 style = Stroke(width = stroke, cap = StrokeCap.Round)
             )
             // Прогресс
             val sweep = 360f * progress
             drawArc(
-                color = color.toArgbColor(),
+                color = color,
                 startAngle = -90f,
                 sweepAngle = sweep,
                 useCenter = false,
@@ -227,4 +230,3 @@ private fun StatColumn(label: String, count: String, minutes: String) {
     }
 }
 
-private fun Color.toArgbColor(): Color = this

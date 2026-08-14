@@ -119,7 +119,7 @@ fun ProjectsScreen(
 
 @Composable
 private fun ProjectCard(project: Project) {
-    val accentColor = project.color?.let { parseColor(it) } ?: AppTheme.colors.primary
+    val accentColor = project.color?.let { parseColor(it) } ?: Color(0xFFFF6D00)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -203,6 +203,6 @@ private fun parseColor(hex: String): androidx.compose.ui.graphics.Color {
         val clean = hex.removePrefix("#")
         androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor("#$clean"))
     } catch (_: Throwable) {
-        AppTheme.colors.primary
+        Color(0xFFFF6D00)
     }
 }

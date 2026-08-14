@@ -138,7 +138,7 @@ private fun HabitCard(
     onToggle: () -> Unit
 ) {
     val habit = habitWithCompletion.habit
-    val accentColor = habit.color?.let { parseColor(it) } ?: AppTheme.colors.primary
+    val accentColor = habit.color?.let { parseColor(it) } ?: Color(0xFFFF6D00)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -312,6 +312,6 @@ private fun parseColor(hex: String): Color {
         val clean = hex.removePrefix("#")
         Color(android.graphics.Color.parseColor("#$clean"))
     } catch (_: Throwable) {
-        AppTheme.colors.primary.let { Color(it.red, it.green, it.blue) }
+        Color(0xFFFF6D00)
     }
 }

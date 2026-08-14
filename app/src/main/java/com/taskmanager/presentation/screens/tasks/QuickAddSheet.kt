@@ -2,7 +2,6 @@ package com.taskmanager.presentation.screens.tasks
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -65,8 +64,7 @@ fun QuickAddSheet(
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(Spacing.lg),
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             Text(
