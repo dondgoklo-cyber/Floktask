@@ -27,7 +27,8 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     updatedAt = updatedAt.toEpochMilli(),
     color = color,
     reminderDate = reminderDate?.toEpochMilli(),
-    recurrenceRule = recurrenceRule?.name
+    recurrenceRule = recurrenceRule?.name,
+    tags = if (tags.isNotEmpty()) JSONArray(tags).toString() else null
 )
 
 private fun Int.toPriority(): Priority =
@@ -60,7 +61,8 @@ fun TaskEntity.toDomain(): Task = Task(
     updatedAt = Instant.ofEpochMilli(updatedAt),
     color = color,
     reminderDate = reminderDate?.let { Instant.ofEpochMilli(it) },
-    recurrenceRule = recurrenceRule?.toRecurrenceRule()
+    recurrenceRule = recurrenceRule?.toRecurrenceRule(),
+    tags = parseTags(tags)
 )
 
 

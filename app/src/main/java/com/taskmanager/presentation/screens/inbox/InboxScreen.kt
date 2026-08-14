@@ -108,7 +108,7 @@ fun InboxScreen(
                     items(state.tasks, key = { it.id ?: 0 }) { task ->
                         val dismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = { value ->
-                                if (value == SwipeToDismissBoxValue.EndToEnd) {
+                                if (value == SwipeToDismissBoxValue.StartToEnd) {
                                     viewModel.completeTask(task.id ?: 0)
                                     true
                                 } else false
@@ -117,8 +117,7 @@ fun InboxScreen(
                         SwipeToDismissBox(
                             state = dismissState,
                             backgroundContent = {},
-                            enableDismissFromStartToEnd = false
-                        ) {
+                                                    ) {
                             TaskCard(
                                 task = task,
                                 onClick = { detailTaskId = task.id ?: 0 },

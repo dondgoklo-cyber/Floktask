@@ -40,5 +40,6 @@ data class TaskEntity(
     val updatedAt: Long = System.currentTimeMillis(),
     val color: String? = null,
     val reminderDate: Long? = null,
-    val recurrenceRule: String? = null
+    val recurrenceRule: String? = null,
+    val tags: String? = null
 )

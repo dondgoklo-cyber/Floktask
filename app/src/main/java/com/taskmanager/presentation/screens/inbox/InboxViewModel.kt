@@ -19,7 +19,7 @@ data class InboxUiState(
 
 @HiltViewModel
 class InboxViewModel @Inject constructor(
-    taskRepository: TaskRepository
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
 
     val state: StateFlow<InboxUiState> = taskRepository.getInboxTasks()
