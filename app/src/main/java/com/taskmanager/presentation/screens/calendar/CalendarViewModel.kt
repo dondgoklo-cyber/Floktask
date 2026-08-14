@@ -3,61 +3,120 @@ package com.taskmanager.presentation.screens.calendar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Task
-import com.taskmanager.domain.usecase.task.GetAllTasksUseCase
+import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 import javax.inject.Inject
 
+enum class CalendarViewMode { DAY, THREE_DAYS, WEEK, MONTH, AGENDA }
+
+data class CalendarUiState(
+    val viewMode: CalendarViewMode = CalendarViewMode.DAY,
+    val selectedDate: LocalDate = LocalDate.now(),
+    val timedTasks: Map<LocalDate, List<Task>> = emptyMap(),
+    val allTasks: List<Task> = emptyList(),
+    val isLoading: Boolean = true
+)
+
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    getAllTasksUseCase: GetAllTasksUseCase
+    private val taskRepository: TaskRepository,
+    private val updateTaskUseCase: UpdateTaskUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<CalendarState>(CalendarState.Loading)
-    val state: StateFlow<CalendarState> = _state.asStateFlow()
+    private val _viewMode = MutableStateFlow(CalendarViewMode.DAY)
+    private val _selectedDate = MutableStateFlow(LocalDate.now())
 
-    init {
-        getAllTasksUseCase()
-            .map { tasks -> tasks.filter { it.deadline != null || it.startTime != null } }
-            .map { tasks -> groupByDay(tasks) }
-            .map { days -> CalendarState.Success(days) as CalendarState }
-            .onEach { _state.value = it }
-            .catch { cause -> _state.value = CalendarState.Error(cause.message ?: "Unknown error") }
-            .launchIn(viewModelScope)
+    private val zone = ZoneId.systemDefault()
+
+    val state: StateFlow<CalendarUiState> = combine(
+        _viewMode,
+        _selectedDate,
+        taskRepository.getAllTasks()
+    ) { viewMode, selectedDate, allTasks ->
+        // Группируем задачи по дате (deadline или startTime)
+        val byDay = allTasks
+            .filter { it.deadline != null || it.startTime != null }
+            .groupBy { task ->
+                task.startTime?.atZone(zone)?.toLocalDate()
+                    ?: task.deadline?.atZone(zone)?.toLocalDate()
+                    ?: selectedDate
+            }
+            .mapValues { (_, tasks) ->
+                tasks.sortedWith(compareBy(nullsLast()) { it.startTime })
+            }
+        CalendarUiState(
+            viewMode = viewMode,
+            selectedDate = selectedDate,
+            timedTasks = byDay,
+            allTasks = allTasks,
+            isLoading = false
+        )
+    }.stateIn(viewModelScope, SharingStarted.Lazily, CalendarUiState(isLoading = true))
+
+    fun setViewMode(mode: CalendarViewMode) {
+        _viewMode.value = mode
     }
 
-    private fun groupByDay(tasks: List<Task>): List<TaskDay> {
-        val zone = ZoneId.systemDefault()
-        return tasks
-            .flatMap { task ->
-                val days = mutableSetOf<LocalDate>()
-                task.deadline?.atZone(zone)?.toLocalDate()?.let { days.add(it) }
-                task.startTime?.atZone(zone)?.toLocalDate()?.let { days.add(it) }
-                days.map { it to task }
-            }
-            .groupBy({ it.first }, { it.second })
-            .toSortedMap(compareBy { it })
-            .map { (day, dayTasks) ->
-                TaskDay(day, dayTasks.sortedWith(compareBy(nullsLast()) { it.startTime }))
-            }
+    fun selectDate(date: LocalDate) {
+        _selectedDate.value = date
+    }
+
+    fun goToNextDay() {
+        _selectedDate.value = _selectedDate.value.plusDays(1)
+    }
+
+    fun goToPreviousDay() {
+        _selectedDate.value = _selectedDate.value.minusDays(1)
+    }
+
+    fun goToNextWeek() {
+        _selectedDate.value = _selectedDate.value.plusWeeks(1)
+    }
+
+    fun goToPreviousWeek() {
+        _selectedDate.value = _selectedDate.value.minusWeeks(1)
+    }
+
+    /**
+     * Обновляет время и длительность задачи (используется при drag&drop в time blocking).
+     * TASK → CALENDAR: обновление Task автоматически отражается в календаре через Flow.
+     */
+    fun updateTaskSchedule(task: Task, newStartTime: java.time.Instant, newDurationMinutes: Long?) {
+        viewModelScope.launch {
+            updateTaskUseCase(
+                task.copy(
+                    startTime = newStartTime,
+                    deadline = newStartTime,
+                    durationMinutes = newDurationMinutes ?: task.durationMinutes
+                )
+            )
+        }
+    }
+
+    /**
+     * Переносит задачу на другой день (без изменения времени).
+     */
+    fun moveTaskToDate(task: Task, newDate: LocalDate) {
+        viewModelScope.launch {
+            val currentTime = task.startTime?.atZone(zone)?.toLocalTime() ?: java.time.LocalTime.NOON
+            val newInstant = newDate.atTime(currentTime).atZone(zone).toInstant()
+            updateTaskUseCase(
+                task.copy(
+                    startTime = newInstant,
+                    deadline = newInstant
+                )
+            )
+        }
     }
 }
-
-sealed class CalendarState {
-    data object Loading : CalendarState()
-    data class Success(val days: List<TaskDay>) : CalendarState()
-    data class Error(val message: String) : CalendarState()
-}
-
-data class TaskDay(
-    val date: LocalDate,
-    val tasks: List<Task>
-)
