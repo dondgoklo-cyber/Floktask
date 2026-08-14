@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">TaskManager</string>
+    <string name="tasks">Tasks</string>
+    <string name="projects">Projects</string>
+    <string name="calendar">Calendar</string>
+    <string name="add_task">Add task</string>
+    <string name="no_tasks">No tasks yet</string>
+    <string name="error_loading">Error loading tasks</string>
+    <string name="priority_high">High</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_none">No priority</string>
+</resources>
