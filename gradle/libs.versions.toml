@@ -18,6 +18,7 @@ timber = "5.0.1"
 kotlinxCoroutines = "1.7.3"
 kotlinxSerialization = "1.5.0"
 desugar = "2.0.4"
+playServicesLocation = "21.0.1"
 junit = "4.13.2"
 androidxTestExt = "1.1.5"
 androidxTestEspresso = "3.5.1"
@@ -71,6 +72,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 # Desugaring
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 
 # Testing

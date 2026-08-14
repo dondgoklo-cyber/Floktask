@@ -115,6 +115,9 @@ dependencies {
     // Core library desugaring (java.time on minSdk 24)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
+    // Play Services Location (geofencing)
+    implementation(libs.play.services.location)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

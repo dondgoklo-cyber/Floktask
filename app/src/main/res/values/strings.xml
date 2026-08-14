@@ -4,6 +4,7 @@
     <string name="projects">Projects</string>
     <string name="calendar">Calendar</string>
     <string name="profile">Profile</string>
+    <string name="location">Location</string>
     <string name="add_task">Add task</string>
     <string name="edit_task">Edit task</string>
     <string name="save">Save</string>
