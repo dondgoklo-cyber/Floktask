@@ -34,6 +34,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -64,7 +68,7 @@ fun TagsScreen(
 ) {
     val state by viewModel.tagsState.collectAsState()
     val dialogState by viewModel.dialogState.collectAsState()
-    var pendingDeleteTag: Tag? by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<Tag?>(null) }
+    var pendingDeleteTag by remember { mutableStateOf<Tag?>(null) }
 
     Scaffold(
         topBar = {
