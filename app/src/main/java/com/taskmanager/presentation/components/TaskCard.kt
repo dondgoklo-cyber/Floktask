@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.taskmanager.domain.model.Task
@@ -55,7 +56,8 @@ import java.time.temporal.ChronoUnit
 fun TaskCard(
     task: Task,
     onClick: () -> Unit,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    tagColors: Map<String, String> = emptyMap()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -201,7 +203,8 @@ fun TaskCard(
                         task.tags.take(3).forEach { tag ->
                             TagMiniChip(
                                 text = tag,
-                                isCompleted = task.isCompleted
+                                isCompleted = task.isCompleted,
+                                color = parseTagColor(tagColors[tag])
                             )
                         }
                     }
@@ -214,14 +217,15 @@ fun TaskCard(
 @Composable
 private fun TagMiniChip(
     text: String,
-    isCompleted: Boolean
+    isCompleted: Boolean,
+    color: Color = DEFAULT_TAG_COLOR
 ) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(Radius.sm))
             .background(
                 if (isCompleted) AppTheme.colors.surfaceVariant
-                else AppTheme.colors.primaryContainer.copy(alpha = 0.2f)
+                else color.copy(alpha = 0.18f)
             )
             .padding(horizontal = Spacing.sm, vertical = 2.dp)
     ) {
@@ -229,7 +233,7 @@ private fun TagMiniChip(
             text = "#$text",
             style = MaterialTheme.typography.labelSmall,
             color = if (isCompleted) AppTheme.colors.outlineVariant
-            else AppTheme.colors.onSurfaceVariant
+            else color
         )
     }
 }

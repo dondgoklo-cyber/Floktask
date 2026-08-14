@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -75,6 +76,7 @@ fun MoreScreen(
         )),
         MoreSection("Рабочее пространство", listOf(
             MoreItem(Icons.Filled.ViewKanban, R.string.kanban, Screen.Kanban.route),
+            MoreItem(Icons.Filled.Label, R.string.tags, Screen.Tags.route),
             MoreItem(Icons.Filled.GridView, R.string.eisenhower_matrix, Screen.Eisenhower.route)
         )),
         MoreSection("Аккаунт", listOf(

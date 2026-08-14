@@ -1,5 +1,8 @@
 package com.taskmanager.presentation.screens.tasks
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -55,6 +58,7 @@ import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.TaskStatus
 import com.taskmanager.presentation.components.AppTextField
+import com.taskmanager.presentation.components.parseTagColor
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
@@ -73,6 +77,7 @@ fun TaskEditScreen(
 ) {
     val form by viewModel.formState.collectAsState()
     val projects by viewModel.projects.collectAsState()
+    val availableTags by viewModel.tags.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showReminderPicker by remember { mutableStateOf(false) }
@@ -270,13 +275,40 @@ fun TaskEditScreen(
             if (form.tags.isNotEmpty()) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                     form.tags.forEach { tag ->
+                        val tagColor = parseTagColor(availableTags.find { it.name == tag }?.color)
                         FilterChip(
                             selected = true,
                             onClick = { viewModel.removeTag(tag) },
                             label = { Text(tag) },
-                            trailingIcon = { Icon(Icons.Filled.Close, contentDescription = null) }
+                            trailingIcon = { Icon(Icons.Filled.Close, contentDescription = null) },
+                            colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = tagColor.copy(alpha = 0.18f),
+                                selectedLabelColor = tagColor,
+                                selectedTrailingIconColor = tagColor
+                            )
                         )
                     }
+                }
+            }
+            if (availableTags.isNotEmpty()) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    availableTags
+                        .filter { it.name !in form.tags }
+                        .forEach { tag ->
+                            val tagColor = parseTagColor(tag.color)
+                            FilterChip(
+                                selected = false,
+                                onClick = { viewModel.addTag(tag.name) },
+                                label = { Text(tag.name) },
+                                leadingIcon = {
+                                    androidx.compose.foundation.layout.Box(
+                                        modifier = Modifier
+                                            .size(10.dp)
+                                            .background(tagColor, CircleShape)
+                                    )
+                                }
+                            )
+                        }
                 }
             }
             AppTextField(

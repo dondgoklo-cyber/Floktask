@@ -53,6 +53,13 @@
     <string name="time">Время</string>
     <string name="duration">Длительность</string>
     <string name="tags">Теги</string>
+    <string name="new_tag">Новый тег</string>
+    <string name="edit_tag">Изменить тег</string>
+    <string name="delete_tag_title">Удалить тег?</string>
+    <string name="delete_tag_message">тег будет удалён. Задачи сохранятся, но потеряют цветовую метку.</string>
+    <string name="tag_name">Название тега</string>
+    <string name="select_color">Цвет</string>
+    <string name="no_tags">Пока нет тегов</string>
     <string name="subtasks">Подзадачи</string>
     <string name="pomodoro_estimate">Оценка Pomodoro</string>
     <string name="eisenhower_quadrant">Квадрант Эйзенхауэра</string>

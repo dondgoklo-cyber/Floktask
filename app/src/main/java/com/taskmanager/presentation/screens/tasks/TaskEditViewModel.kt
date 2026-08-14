@@ -7,9 +7,12 @@ import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.RecurrenceRule
+import com.taskmanager.domain.model.Tag
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
 import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
+import com.taskmanager.domain.usecase.tag.CreateTagUseCase
+import com.taskmanager.domain.usecase.tag.GetAllTagsUseCase
 import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
@@ -36,7 +39,9 @@ class TaskEditViewModel @Inject constructor(
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val alarmScheduler: AlarmScheduler,
-    getAllProjectsUseCase: GetAllProjectsUseCase
+    private val createTagUseCase: CreateTagUseCase,
+    getAllProjectsUseCase: GetAllProjectsUseCase,
+    getAllTagsUseCase: GetAllTagsUseCase
 ) : ViewModel() {
 
     private val taskId: Long? = savedStateHandle
@@ -49,6 +54,10 @@ class TaskEditViewModel @Inject constructor(
     val formState: StateFlow<TaskFormState> = _formState.asStateFlow()
 
     val projects: StateFlow<List<Project>> = getAllProjectsUseCase()
+        .map { it }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val tags: StateFlow<List<Tag>> = getAllTagsUseCase()
         .map { it }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
@@ -126,6 +135,12 @@ class TaskEditViewModel @Inject constructor(
         val trimmed = tag.trim()
         if (trimmed.isNotBlank() && trimmed !in _formState.value.tags) {
             _formState.value = _formState.value.copy(tags = _formState.value.tags + trimmed)
+            viewModelScope.launch {
+                val exists = tags.value.any { it.name.equals(trimmed, ignoreCase = true) }
+                if (!exists) {
+                    createTagUseCase(com.taskmanager.domain.model.Tag(name = trimmed))
+                }
+            }
         }
     }
 

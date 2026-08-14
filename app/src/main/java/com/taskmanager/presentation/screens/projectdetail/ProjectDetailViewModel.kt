@@ -6,6 +6,7 @@ import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
 import com.taskmanager.domain.repository.ProjectRepository
+import com.taskmanager.domain.repository.TagRepository
 import com.taskmanager.domain.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,7 @@ import javax.inject.Inject
 data class ProjectDetailUiState(
     val project: Project? = null,
     val tasks: List<Task> = emptyList(),
+    val tagColors: Map<String, String> = emptyMap(),
     val isLoading: Boolean = true
 )
 
@@ -31,7 +33,8 @@ data class ProjectDetailUiState(
 @HiltViewModel
 class ProjectDetailViewModel @Inject constructor(
     private val projectRepository: ProjectRepository,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val tagRepository: TagRepository
 ) : ViewModel() {
 
     private val _projectId = MutableStateFlow(0L)
@@ -42,12 +45,15 @@ class ProjectDetailViewModel @Inject constructor(
         .flatMapLatest { id ->
             combine(
                 flowOf(id),
-                taskRepository.getTasksByProject(id)
-            ) { projectId, tasks ->
+                taskRepository.getTasksByProject(id),
+                tagRepository.getAllTags()
+            ) { projectId, tasks, allTags ->
                 val project = projectRepository.getProjectById(projectId)
+                val colors = allTags.associate { it.name to (it.color ?: "") }
                 ProjectDetailUiState(
                     project = project,
                     tasks = tasks,
+                    tagColors = colors,
                     isLoading = false
                 )
             }
