@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -63,7 +64,7 @@ fun TagsScreen(
 ) {
     val state by viewModel.tagsState.collectAsState()
     val dialogState by viewModel.dialogState.collectAsState()
-    var pendingDeleteTag: Tag? by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(null) }
+    var pendingDeleteTag: Tag? by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<Tag?>(null) }
 
     Scaffold(
         topBar = {
@@ -72,7 +73,7 @@ fun TagsScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            androidx.compose.material.icons.automirrored.filled.ArrowBack,
+                            Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
                     }

@@ -54,7 +54,7 @@ fun parseTagColor(hex: String?): Color {
         val clean = hex.removePrefix("#")
         val value = clean.toLong(16)
         // Поддержка #RRGGBB (6) и #AARRGGBB (8)
-        if (clean.length <= 6) Color(value or 0xFF000000.toInt())
+        if (clean.length <= 6) Color(value or 0xFF000000L)
         else Color(value)
     }.getOrElse { DEFAULT_TAG_COLOR }
 }
