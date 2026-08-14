@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -47,7 +48,6 @@ class TasksViewModel @Inject constructor(
         _priorityFilter
     ) { tasks, query, filter, priority ->
         var filtered = tasks
-
         if (query.isNotBlank()) {
             val q = query.lowercase()
             filtered = filtered.filter {
@@ -55,18 +55,15 @@ class TasksViewModel @Inject constructor(
                     (it.description?.lowercase()?.contains(q) == true)
             }
         }
-
         filtered = when (filter) {
             TaskFilter.ALL -> filtered
             TaskFilter.ACTIVE -> filtered.filter { !it.isCompleted }
             TaskFilter.COMPLETED -> filtered.filter { it.isCompleted }
         }
-
         if (priority != null) {
             filtered = filtered.filter { it.priority == priority }
         }
-
-        TasksState.Success(filtered)
+        TasksState.Success(filtered) as TasksState
     }.catch { cause ->
         emit(TasksState.Error(cause.message ?: "Неизвестная ошибка"))
     }.stateIn(viewModelScope, SharingStarted.Lazily, TasksState.Loading)
