@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.taskmanager.R
 import com.taskmanager.presentation.screens.calendar.CalendarScreen
 import com.taskmanager.presentation.screens.focus.FocusScreen
 import com.taskmanager.presentation.screens.habits.HabitsScreen

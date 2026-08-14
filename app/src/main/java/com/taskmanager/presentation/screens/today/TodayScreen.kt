@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,6 +33,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,11 +47,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Task
 import com.taskmanager.presentation.components.priorityColor
+import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
-import com.taskmanager.presentation.theme.Elevation
-import java.time.Instant
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -62,6 +64,19 @@ fun TodayScreen(
     onAddTaskClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    var detailTaskId by remember { mutableStateOf<Long?>(null) }
+
+    if (detailTaskId != null) {
+        TaskDetailSheet(
+            taskId = detailTaskId!!,
+            onDismiss = { detailTaskId = null },
+            onEdit = { id ->
+                detailTaskId = null
+                onTaskClick(id)
+            },
+            onStartFocus = { /* Итерация 6: переход на Focus с задачей */ }
+        )
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -81,15 +96,13 @@ fun TodayScreen(
                 contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.lg),
                 verticalArrangement = Arrangement.spacedBy(Spacing.md)
             ) {
-                item { GreetingHeader(state) }
+                item { GreetingHeader() }
                 item { ProgressCard(state) }
                 item { SummaryRow(state) }
                 if (state.nextTasks.isNotEmpty()) {
-                    item {
-                        SectionHeader(stringResource(R.string.next_tasks))
-                    }
+                    item { SectionHeader(stringResource(R.string.next_tasks)) }
                     items(state.nextTasks, key = { it.id ?: 0 }) { task ->
-                        NextTaskRow(task, onClick = { onTaskClick(task.id ?: 0) })
+                        NextTaskRow(task, onClick = { detailTaskId = task.id ?: 0 })
                     }
                 }
                 if (state.focusMinutesToday > 0) {
@@ -104,7 +117,7 @@ fun TodayScreen(
 }
 
 @Composable
-private fun GreetingHeader(state: TodayUiState) {
+private fun GreetingHeader() {
     val hour = LocalTime.now().hour
     val greeting = when (hour) {
         in 5..11 -> stringResource(R.string.good_morning)
