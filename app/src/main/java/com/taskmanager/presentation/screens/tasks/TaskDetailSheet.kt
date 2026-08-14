@@ -75,6 +75,7 @@ fun TaskDetailSheet(
     onDismiss: () -> Unit,
     onEdit: (Long) -> Unit,
     onStartFocus: (Long) -> Unit,
+    onNoteClick: (Long) -> Unit = {},
     viewModel: TaskDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -102,6 +103,7 @@ fun TaskDetailSheet(
                     task = task,
                     projectName = state.projectName,
                     subtasks = state.subtasks,
+                    relatedNotes = state.relatedNotes,
                     onToggleComplete = { viewModel.toggleComplete(task) },
                     onEdit = { onEdit(task.id ?: 0) },
                     onStartFocus = { onStartFocus(task.id ?: 0) },
@@ -111,7 +113,8 @@ fun TaskDetailSheet(
                     onRenameSubtask = { subtask, title -> viewModel.renameSubtask(subtask, title) },
                     onReorderSubtask = { from, to ->
                         viewModel.reorderSubtask(task.id ?: 0, from, to)
-                    }
+                    },
+                    onNoteClick = onNoteClick
                 )
             }
         }
@@ -130,7 +133,9 @@ private fun TaskDetailContent(
     onToggleSubtask: (Subtask) -> Unit,
     onDeleteSubtask: (Subtask) -> Unit,
     onRenameSubtask: (Subtask, String) -> Unit,
-    onReorderSubtask: (Int, Int) -> Unit
+    onReorderSubtask: (Int, Int) -> Unit,
+    relatedNotes: List<com.taskmanager.domain.model.Note> = emptyList(),
+    onNoteClick: (Long) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -273,6 +278,49 @@ private fun TaskDetailContent(
                 onDelete = onDeleteSubtask,
                 onRename = onRenameSubtask
             )
+        }
+
+        // Связанные заметки
+        if (relatedNotes.isNotEmpty()) {
+            item {
+                Text(
+                    stringResource(R.string.related_notes),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            relatedNotes.take(5).forEach { note ->
+                item {
+                    androidx.compose.material3.Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { note.id?.let(onNoteClick) },
+                        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.md),
+                        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
+                    ) {
+                        androidx.compose.foundation.layout.Column(
+                            modifier = Modifier.fillMaxWidth().padding(Spacing.md)
+                        ) {
+                            Text(
+                                note.title.ifBlank { "Без названия" },
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium
+                            )
+                            note.contentMarkdown.takeIf { it.isNotBlank() }?.let { c ->
+                                val preview = c.lines().firstOrNull { it.isNotBlank() } ?: ""
+                                if (preview.isNotBlank()) {
+                                    Text(
+                                        preview,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = AppTheme.colors.onSurfaceVariant,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Кнопки действий

@@ -110,6 +110,7 @@
     <string name="folders">Папки</string>
     <string name="pinned">Закреплённые</string>
     <string name="recent">Недавние</string>
+    <string name="related_notes">Связанные заметки</string>
     <!-- Haptic -->
     <string name="haptic_feedback">Тактильный отклик</string>
     <string name="haptic_feedback_desc">Использовать тактильный отклик при взаимодействии с интерфейсом</string>

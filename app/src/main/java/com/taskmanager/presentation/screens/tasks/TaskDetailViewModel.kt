@@ -2,9 +2,11 @@ package com.taskmanager.presentation.screens.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.model.Note
 import com.taskmanager.domain.model.Subtask
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.ProjectRepository
+import com.taskmanager.domain.repository.NoteRepository
 import com.taskmanager.domain.repository.SubtaskRepository
 import com.taskmanager.domain.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +20,7 @@ data class TaskDetailState(
     val task: Task? = null,
     val projectName: String? = null,
     val subtasks: List<Subtask> = emptyList(),
+    val relatedNotes: List<Note> = emptyList(),
     val isLoading: Boolean = true
 )
 
@@ -25,7 +28,8 @@ data class TaskDetailState(
 class TaskDetailViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val projectRepository: ProjectRepository,
-    private val subtaskRepository: SubtaskRepository
+    private val subtaskRepository: SubtaskRepository,
+    private val noteRepository: NoteRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskDetailState())
@@ -36,10 +40,14 @@ class TaskDetailViewModel @Inject constructor(
             val task = taskRepository.getTaskById(taskId)
             val projectName = task?.projectId?.let { projectRepository.getProjectById(it)?.title }
             val subtasks = task?.let { subtaskRepository.getSubtaskTree(it.id ?: 0) } ?: emptyList()
+            val relatedNotes = task?.projectId?.let { pid ->
+                kotlinx.coroutines.flow.first(noteRepository.getNotesByProject(pid))
+            } ?: emptyList()
             _state.value = TaskDetailState(
                 task = task,
                 projectName = projectName,
                 subtasks = subtasks,
+                relatedNotes = relatedNotes,
                 isLoading = false
             )
         }

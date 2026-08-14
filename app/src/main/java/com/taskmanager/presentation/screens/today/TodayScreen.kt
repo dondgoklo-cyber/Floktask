@@ -97,7 +97,11 @@ fun TodayScreen(
                 detailTaskId = null
                 onTaskClick(id)
             },
-            onStartFocus = onStartFocus
+            onStartFocus = onStartFocus,
+            onNoteClick = { noteId ->
+                detailTaskId = null
+                onAllNotes()
+            }
         )
     }
 
