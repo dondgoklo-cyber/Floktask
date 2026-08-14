@@ -7,68 +7,54 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Orange palette
-val OrangePrimary = Color(0xFFF57C00)
-val OrangePrimaryDark = Color(0xFFFF9800)
-val OrangeContainer = Color(0xFFFFE0B2)
-val OrangeOnContainer = Color(0xFF3E2A00)
+// Яркий оранжевый — основной бренд-цвет
+val Orange = Color(0xFFFF6D00)
+val OrangeLight = Color(0xFFFFAB40)
+val OrangeDark = Color(0xFFFF9100)
 
-val TealSecondary = Color(0xFF00897B)
-val TealSecondaryDark = Color(0xFF80CBC4)
-
-val AmberTertiary = Color(0xFFFFB300)
-val AmberTertiaryDark = Color(0xFFFFD54F)
-
-val SurfaceLight = Color(0xFFFFFBFE)
-val SurfaceDark = Color(0xFF1C1B1F)
-val BackgroundLight = Color(0xFFFAF6F0)
-val BackgroundDark = Color(0xFF121212)
-
+// Светлая тема — чисто белый
 private val LightColors = lightColorScheme(
-    primary = OrangePrimary,
+    primary = Orange,
     onPrimary = Color.White,
-    primaryContainer = OrangeContainer,
-    onPrimaryContainer = OrangeOnContainer,
-    secondary = TealSecondary,
+    primaryContainer = Color(0xFFFFF3E0),
+    onPrimaryContainer = Color(0xFF3E2700),
+    secondary = Color(0xFF00897B),
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFB2DFDB),
     onSecondaryContainer = Color(0xFF003734),
-    tertiary = AmberTertiary,
-    onTertiary = Color(0xFF3E2A00),
-    tertiaryContainer = Color(0xFFFFE082),
-    onTertiaryContainer = Color(0xFF3E2A00),
-    background = BackgroundLight,
-    onBackground = Color(0xFF1C1B1F),
-    surface = SurfaceLight,
-    onSurface = Color(0xFF1C1B1F),
-    surfaceVariant = Color(0xFFF3E8DC),
-    onSurfaceVariant = Color(0xFF49454F),
+    tertiary = Color(0xFFFFB300),
+    onTertiary = Color(0xFF3E2700),
+    background = Color.White,
+    onBackground = Color(0xFF1A1A1A),
+    surface = Color.White,
+    onSurface = Color(0xFF1A1A1A),
+    surfaceVariant = Color(0xFFF5F5F5),
+    onSurfaceVariant = Color(0xFF616161),
     outline = Color(0xFFBDBDBD),
     error = Color(0xFFD32F2F),
     onError = Color.White,
 )
 
+// Тёмная тема — глубокий чёрный + ярко-оранжевый
 private val DarkColors = darkColorScheme(
-    primary = OrangePrimaryDark,
-    onPrimary = Color(0xFF3E2A00),
-    primaryContainer = Color(0xFFBF5F00),
-    onPrimaryContainer = OrangeContainer,
-    secondary = TealSecondaryDark,
+    primary = OrangeDark,
+    onPrimary = Color(0xFF1A0A00),
+    primaryContainer = Color(0xFF4E2C00),
+    onPrimaryContainer = Color(0xFFFFD9B0),
+    secondary = Color(0xFF80CBC4),
     onSecondary = Color(0xFF003734),
     secondaryContainer = Color(0xFF004D40),
     onSecondaryContainer = Color(0xFFB2DFDB),
-    tertiary = AmberTertiaryDark,
-    onTertiary = Color(0xFF3E2A00),
-    tertiaryContainer = Color(0xFF8C6D00),
-    onTertiaryContainer = Color(0xFFFFE082),
-    background = BackgroundDark,
-    onBackground = Color(0xFFE6E1E5),
-    surface = SurfaceDark,
-    onSurface = Color(0xFFE6E1E5),
-    surfaceVariant = Color(0xFF2C2A2E),
-    onSurfaceVariant = Color(0xFFCAC4D0),
-    outline = Color(0xFF6E6E6E),
-    error = Color(0xFFEF5350),
+    tertiary = Color(0xFFFFD54F),
+    onTertiary = Color(0xFF3E2700),
+    background = Color(0xFF000000),
+    onBackground = Color(0xFFE6E6E6),
+    surface = Color(0xFF0A0A0A),
+    onSurface = Color(0xFFE6E6E6),
+    surfaceVariant = Color(0xFF1A1A1A),
+    onSurfaceVariant = Color(0xFF9E9E9E),
+    outline = Color(0xFF424242),
+    error = Color(0xFFFF5252),
     onError = Color(0xFF410E0B),
 )
 

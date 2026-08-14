@@ -3,8 +3,6 @@ package com.taskmanager.presentation.navigation
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -40,7 +38,6 @@ fun NavGraph() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
-
     val currentRoute = currentDestination?.route
     val navRoutes = Screen.bottomNavItems.map { it.route }.toSet()
     val showBottomBar = navRoutes.contains(currentRoute)
@@ -75,20 +72,10 @@ fun NavGraph() {
             navController = navController,
             startDestination = Screen.Tasks.route,
             modifier = Modifier.padding(innerPadding),
-            enterTransition = {
-                fadeIn(animationSpec = tween(200)) +
-                    slideInHorizontally(initialOffsetX = { it / 8 }, animationSpec = tween(200))
-            },
-            exitTransition = {
-                fadeOut(animationSpec = tween(150))
-            },
-            popEnterTransition = {
-                fadeIn(animationSpec = tween(200))
-            },
-            popExitTransition = {
-                fadeOut(animationSpec = tween(150)) +
-                    slideOutHorizontally(targetOffsetX = { it / 8 }, animationSpec = tween(200))
-            }
+            enterTransition = { fadeIn(animationSpec = tween(120)) },
+            exitTransition = { fadeOut(animationSpec = tween(80)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(120)) },
+            popExitTransition = { fadeOut(animationSpec = tween(80)) }
         ) {
             composable(Screen.Tasks.route) {
                 TasksScreen(
@@ -96,23 +83,15 @@ fun NavGraph() {
                     onAddTaskClick = { navController.navigate(Screen.TaskEditNew.route) }
                 )
             }
-            composable(Screen.Projects.route) {
-                ProjectsScreen()
-            }
-            composable(Screen.Calendar.route) {
-                CalendarScreen()
-            }
-            composable(Screen.Profile.route) {
-                ProfileScreen()
-            }
+            composable(Screen.Projects.route) { ProjectsScreen() }
+            composable(Screen.Calendar.route) { CalendarScreen() }
+            composable(Screen.Profile.route) { ProfileScreen() }
             composable(Screen.TaskEditNew.route) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
             composable(
                 route = Screen.TaskEdit.route,
-                arguments = listOf(
-                    navArgument(Screen.TaskEdit.ARG_TASK_ID) { type = NavType.LongType }
-                )
+                arguments = listOf(navArgument(Screen.TaskEdit.ARG_TASK_ID) { type = NavType.LongType })
             ) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
