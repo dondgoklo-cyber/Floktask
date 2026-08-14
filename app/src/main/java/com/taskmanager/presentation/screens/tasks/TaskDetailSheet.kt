@@ -430,7 +430,7 @@ private fun SubtaskSection(
             }
             // Рекурсивный рендеринг дочерних подзадач (до 5 уровней)
             if (subtask.children.isNotEmpty() && depth < 4) {
-                Column(modifier = Modifier.padding(start = (depth + 1) * 16.dp)) {
+                Column(modifier = Modifier.padding(start = ((depth + 1) * 16).dp)) {
                     SubtaskSection(
                         subtasks = subtask.children,
                         depth = depth + 1,
