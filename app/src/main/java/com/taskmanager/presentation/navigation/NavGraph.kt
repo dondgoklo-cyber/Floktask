@@ -1,5 +1,8 @@
 package com.taskmanager.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -13,16 +16,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.taskmanager.presentation.screens.calendar.CalendarScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
+import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.tasks.TasksScreen
 
 @Composable
@@ -31,26 +37,34 @@ fun NavGraph() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
+    val showBottomBar = currentDestination?.route in Screen.bottomNavItems.map { it.route }
+
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                Screen.bottomNavItems.forEach { screen ->
-                    val selected =
-                        currentDestination?.hierarchy?.any { it.route == screen.route } == true
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            AnimatedVisibility(
+                visible = showBottomBar,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it }
+            ) {
+                NavigationBar {
+                    Screen.bottomNavItems.forEach { screen ->
+                        val selected =
+                            currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = {
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(screen.icon, contentDescription = null) },
-                        label = { Text(stringResource(screen.labelRes)) }
-                    )
+                            },
+                            icon = { Icon(screen.icon, contentDescription = null) },
+                            label = { Text(stringResource(screen.labelRes)) }
+                        )
+                    }
                 }
             }
         }
@@ -62,8 +76,8 @@ fun NavGraph() {
         ) {
             composable(Screen.Tasks.route) {
                 TasksScreen(
-                    onTaskClick = { },
-                    onAddTaskClick = { }
+                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) },
+                    onAddTaskClick = { navController.navigate(Screen.TaskEditNew.route) }
                 )
             }
             composable(Screen.Projects.route) {
@@ -71,6 +85,17 @@ fun NavGraph() {
             }
             composable(Screen.Calendar.route) {
                 CalendarScreen()
+            }
+            composable(Screen.TaskEditNew.route) {
+                TaskEditScreen(onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = Screen.TaskEdit.route,
+                arguments = listOf(
+                    navArgument(Screen.TaskEdit.ARG_TASK_ID) { type = NavType.LongType }
+                )
+            ) {
+                TaskEditScreen(onBack = { navController.popBackStack() })
             }
         }
     }
@@ -81,4 +106,6 @@ private val Screen.icon: ImageVector
         Screen.Tasks -> Icons.Filled.List
         Screen.Projects -> Icons.Filled.Folder
         Screen.Calendar -> Icons.Filled.DateRange
+        Screen.TaskEditNew,
+        Screen.TaskEdit -> Icons.Filled.List
     }

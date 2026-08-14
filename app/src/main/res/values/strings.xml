@@ -4,6 +4,9 @@
     <string name="projects">Projects</string>
     <string name="calendar">Calendar</string>
     <string name="add_task">Add task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
     <string name="no_tasks">No tasks yet</string>
     <string name="error_loading">Error loading tasks</string>
     <string name="priority_high">High</string>

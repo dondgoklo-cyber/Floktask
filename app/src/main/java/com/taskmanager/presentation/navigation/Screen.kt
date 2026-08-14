@@ -8,6 +8,15 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Projects : Screen("projects", R.string.projects)
     data object Calendar : Screen("calendar", R.string.calendar)
 
+    /** Create a new task. */
+    data object TaskEditNew : Screen("task/new", R.string.add_task)
+
+    /** Edit an existing task by id. */
+    data object TaskEdit : Screen("task/{taskId}", R.string.add_task) {
+        const val ARG_TASK_ID = "taskId"
+        fun buildRoute(taskId: Long): String = "task/$taskId"
+    }
+
     companion object {
         val bottomNavItems = listOf(Tasks, Projects, Calendar)
     }
