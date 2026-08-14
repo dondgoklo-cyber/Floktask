@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.model.Priority
+import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
@@ -14,8 +15,11 @@ import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
@@ -40,6 +44,10 @@ class TaskEditViewModel @Inject constructor(
 
     private val _formState = MutableStateFlow(TaskFormState())
     val formState: StateFlow<TaskFormState> = _formState.asStateFlow()
+
+    val projects: StateFlow<List<Project>> = getAllProjectsUseCase()
+        .map { it }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
         taskId?.let { loadTask(it) }
@@ -108,6 +116,17 @@ class TaskEditViewModel @Inject constructor(
 
     fun onTagsChange(value: List<String>) {
         _formState.value = _formState.value.copy(tags = value)
+    }
+
+    fun addTag(tag: String) {
+        val trimmed = tag.trim()
+        if (trimmed.isNotBlank() && trimmed !in _formState.value.tags) {
+            _formState.value = _formState.value.copy(tags = _formState.value.tags + trimmed)
+        }
+    }
+
+    fun removeTag(tag: String) {
+        _formState.value = _formState.value.copy(tags = _formState.value.tags - tag)
     }
 
     fun onRecurrenceChange(value: RecurrenceRule?) {
