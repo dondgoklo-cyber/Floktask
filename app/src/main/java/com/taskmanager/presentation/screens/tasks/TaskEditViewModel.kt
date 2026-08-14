@@ -13,6 +13,7 @@ import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
 import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
+import com.taskmanager.notification.AlarmScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -33,6 +35,7 @@ class TaskEditViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
+    private val alarmScheduler: AlarmScheduler,
     getAllProjectsUseCase: GetAllProjectsUseCase
 ) : ViewModel() {
 
@@ -68,7 +71,8 @@ class TaskEditViewModel @Inject constructor(
                     pomodoroEstimate = task.pomodoroEstimate,
                     eisenhowerQuadrant = task.eisenhowerQuadrant,
                     tags = task.tags,
-                    recurrenceRule = task.recurrenceRule
+                    recurrenceRule = task.recurrenceRule,
+                    reminderDateTime = task.reminderDate?.atZone(ZoneId.systemDefault())?.toLocalDateTime()
                 )
             }
         }
@@ -129,6 +133,10 @@ class TaskEditViewModel @Inject constructor(
         _formState.value = _formState.value.copy(tags = _formState.value.tags - tag)
     }
 
+    fun onReminderChange(value: LocalDateTime?) {
+        _formState.value = _formState.value.copy(reminderDateTime = value)
+    }
+
     fun onRecurrenceChange(value: RecurrenceRule?) {
         _formState.value = _formState.value.copy(recurrenceRule = value)
     }
@@ -141,6 +149,8 @@ class TaskEditViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val (deadline, startTime) = combineDateTime(state)
+            val reminderInstant = state.reminderDateTime
+                ?.atZone(ZoneId.systemDefault())?.toInstant()
             val existing = taskId?.let { getTaskByIdUseCase(it) }
             val task = (existing?.copy(
                 title = state.title.trim(),
@@ -154,7 +164,8 @@ class TaskEditViewModel @Inject constructor(
                 pomodoroEstimate = state.pomodoroEstimate,
                 eisenhowerQuadrant = state.eisenhowerQuadrant,
                 tags = state.tags,
-                recurrenceRule = state.recurrenceRule
+                recurrenceRule = state.recurrenceRule,
+                reminderDate = reminderInstant
             ) ?: Task(
                 title = state.title.trim(),
                 description = state.description.trim().ifBlank { null },
@@ -167,13 +178,18 @@ class TaskEditViewModel @Inject constructor(
                 pomodoroEstimate = state.pomodoroEstimate,
                 eisenhowerQuadrant = state.eisenhowerQuadrant,
                 tags = state.tags,
-                recurrenceRule = state.recurrenceRule
+                recurrenceRule = state.recurrenceRule,
+                reminderDate = reminderInstant
             ))
-            if (existing != null) {
+            val savedId = if (existing != null) {
                 updateTaskUseCase(task)
+                task.id ?: 0L
             } else {
                 createTaskUseCase(task)
             }
+            reminderInstant?.let { inst ->
+                alarmScheduler.scheduleReminder(savedId, task.title, inst.toEpochMilli())
+            } ?: alarmScheduler.cancelReminder(savedId)
             onSaved()
         }
     }

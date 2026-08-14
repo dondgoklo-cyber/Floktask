@@ -85,4 +85,8 @@ interface TaskDao {
         """
     )
     fun getUpcomingTasks(fromEpoch: Long): Flow<List<TaskEntity>>
+
+    /** Задачи с активным напоминанием в будущем (для перерегистрации после перезагрузки). */
+    @Query("SELECT * FROM tasks WHERE reminderDate IS NOT NULL AND reminderDate > :now AND isCompleted = 0")
+    suspend fun getAllTasksWithReminders(now: Long): List<TaskEntity>
 }

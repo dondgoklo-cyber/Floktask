@@ -168,4 +168,32 @@
     <string name="settings_version">Версия</string>
     <string name="settings_general">Общие</string>
     <string name="settings_appearance">Внешний вид</string>
+
+    <!-- Напоминания -->
+    <string name="reminder">Напоминание</string>
+    <string name="set_reminder">Установить напоминание</string>
+    <string name="channel_reminders">Напоминания о задачах</string>
+    <string name="channel_reminders_desc">Локальные уведомления о наступлении срока задачи</string>
+    <string name="snooze_5">Через 5 мин</string>
+    <string name="snooze_15">Через 15 мин</string>
+    <string name="snooze_30">Через 30 мин</string>
+    <string name="snooze_60">Через час</string>
+    <string name="notification_permission_title">Разрешение на уведомления</string>
+    <string name="notification_permission_rationale">Разрешите уведомления, чтобы получать напоминания о задачах</string>
+    <!-- Kanban -->
+    <string name="kanban">Канбан</string>
+    <string name="view_list">Список</string>
+    <string name="view_kanban">Канбан</string>
+    <string name="view_calendar">Календарь</string>
+    <string name="column_todo">К выполнению</string>
+    <string name="column_in_progress">В процессе</string>
+    <string name="column_done">Выполнено</string>
+    <!-- Импорт/экспорт -->
+    <string name="export_data">Экспорт данных</string>
+    <string name="import_data">Импорт данных</string>
+    <string name="export_json">Экспорт в JSON</string>
+    <string name="import_json">Импорт из JSON</string>
+    <string name="export_success">Данные экспортированы</string>
+    <string name="import_success">Данные импортированы</string>
+    <string name="import_error">Ошибка импорта</string>
 </resources>

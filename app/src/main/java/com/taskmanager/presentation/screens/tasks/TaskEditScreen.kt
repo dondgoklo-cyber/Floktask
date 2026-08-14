@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
@@ -73,6 +74,7 @@ fun TaskEditScreen(
     val projects by viewModel.projects.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
+    var showReminderPicker by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -186,6 +188,35 @@ fun TaskEditScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            // Напоминание
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(Radius.md)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(Spacing.md),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+                ) {
+                    Icon(Icons.Filled.Notifications, contentDescription = null, tint = AppTheme.colors.outline)
+                    TextButton(onClick = { showReminderPicker = true }) {
+                        Text(
+                            form.reminderDateTime?.format(
+                                DateTimeFormatter.ofPattern("d MMM, HH:mm")
+                            ) ?: stringResource(R.string.set_reminder),
+                            color = if (form.reminderDateTime != null) AppTheme.colors.onSurface
+                            else AppTheme.colors.onSurfaceVariant
+                        )
+                    }
+                    if (form.reminderDateTime != null) {
+                        IconButton(onClick = { viewModel.onReminderChange(null) }) {
+                            Icon(Icons.Filled.Close, contentDescription = null, tint = AppTheme.colors.outline)
+                        }
+                    }
+                }
+            }
 
             // Приоритет
             Text(stringResource(R.string.priority), style = MaterialTheme.typography.titleSmall)
@@ -319,6 +350,31 @@ fun TaskEditScreen(
                 TextButton(onClick = { showDatePicker = false }) {
                     Text(stringResource(R.string.cancel))
                 }
+            }
+        ) { DatePicker(state = datePickerState) }
+    }
+
+    if (showReminderPicker) {
+        val initialDate = form.reminderDateTime?.toLocalDate() ?: form.deadlineDate ?: LocalDate.now()
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = initialDate
+                .atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showReminderPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault()).toLocalDate()
+                        val time = form.reminderDateTime?.toLocalTime() ?: LocalTime.of(9, 0)
+                        viewModel.onReminderChange(date.atTime(time))
+                    }
+                    showReminderPicker = false
+                }) { Text(stringResource(R.string.done)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showReminderPicker = false }) { Text(stringResource(R.string.cancel)) }
             }
         ) { DatePicker(state = datePickerState) }
     }
