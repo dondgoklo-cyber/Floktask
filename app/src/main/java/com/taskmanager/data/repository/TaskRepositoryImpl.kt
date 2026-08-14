@@ -26,6 +26,10 @@ class TaskRepositoryImpl @Inject constructor(
         taskDao.deleteById(id)
     }
 
+    override suspend fun setCompleted(id: Long, completed: Boolean) {
+        taskDao.setCompleted(id, completed, Instant.now().toEpochMilli())
+    }
+
     override fun getAllTasks(): Flow<List<Task>> =
         taskDao.getAll().map { list -> list.map { it.toDomain() } }
 
@@ -40,4 +44,13 @@ class TaskRepositoryImpl @Inject constructor(
 
     override fun searchTasks(query: String): Flow<List<Task>> =
         taskDao.search("%$query%").map { list -> list.map { it.toDomain() } }
+
+    override fun getTimedTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>> =
+        taskDao.getTimedTasksForDay(dayStart, dayEnd).map { list -> list.map { it.toDomain() } }
+
+    override fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>> =
+        taskDao.getTasksForDay(dayStart, dayEnd).map { list -> list.map { it.toDomain() } }
+
+    override fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>> =
+        taskDao.getTasksByQuadrant(quadrantName).map { list -> list.map { it.toDomain() } }
 }

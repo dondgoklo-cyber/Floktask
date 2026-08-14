@@ -32,13 +32,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Task
+import com.taskmanager.presentation.components.priorityColor
+import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.presentation.theme.Spacing
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
@@ -60,7 +63,7 @@ fun CalendarScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.calendar)) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = AppTheme.colors.surface
                 )
             )
         }
@@ -83,13 +86,12 @@ fun CalendarScreen(
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(vertical = 8.dp)
+                    contentPadding = PaddingValues(vertical = Spacing.sm)
                 ) {
-                    // Лента дней недели — горизонтальный скролл
                     item {
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                         ) {
                             week.forEach { date ->
                                 DayCell(
@@ -97,7 +99,8 @@ fun CalendarScreen(
                                     isToday = date == today,
                                     isSelected = date == selectedDate,
                                     hasTasks = dayTasks.any { task ->
-                                        task.deadline?.atZone(ZoneId.systemDefault())?.toLocalDate() == date
+                                        task.deadline?.atZone(ZoneId.systemDefault())?.toLocalDate() == date ||
+                                            task.startTime?.atZone(ZoneId.systemDefault())?.toLocalDate() == date
                                     },
                                     onClick = { selectedDate = date }
                                 )
@@ -105,28 +108,29 @@ fun CalendarScreen(
                         }
                     }
 
-                    // Выбранный день — заголовок
                     val selectedFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
                     item {
                         Text(
                             text = selectedDate.format(selectedFormatter),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)
                         )
                     }
 
-                    // Задачи выбранного дня
                     val tasksForDay = dayTasks.filter { task ->
-                        task.deadline?.atZone(ZoneId.systemDefault())?.toLocalDate() == selectedDate
+                        task.deadline?.atZone(ZoneId.systemDefault())?.toLocalDate() == selectedDate ||
+                            task.startTime?.atZone(ZoneId.systemDefault())?.toLocalDate() == selectedDate
                     }
 
                     if (tasksForDay.isEmpty()) {
                         item {
                             Box(
-                                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                                modifier = Modifier.fillMaxWidth().padding(Spacing.xxl),
                                 contentAlignment = Alignment.Center
-                            ) { Text("Нет задач на этот день", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                            ) {
+                                Text("Нет задач на этот день", color = AppTheme.colors.onSurfaceVariant)
+                            }
                         }
                     } else {
                         items(tasksForDay, key = { it.id ?: 0 }) { task ->
@@ -148,20 +152,20 @@ private fun DayCell(
     onClick: () -> Unit
 ) {
     val bg = when {
-        isSelected -> MaterialTheme.colorScheme.primary
-        isToday -> MaterialTheme.colorScheme.primaryContainer
-        else -> MaterialTheme.colorScheme.surface
+        isSelected -> AppTheme.colors.primary
+        isToday -> AppTheme.colors.primaryContainer
+        else -> AppTheme.colors.surface
     }
     val fg = when {
-        isSelected -> MaterialTheme.colorScheme.onPrimary
-        else -> MaterialTheme.colorScheme.onSurface
+        isSelected -> AppTheme.colors.onPrimary
+        else -> AppTheme.colors.onSurface
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(Radius.md))
             .background(bg)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = Spacing.sm)
     ) {
         Text(
             text = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale("ru")).replace(".", ""),
@@ -180,7 +184,7 @@ private fun DayCell(
                     .padding(top = 2.dp)
                     .size(6.dp)
                     .clip(CircleShape)
-                    .background(if (isSelected) Color.White else MaterialTheme.colorScheme.primary)
+                    .background(if (isSelected) AppTheme.colors.onPrimary else AppTheme.colors.primary)
             )
         }
     }
@@ -189,28 +193,29 @@ private fun DayCell(
 @Composable
 private fun CalendarTaskCard(task: Task) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.lg, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
-                modifier = Modifier.size(12.dp).clip(CircleShape).background(
-                    when (task.priority) {
-                        com.taskmanager.domain.model.Priority.HIGH -> Color(0xFFEF5350)
-                        com.taskmanager.domain.model.Priority.MEDIUM -> Color(0xFFFFA726)
-                        com.taskmanager.domain.model.Priority.LOW -> Color(0xFF66BB6A)
-                        com.taskmanager.domain.model.Priority.NONE -> Color(0xFFBDBDBD)
-                    }
-                )
+                modifier = Modifier.size(12.dp).clip(CircleShape).background(priorityColor(task.priority))
             )
             Column(Modifier.weight(1f)) {
                 Text(task.title, style = MaterialTheme.typography.bodyLarge)
+                task.startTime?.let { start ->
+                    val time = start.atZone(ZoneId.systemDefault()).toLocalTime()
+                    Text(
+                        time.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppTheme.colors.onSurfaceVariant
+                    )
+                }
                 if (task.isCompleted) {
-                    Text("Выполнено", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                    Text("Выполнено", style = MaterialTheme.typography.labelSmall, color = AppTheme.colors.primary)
                 }
             }
         }

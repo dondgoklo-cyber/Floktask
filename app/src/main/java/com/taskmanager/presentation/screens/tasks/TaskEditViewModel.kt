@@ -3,9 +3,11 @@ package com.taskmanager.presentation.screens.tasks
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.Task
+import com.taskmanager.domain.model.TaskStatus
 import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
 import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
@@ -15,6 +17,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +32,6 @@ class TaskEditViewModel @Inject constructor(
     getAllProjectsUseCase: GetAllProjectsUseCase
 ) : ViewModel() {
 
-    // Navigation passes taskId as LongType; read it directly as Long.
     private val taskId: Long? = savedStateHandle
         .get<Long>("taskId")
         ?.takeIf { it > 0 }
@@ -48,6 +53,13 @@ class TaskEditViewModel @Inject constructor(
                     description = task.description.orEmpty(),
                     priority = task.priority,
                     projectId = task.projectId,
+                    status = task.status,
+                    deadlineDate = task.deadline?.atZone(ZoneId.systemDefault())?.toLocalDate(),
+                    startTime = task.startTime?.atZone(ZoneId.systemDefault())?.toLocalTime(),
+                    durationMinutes = task.durationMinutes,
+                    pomodoroEstimate = task.pomodoroEstimate,
+                    eisenhowerQuadrant = task.eisenhowerQuadrant,
+                    tags = task.tags,
                     recurrenceRule = task.recurrenceRule
                 )
             }
@@ -70,6 +82,34 @@ class TaskEditViewModel @Inject constructor(
         _formState.value = _formState.value.copy(projectId = value)
     }
 
+    fun onStatusChange(value: TaskStatus) {
+        _formState.value = _formState.value.copy(status = value)
+    }
+
+    fun onDeadlineChange(value: LocalDate?) {
+        _formState.value = _formState.value.copy(deadlineDate = value)
+    }
+
+    fun onStartTimeChange(value: LocalTime?) {
+        _formState.value = _formState.value.copy(startTime = value)
+    }
+
+    fun onDurationChange(value: Long?) {
+        _formState.value = _formState.value.copy(durationMinutes = value)
+    }
+
+    fun onPomodoroEstimateChange(value: Int?) {
+        _formState.value = _formState.value.copy(pomodoroEstimate = value)
+    }
+
+    fun onEisenhowerChange(value: EisenhowerQuadrant?) {
+        _formState.value = _formState.value.copy(eisenhowerQuadrant = value)
+    }
+
+    fun onTagsChange(value: List<String>) {
+        _formState.value = _formState.value.copy(tags = value)
+    }
+
     fun onRecurrenceChange(value: RecurrenceRule?) {
         _formState.value = _formState.value.copy(recurrenceRule = value)
     }
@@ -81,18 +121,33 @@ class TaskEditViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
+            val (deadline, startTime) = combineDateTime(state)
             val existing = taskId?.let { getTaskByIdUseCase(it) }
             val task = (existing?.copy(
                 title = state.title.trim(),
                 description = state.description.trim().ifBlank { null },
                 priority = state.priority,
                 projectId = state.projectId,
+                status = state.status,
+                deadline = deadline,
+                startTime = startTime,
+                durationMinutes = state.durationMinutes,
+                pomodoroEstimate = state.pomodoroEstimate,
+                eisenhowerQuadrant = state.eisenhowerQuadrant,
+                tags = state.tags,
                 recurrenceRule = state.recurrenceRule
             ) ?: Task(
                 title = state.title.trim(),
                 description = state.description.trim().ifBlank { null },
                 priority = state.priority,
                 projectId = state.projectId,
+                status = state.status,
+                deadline = deadline,
+                startTime = startTime,
+                durationMinutes = state.durationMinutes,
+                pomodoroEstimate = state.pomodoroEstimate,
+                eisenhowerQuadrant = state.eisenhowerQuadrant,
+                tags = state.tags,
                 recurrenceRule = state.recurrenceRule
             ))
             if (existing != null) {
@@ -103,6 +158,23 @@ class TaskEditViewModel @Inject constructor(
             onSaved()
         }
     }
+
+    /**
+     * Комбинирует дату дедлайна и время начала в Instant.
+     * Если есть время — deadline = date+time, startTime = date+time.
+     * Если только дата — deadline = date в полночь.
+     */
+    private fun combineDateTime(state: TaskFormState): Pair<Instant?, Instant?> {
+        val zone = ZoneId.systemDefault()
+        if (state.deadlineDate == null) return null to null
+
+        val time = state.startTime ?: LocalTime.MIDNIGHT
+        val dateTime = state.deadlineDate.atTime(time)
+        val instant = dateTime.atZone(zone).toInstant()
+
+        val startInstant = if (state.startTime != null) instant else null
+        return instant to startInstant
+    }
 }
 
 data class TaskFormState(
@@ -110,6 +182,13 @@ data class TaskFormState(
     val description: String = "",
     val priority: Priority = Priority.NONE,
     val projectId: Long? = null,
+    val status: TaskStatus = TaskStatus.TODO,
+    val deadlineDate: LocalDate? = null,
+    val startTime: LocalTime? = null,
+    val durationMinutes: Long? = null,
+    val pomodoroEstimate: Int? = null,
+    val eisenhowerQuadrant: EisenhowerQuadrant? = null,
+    val tags: List<String> = emptyList(),
     val recurrenceRule: RecurrenceRule? = null,
     val titleError: Boolean = false
 )

@@ -26,7 +26,7 @@ class CalendarViewModel @Inject constructor(
 
     init {
         getAllTasksUseCase()
-            .map { tasks -> tasks.filter { it.deadline != null } }
+            .map { tasks -> tasks.filter { it.deadline != null || it.startTime != null } }
             .map { tasks -> groupByDay(tasks) }
             .map { days -> CalendarState.Success(days) as CalendarState }
             .onEach { _state.value = it }
@@ -37,11 +37,17 @@ class CalendarViewModel @Inject constructor(
     private fun groupByDay(tasks: List<Task>): List<TaskDay> {
         val zone = ZoneId.systemDefault()
         return tasks
-            .groupBy { task ->
-                task.deadline!!.atZone(zone).toLocalDate()
+            .flatMap { task ->
+                val days = mutableSetOf<LocalDate>()
+                task.deadline?.atZone(zone)?.toLocalDate()?.let { days.add(it) }
+                task.startTime?.atZone(zone)?.toLocalDate()?.let { days.add(it) }
+                days.map { it to task }
             }
+            .groupBy({ it.first }, { it.second })
             .toSortedMap(compareBy { it })
-            .map { (day, dayTasks) -> TaskDay(day, dayTasks.sortedBy { it.deadline }) }
+            .map { (day, dayTasks) ->
+                TaskDay(day, dayTasks.sortedWith(compareBy(nullsLast()) { it.startTime }))
+            }
     }
 }
 

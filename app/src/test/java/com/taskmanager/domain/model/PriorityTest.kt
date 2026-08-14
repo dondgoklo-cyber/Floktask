@@ -22,4 +22,14 @@ class PriorityTest {
     fun recurrenceRule_has_five_variants() {
         assertEquals(5, RecurrenceRule.entries.size)
     }
+
+    @Test
+    fun taskStatus_has_three_variants() {
+        assertEquals(3, TaskStatus.entries.size)
+    }
+
+    @Test
+    fun eisenhowerQuadrant_has_four_quadrants() {
+        assertEquals(4, EisenhowerQuadrant.entries.size)
+    }
 }

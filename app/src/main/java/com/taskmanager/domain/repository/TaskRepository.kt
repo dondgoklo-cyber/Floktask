@@ -8,10 +8,20 @@ interface TaskRepository {
     suspend fun getTaskById(id: Long): Task?
     suspend fun updateTask(task: Task)
     suspend fun deleteTask(id: Long)
+    suspend fun setCompleted(id: Long, completed: Boolean)
 
     fun getAllTasks(): Flow<List<Task>>
     fun getTasksByProject(projectId: Long): Flow<List<Task>>
     fun getCompletedTasks(): Flow<List<Task>>
     fun getIncompleteTasks(): Flow<List<Task>>
     fun searchTasks(query: String): Flow<List<Task>>
+
+    /** Задачи с запланированным временем (time blocks) за день [dayStart, dayEnd). */
+    fun getTimedTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>>
+
+    /** Все задачи дня (deadline или startTime в диапазоне). */
+    fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>>
+
+    /** Задачи по квадранту Эйзенхауэра. */
+    fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>>
 }

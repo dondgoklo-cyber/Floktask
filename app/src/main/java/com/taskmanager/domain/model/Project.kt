@@ -7,6 +7,8 @@ data class Project(
     val title: String,
     val description: String? = null,
     val color: String? = null,
+    val icon: String? = null,
+    val deadline: Instant? = null,
     val isArchived: Boolean = false,
     val createdAt: Instant = Instant.now(),
     val updatedAt: Instant = Instant.now()

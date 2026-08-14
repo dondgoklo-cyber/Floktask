@@ -5,57 +5,64 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-// Яркий оранжевый — основной бренд-цвет
+// Брендовые цвета (обратная совместимость с существующими импортами)
 val Orange = Color(0xFFFF6D00)
 val OrangeLight = Color(0xFFFFAB40)
 val OrangeDark = Color(0xFFFF9100)
 
-// Светлая тема — чисто белый
+/** Локальная композиция для доступа к расширенной палитре [AppColors] из любого компонента. */
+val LocalAppColors = staticCompositionLocalOf { LightAppColors }
+
 private val LightColors = lightColorScheme(
-    primary = Orange,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFFFF3E0),
-    onPrimaryContainer = Color(0xFF3E2700),
-    secondary = Color(0xFF00897B),
-    onSecondary = Color.White,
-    secondaryContainer = Color(0xFFB2DFDB),
-    onSecondaryContainer = Color(0xFF003734),
-    tertiary = Color(0xFFFFB300),
-    onTertiary = Color(0xFF3E2700),
-    background = Color.White,
-    onBackground = Color(0xFF1A1A1A),
-    surface = Color.White,
-    onSurface = Color(0xFF1A1A1A),
-    surfaceVariant = Color(0xFFF5F5F5),
-    onSurfaceVariant = Color(0xFF616161),
-    outline = Color(0xFFBDBDBD),
-    error = Color(0xFFD32F2F),
-    onError = Color.White,
+    primary = LightAppColors.primary,
+    onPrimary = LightAppColors.onPrimary,
+    primaryContainer = LightAppColors.primaryContainer,
+    onPrimaryContainer = LightAppColors.onPrimaryContainer,
+    secondary = LightAppColors.secondary,
+    onSecondary = LightAppColors.onSecondary,
+    secondaryContainer = LightAppColors.secondaryContainer,
+    onSecondaryContainer = LightAppColors.onSecondaryContainer,
+    tertiary = LightAppColors.warning,
+    onTertiary = LightAppColors.onWarning,
+    background = LightAppColors.background,
+    onBackground = LightAppColors.onBackground,
+    surface = LightAppColors.surface,
+    onSurface = LightAppColors.onSurface,
+    surfaceVariant = LightAppColors.surfaceVariant,
+    onSurfaceVariant = LightAppColors.onSurfaceVariant,
+    surfaceTint = LightAppColors.primary,
+    outline = LightAppColors.outline,
+    outlineVariant = LightAppColors.outlineVariant,
+    error = LightAppColors.error,
+    onError = LightAppColors.onError
 )
 
-// Тёмная тема — глубокий чёрный + ярко-оранжевый
 private val DarkColors = darkColorScheme(
-    primary = OrangeDark,
-    onPrimary = Color(0xFF1A0A00),
-    primaryContainer = Color(0xFF4E2C00),
-    onPrimaryContainer = Color(0xFFFFD9B0),
-    secondary = Color(0xFF80CBC4),
-    onSecondary = Color(0xFF003734),
-    secondaryContainer = Color(0xFF004D40),
-    onSecondaryContainer = Color(0xFFB2DFDB),
-    tertiary = Color(0xFFFFD54F),
-    onTertiary = Color(0xFF3E2700),
-    background = Color(0xFF000000),
-    onBackground = Color(0xFFE6E6E6),
-    surface = Color(0xFF0A0A0A),
-    onSurface = Color(0xFFE6E6E6),
-    surfaceVariant = Color(0xFF1A1A1A),
-    onSurfaceVariant = Color(0xFF9E9E9E),
-    outline = Color(0xFF424242),
-    error = Color(0xFFFF5252),
-    onError = Color(0xFF410E0B),
+    primary = DarkAppColors.primary,
+    onPrimary = DarkAppColors.onPrimary,
+    primaryContainer = DarkAppColors.primaryContainer,
+    onPrimaryContainer = DarkAppColors.onPrimaryContainer,
+    secondary = DarkAppColors.secondary,
+    onSecondary = DarkAppColors.onSecondary,
+    secondaryContainer = DarkAppColors.secondaryContainer,
+    onSecondaryContainer = DarkAppColors.onSecondaryContainer,
+    tertiary = DarkAppColors.warning,
+    onTertiary = DarkAppColors.onWarning,
+    background = DarkAppColors.background,
+    onBackground = DarkAppColors.onBackground,
+    surface = DarkAppColors.surface,
+    onSurface = DarkAppColors.onSurface,
+    surfaceVariant = DarkAppColors.surfaceVariant,
+    onSurfaceVariant = DarkAppColors.onSurfaceVariant,
+    surfaceTint = DarkAppColors.primary,
+    outline = DarkAppColors.outline,
+    outlineVariant = DarkAppColors.outlineVariant,
+    error = DarkAppColors.error,
+    onError = DarkAppColors.onError
 )
 
 @Composable
@@ -64,9 +71,19 @@ fun TaskManagerTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColors else LightColors
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = MaterialTheme.typography,
-        content = content
-    )
+    val appColors = if (darkTheme) DarkAppColors else LightAppColors
+
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = appTypography(),
+            content = content
+        )
+    }
+}
+
+/** Удобный доступ к расширенной палитре из любого composable. */
+object AppTheme {
+    val colors: AppColors
+        @Composable get() = LocalAppColors.current
 }

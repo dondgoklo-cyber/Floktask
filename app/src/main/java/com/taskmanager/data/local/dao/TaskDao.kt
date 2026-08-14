@@ -43,4 +43,27 @@ interface TaskDao {
 
     @Query("UPDATE tasks SET isCompleted = :completed, updatedAt = :updatedAt WHERE id = :id")
     suspend fun setCompleted(id: Long, completed: Boolean, updatedAt: Long)
+
+    /**
+     * Задачи с запланированным временем на день (startTime в диапазоне [dayStart, dayEnd)).
+     * Используется для time blocking в календаре.
+     */
+    @Query("SELECT * FROM tasks WHERE startTime IS NOT NULL AND startTime >= :dayStart AND startTime < :dayEnd ORDER BY startTime ASC")
+    fun getTimedTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<TaskEntity>>
+
+    /**
+     * Задачи на день: те, у которых deadline или startTime попадает в [dayStart, dayEnd).
+     */
+    @Query(
+        """
+        SELECT * FROM tasks
+        WHERE (deadline IS NOT NULL AND deadline >= :dayStart AND deadline < :dayEnd)
+           OR (startTime IS NOT NULL AND startTime >= :dayStart AND startTime < :dayEnd)
+        ORDER BY startTime IS NULL, startTime ASC, deadline ASC
+        """
+    )
+    fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE eisenhowerQuadrant = :quadrant AND isCompleted = 0")
+    fun getTasksByQuadrant(quadrant: String): Flow<List<TaskEntity>>
 }
