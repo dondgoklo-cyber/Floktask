@@ -1,6 +1,9 @@
 # ТЗ ДЛЯ СЛЕДУЮЩЕЙ СЕССИИ
 ## TaskManager — MVP доработка: сделать так, чтобы всё работало
 
+> **Обновление от сессии 4:** приоритеты 1–8 реализованы, `Android CI: Build & Test — success` (коммит 5b4289a).
+> `Emulator Test` (Boot Test) падает на инфраструктуре эмулятора (было и на baseline b44495c) — не связано с кодом.
+
 ---
 
 ## 0. КАК НАЧАТЬ
@@ -55,6 +58,20 @@
 - MoreScreen: добавлен Profile
 
 **CI статус:** `Android CI: Build & Test — success` (коммит a3e84da)
+
+### Сессия 4 (доработка по ТЗ — приоритеты 1–8)
+- **P1 Inbox:** экран задач без проекта/даты, FAB→QuickAdd, клик→TaskDetailSheet, skeleton + empty state
+- **P1 Upcoming:** невыполненные задачи с дедлайном/startTime в будущем, группировка по дням, FAB, skeleton
+- **P2 Focus↔Task:** роут `focus/{taskId}`, `FocusViewModel.setTask` загружает название, FocusScreen показывает его, PomodoroSession с taskId
+- **P3 Eisenhower drag&drop:** отслеживание pointer через onGloballyPositioned, подсветка целевого квадранта, moveTask при drop
+- **P4 Календарь:** resize-handle (нижняя граница time block) меняет длительность (мин 15 мин); перенос времени и дня сохранён
+- **P5 Подзадачи:** переупорядочивание (drag handle + drop zones), прогресс (X/Y + LinearProgressIndicator), inline-редактирование названия
+- **P6 Поиск:** глобальный поиск (задачи/проекты/привычки), экран SearchScreen, вход из More
+- **P7 Onboarding:** 4 слайда (HorizontalPager), один раз через SharedPreferences
+- **P8 UX:** skeleton в Projects/Habits/Inbox/Upcoming, empty states
+
+**Новые файлы:** inbox/, upcoming/, search/, onboarding/
+**CI статус:** `Android CI: Build & Test — success` (коммит 5b4289a)
 
 ---
 
