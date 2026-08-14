@@ -73,14 +73,23 @@ class FinanceViewModel @Inject constructor(
     private val _selectedPeriod = MutableStateFlow(FinancePeriod.MONTH)
     val selectedPeriod: StateFlow<FinancePeriod> = _selectedPeriod.asStateFlow()
 
-    val state: StateFlow<FinanceUiState> = combine(
-        _selectedPeriod,
+    private val financeDataFlow = combine(
         getAllTransactionsUseCase(),
         getFinanceSummaryUseCase.totalIncome(),
-        getFinanceSummaryUseCase.totalExpense(),
+        getFinanceSummaryUseCase.totalExpense()
+    ) { transactions, totalIncome, totalExpense ->
+        Triple(transactions, totalIncome, totalExpense)
+    }
+
+    val state: StateFlow<FinanceUiState> = combine(
+        _selectedPeriod,
+        financeDataFlow,
         getCategoriesUseCase.all(),
         getAccountsUseCase()
-    ) { period, transactions, totalIncome, totalExpense, categories, accounts ->
+    ) { period, finance, categories, accounts ->
+        val transactions = finance.first
+        val totalIncome = finance.second
+        val totalExpense = finance.third
         val zone = ZoneId.systemDefault()
         val (from, to) = periodRange(period, zone)
         val periodTx = transactions.filter { tx ->

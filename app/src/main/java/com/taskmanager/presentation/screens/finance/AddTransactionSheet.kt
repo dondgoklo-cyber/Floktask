@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
@@ -128,10 +129,9 @@ fun AddTransactionSheet(
             }
 
             // Amount — главное поле, авто-фокус
-            AppTextField(
+            OutlinedTextField(
                 value = amountText,
                 onValueChange = { value ->
-                    // Разрешаем только цифры, точку, запятую
                     val cleaned = value.replace(',', '.').filter { it.isDigit() || it == '.' }
                     amountText = cleaned
                 },
@@ -143,6 +143,7 @@ fun AddTransactionSheet(
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(Radius.md),
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester)
