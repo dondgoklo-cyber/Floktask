@@ -167,6 +167,7 @@ private fun ProjectCard(project: Project, stats: ProjectStats) {
                 trackColor = AppTheme.colors.surfaceVariant
             )
         }
+        }
     }
 }
 
