@@ -242,7 +242,7 @@ fun VoiceTaskSheet(
                 // Time
                 d.time?.let { time ->
                     val timeLabel = if (d.isAmbiguousTime) "Время (примерно)" else "Время"
-                    DraftInfoRow(timeLabel, time.format(DateTimeFormatter.ofPattern("HH:mm"))))
+                    DraftInfoRow(timeLabel, time.format(DateTimeFormatter.ofPattern("HH:mm")))
                 }
                 // Priority
                 if (d.priority != Priority.NONE) {
