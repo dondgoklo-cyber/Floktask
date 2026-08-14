@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.taskmanager.R
 import com.taskmanager.presentation.screens.calendar.CalendarScreen
+import com.taskmanager.presentation.screens.eisenhower.EisenhowerScreen
 import com.taskmanager.presentation.screens.focus.FocusScreen
 import com.taskmanager.presentation.screens.habits.HabitsScreen
 import com.taskmanager.presentation.screens.more.MoreScreen
@@ -104,6 +105,7 @@ fun NavGraph() {
                     onNavigate = { route -> navController.navigate(route) }
                 )
             }
+            composable(Screen.Eisenhower.route) { EisenhowerScreen() }
 
             composable(Screen.TaskEditNew.route) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
