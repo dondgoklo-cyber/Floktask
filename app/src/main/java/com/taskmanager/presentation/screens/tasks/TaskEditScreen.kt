@@ -54,6 +54,7 @@ import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.TaskStatus
+import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
@@ -102,7 +103,7 @@ fun TaskEditScreen(
             verticalArrangement = Arrangement.spacedBy(Spacing.lg)
         ) {
             // Название
-            OutlinedTextField(
+            AppTextField(
                 value = form.title,
                 onValueChange = viewModel::onTitleChange,
                 label = { Text(stringResource(R.string.title)) },
@@ -115,7 +116,7 @@ fun TaskEditScreen(
             )
 
             // Описание
-            OutlinedTextField(
+            AppTextField(
                 value = form.description,
                 onValueChange = viewModel::onDescriptionChange,
                 label = { Text(stringResource(R.string.description)) },
@@ -179,7 +180,7 @@ fun TaskEditScreen(
             }
 
             // Длительность
-            OutlinedTextField(
+            AppTextField(
                 value = form.durationMinutes?.toString() ?: "",
                 onValueChange = { value ->
                     viewModel.onDurationChange(value.toLongOrNull())
@@ -254,7 +255,7 @@ fun TaskEditScreen(
             }
 
             // Pomodoro estimate
-            OutlinedTextField(
+            AppTextField(
                 value = form.pomodoroEstimate?.toString() ?: "",
                 onValueChange = { value ->
                     viewModel.onPomodoroEstimateChange(value.toIntOrNull())
@@ -278,7 +279,7 @@ fun TaskEditScreen(
                     }
                 }
             }
-            OutlinedTextField(
+            AppTextField(
                 value = "",
                 onValueChange = { value ->
                     if (value.endsWith(",") || value.endsWith(" ")) {
@@ -421,7 +422,7 @@ private fun ProjectDropdown(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
-        OutlinedTextField(
+        AppTextField(
             value = selectedProject?.title ?: stringResource(R.string.no_project),
             onValueChange = {},
             label = { Text(stringResource(R.string.project)) },

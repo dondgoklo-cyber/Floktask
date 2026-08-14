@@ -58,6 +58,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Subtask
 import com.taskmanager.domain.model.Task
+import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.PrimaryButton
 import com.taskmanager.presentation.components.SecondaryButton
 import com.taskmanager.presentation.components.PriorityBadge
@@ -396,7 +397,7 @@ private fun SubtaskSection(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                     modifier = Modifier.padding(start = (depth * 16).dp)
                 ) {
-                    OutlinedTextField(
+                    AppTextField(
                         value = editingTitle,
                         onValueChange = { editingTitle = it },
                         singleLine = true,
@@ -443,7 +444,7 @@ private fun SubtaskSection(
             }
         }
         // Поле добавления подзадачи на текущем уровне
-        OutlinedTextField(
+        AppTextField(
             value = newSubtaskTitle,
             onValueChange = { newSubtaskTitle = it },
             placeholder = {
@@ -518,7 +519,7 @@ private fun SubtaskRow(
             }
         }
         if (showAddChild && depth < 4) {
-            OutlinedTextField(
+            AppTextField(
                 value = childTitle,
                 onValueChange = { childTitle = it },
                 placeholder = { Text("Вложенная подзадача...", style = MaterialTheme.typography.bodySmall) },

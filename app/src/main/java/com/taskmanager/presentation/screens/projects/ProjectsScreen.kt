@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Project
+import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.components.AppFloatingActionButton
@@ -189,14 +190,14 @@ private fun CreateProjectDialog(
         title = { Text(stringResource(R.string.new_project)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                OutlinedTextField(
+                AppTextField(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text(stringResource(R.string.title)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
-                OutlinedTextField(
+                AppTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text(stringResource(R.string.description_optional)) },

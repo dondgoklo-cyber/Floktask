@@ -38,6 +38,7 @@ import com.taskmanager.R
 import com.taskmanager.domain.model.Habit
 import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.Task
+import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.priorityColor
 import com.taskmanager.presentation.theme.AppTheme
@@ -73,13 +74,12 @@ fun SearchScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(padding)
         ) {
-            OutlinedTextField(
+            AppTextField(
                 value = state.query,
                 onValueChange = viewModel::onQueryChange,
                 placeholder = { Text(stringResource(R.string.search_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true,
-                shape = RoundedCornerShape(Radius.full),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Spacing.lg, vertical = Spacing.sm)

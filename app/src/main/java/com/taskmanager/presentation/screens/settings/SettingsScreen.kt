@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.components.AppTextButton
+import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
 import com.taskmanager.security.PinMode
@@ -141,7 +142,7 @@ fun SettingsScreen(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = Spacing.md)
             )
-            OutlinedTextField(
+            AppTextField(
                 value = nameInput,
                 onValueChange = { nameInput = it },
                 label = { Text(stringResource(R.string.user_name)) },

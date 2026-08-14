@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
+import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
@@ -71,7 +72,7 @@ fun QuickAddSheet(
                 stringResource(R.string.add_task),
                 style = MaterialTheme.typography.titleMedium
             )
-            OutlinedTextField(
+            AppTextField(
                 value = input,
                 onValueChange = { input = it },
                 placeholder = {

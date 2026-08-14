@@ -249,7 +249,7 @@ private fun CreateHabitDialog(
         title = { Text(stringResource(R.string.new_habit)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                OutlinedTextField(
+                AppTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(stringResource(R.string.title)) },
