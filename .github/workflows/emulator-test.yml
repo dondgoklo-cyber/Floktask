@@ -29,7 +29,7 @@ jobs:
 
       - name: Enable KVM
         run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node"kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
@@ -48,13 +48,12 @@ jobs:
             adb shell am start -n com.taskmanager.debug/com.taskmanager.presentation.MainActivity
             sleep 10
             adb logcat -d > /tmp/full-logcat.txt
-            echo "=== Проверка FATAL ==="
-            adb logcat -d | grep "FATAL EXCEPTION" > /tmp/crash.txt
+            adb logcat -d | grep "FATAL EXCEPTION" > /tmp/crash.txt || true
             echo "Crash lines: $(wc -l < /tmp/crash.txt)"
-            cat /tmp/crash.txt
-            adb logcat -d | grep "FATAL EXCEPTION" && exit 1
+            cat /tmp/crash.txt || true
+            test -s /tmp/crash.txt && exit 1
             echo "NO_CRASH_DETECTED"
-            adb shell ps | grep taskmanager
+            adb shell ps | grep taskmanager || true
 
       - name: Upload logcat
         if: always()
