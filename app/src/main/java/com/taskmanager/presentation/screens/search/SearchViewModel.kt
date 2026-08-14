@@ -3,6 +3,8 @@ package com.taskmanager.presentation.screens.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Habit
+import com.taskmanager.domain.model.Note
+import com.taskmanager.domain.usecase.note.SearchNotesUseCase
 import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.HabitRepository
@@ -21,6 +23,7 @@ data class SearchResults(
     val tasks: List<Task> = emptyList(),
     val projects: List<Project> = emptyList(),
     val habits: List<Habit> = emptyList(),
+    val notes: List<Note> = emptyList(),
     val hasQuery: Boolean = false
 )
 
@@ -34,13 +37,15 @@ data class SearchUiState(
 class SearchViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val projectRepository: ProjectRepository,
-    private val habitRepository: HabitRepository
+    private val habitRepository: HabitRepository,
+    private val searchNotesUseCase: SearchNotesUseCase
 ) : ViewModel() {
 
     private val _query = MutableStateFlow("")
     private val _taskResults = MutableStateFlow<List<Task>>(emptyList())
     private val _allProjects = MutableStateFlow<List<Project>>(emptyList())
     private val _allHabits = MutableStateFlow<List<Habit>>(emptyList())
+    private val _noteResults = MutableStateFlow<List<Note>>(emptyList())
 
     init {
         observeCatalogs()
@@ -58,8 +63,9 @@ class SearchViewModel @Inject constructor(
     val state: StateFlow<SearchUiState> = combine(
         _query,
         _taskResults,
+        _noteResults,
         combine(_allProjects, _allHabits) { p, h -> p to h }
-    ) { query, tasks, (projects, habits) ->
+    ) { query, tasks, notes, (projects, habits) ->
         val q = query.trim()
         if (q.isEmpty()) {
             SearchUiState(query = query, results = SearchResults(hasQuery = false))
@@ -77,6 +83,7 @@ class SearchViewModel @Inject constructor(
                     tasks = tasks,
                     projects = filteredProjects,
                     habits = filteredHabits,
+                    notes = notes,
                     hasQuery = true
                 )
             )
@@ -88,10 +95,16 @@ class SearchViewModel @Inject constructor(
         val q = newQuery.trim()
         if (q.isEmpty()) {
             _taskResults.value = emptyList()
+            _noteResults.value = emptyList()
         } else {
             viewModelScope.launch {
                 taskRepository.searchTasks(q).collect { results ->
                     _taskResults.value = results
+                }
+            }
+            viewModelScope.launch {
+                searchNotesUseCase(q).collect { results ->
+                    _noteResults.value = results
                 }
             }
         }

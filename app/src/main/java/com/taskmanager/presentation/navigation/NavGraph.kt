@@ -168,7 +168,8 @@ fun NavGraph() {
                     onAllFinance = { navController.navigate(Screen.Finance.route) },
                     onAddHabit = { navController.navigate(Screen.Habits.route) },
                     onAddProject = { navController.navigate(Screen.Projects.route) },
-                    onAddNote = { navController.navigate(Screen.NoteEditNew.route) }
+                    onAddNote = { navController.navigate(Screen.NoteEditNew.route) },
+                    onAllNotes = { navController.navigate(Screen.Notes.route) }
                 )
             }
             composable(Screen.Projects.route) {
@@ -227,7 +228,8 @@ fun NavGraph() {
             composable(Screen.Search.route) {
                 SearchScreen(
                     onBack = { navController.popBackStack() },
-                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) }
+                    onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) },
+                    onNoteClick = { noteId -> navController.navigate(Screen.NoteEdit.buildRoute(noteId)) }
                 )
             }
             composable(Screen.Kanban.route) {

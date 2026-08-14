@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Spa
@@ -55,6 +56,7 @@ import com.taskmanager.presentation.theme.Spacing
 fun SearchScreen(
     onBack: () -> Unit,
     onTaskClick: (Long) -> Unit,
+    onNoteClick: (Long) -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -99,7 +101,7 @@ fun SearchScreen(
                     subtitle = stringResource(R.string.search_hint),
                     modifier = Modifier.fillMaxSize()
                 )
-            } else if (results.tasks.isEmpty() && results.projects.isEmpty() && results.habits.isEmpty()) {
+            } else if (results.tasks.isEmpty() && results.projects.isEmpty() && results.habits.isEmpty() && results.notes.isEmpty()) {
                 EmptyState(
                     icon = Icons.Filled.Search,
                     title = stringResource(R.string.search_empty_title),
@@ -151,6 +153,20 @@ fun SearchScreen(
                                 title = habit.name,
                                 subtitle = habit.description,
                                 onClick = {}
+                            )
+                        }
+                    }
+                    if (results.notes.isNotEmpty()) {
+                        item {
+                            SectionTitle(stringResource(R.string.notes))
+                        }
+                        items(results.notes, key = { "note-${it.id ?: 0}" }) { note ->
+                            SearchResultRow(
+                                icon = Icons.Filled.Description,
+                                iconColor = AppTheme.colors.info,
+                                title = note.title.ifBlank { "Без названия" },
+                                subtitle = note.contentMarkdown.lines().firstOrNull { it.isNotBlank() },
+                                onClick = { note.id?.let(onNoteClick) }
                             )
                         }
                     }

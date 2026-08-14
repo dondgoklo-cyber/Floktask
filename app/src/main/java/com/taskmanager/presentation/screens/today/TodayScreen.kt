@@ -78,7 +78,8 @@ fun TodayScreen(
     onAllFinance: () -> Unit = {},
     onAddHabit: () -> Unit = {},
     onAddProject: () -> Unit = {},
-    onAddNote: () -> Unit = {}
+    onAddNote: () -> Unit = {},
+    onAllNotes: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
@@ -159,6 +160,9 @@ fun TodayScreen(
                 item { SummaryRow(state) }
                 if (state.recentTransactions.isNotEmpty() || state.financeBalance != 0.0) {
                     item { FinanceSummaryCard(state, onAllFinance) }
+                }
+                if (state.recentNotes.isNotEmpty()) {
+                    item { NotesPreviewCard(state, onAllNotes) }
                 }
                 if (state.nextTasks.isNotEmpty()) {
                     item { SectionHeader(stringResource(R.string.next_tasks)) }
@@ -524,6 +528,59 @@ private fun FinanceSummaryCard(state: TodayUiState, onAllFinance: () -> Unit) {
                 }
                 androidx.compose.material3.TextButton(onClick = onAllFinance) {
                     androidx.compose.material3.Text("Все финансы →")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NotesPreviewCard(state: TodayUiState, onAllNotes: () -> Unit) {
+    androidx.compose.material3.Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onAllNotes,
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.lg),
+        colors = androidx.compose.material3.CardDefaults.cardColors(
+            containerColor = AppTheme.colors.surface
+        )
+    ) {
+        androidx.compose.foundation.layout.Column(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg)
+        ) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                androidx.compose.material3.Text(
+                    "Заметки",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                )
+                androidx.compose.material3.TextButton(onClick = onAllNotes) {
+                    androidx.compose.material3.Text("Все →")
+                }
+            }
+            state.recentNotes.forEach { note ->
+                androidx.compose.foundation.layout.Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(Spacing.sm),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    androidx.compose.foundation.layout.Box(
+                        modifier = Modifier
+                            .then(androidx.compose.foundation.layout.size(8.dp))
+                            .then(androidx.compose.foundation.background(AppTheme.colors.info, androidx.compose.foundation.shape.CircleShape))
+                    )
+                    androidx.compose.material3.Text(
+                        note.title.ifBlank { "Без названия" },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppTheme.colors.onSurface,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }

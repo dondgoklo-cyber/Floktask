@@ -8,7 +8,9 @@ import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.HabitLogRepository
 import com.taskmanager.domain.repository.HabitRepository
 import com.taskmanager.domain.repository.PomodoroSessionRepository
+import com.taskmanager.domain.model.Note
 import com.taskmanager.domain.model.Transaction
+import com.taskmanager.domain.usecase.note.GetAllNotesUseCase
 import com.taskmanager.domain.usecase.finance.GetFinanceSummaryUseCase
 import com.taskmanager.domain.usecase.finance.GetRecentTransactionsUseCase
 import com.taskmanager.domain.repository.ProjectRepository
@@ -43,6 +45,7 @@ data class TodayUiState(
     val financeIncome: Double = 0.0,
     val financeExpense: Double = 0.0,
     val recentTransactions: List<Transaction> = emptyList(),
+    val recentNotes: List<Note> = emptyList(),
     val isLoading: Boolean = true
 )
 
@@ -54,7 +57,8 @@ class TodayViewModel @Inject constructor(
     private val habitLogRepository: HabitLogRepository,
     private val pomodoroSessionRepository: PomodoroSessionRepository,
     private val getFinanceSummaryUseCase: GetFinanceSummaryUseCase,
-    private val getRecentTransactionsUseCase: GetRecentTransactionsUseCase
+    private val getRecentTransactionsUseCase: GetRecentTransactionsUseCase,
+    private val getAllNotesUseCase: GetAllNotesUseCase
 ) : ViewModel() {
 
     private val zone = ZoneId.systemDefault()
@@ -71,20 +75,21 @@ class TodayViewModel @Inject constructor(
         val dayStart = today.atStartOfDay(zone).toInstant().toEpochMilli()
         val dayEnd = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
 
-        val financeFlow = combine(
+        val dashboardDataFlow = combine(
             getFinanceSummaryUseCase.totalIncome(),
             getFinanceSummaryUseCase.totalExpense(),
-            getRecentTransactionsUseCase(3)
-        ) { income, expense, recentTx ->
-            Triple(income, expense, recentTx)
+            getRecentTransactionsUseCase(3),
+            getAllNotesUseCase()
+        ) { income, expense, recentTx, notes ->
+            DashboardFinanceData(income, expense, recentTx, notes.take(3))
         }
         combine(
             taskRepository.getTasksForDay(dayStart, dayEnd),
             pomodoroSessionRepository.getSessionsForDay(dayStart, dayEnd),
             habitRepository.getActiveHabits(),
             projectRepository.getActiveProjects(),
-            financeFlow
-        ) { tasks, pomodoros, habits, projects, finance ->
+            dashboardDataFlow
+        ) { tasks, pomodoros, habits, projects, data ->
             val now = System.currentTimeMillis()
             val completedToday = tasks.count { it.isCompleted }
             val totalToday = tasks.size
@@ -120,10 +125,11 @@ class TodayViewModel @Inject constructor(
                 habitsCompleted = habitsCompleted,
                 habitsTotal = habitsTotal,
                 projects = projects,
-                financeBalance = finance.first - finance.second,
-                financeIncome = finance.first,
-                financeExpense = finance.second,
-                recentTransactions = finance.third,
+                financeBalance = data.income - data.expense,
+                financeIncome = data.income,
+                financeExpense = data.expense,
+                recentTransactions = data.recentTx,
+                recentNotes = data.recentNotes,
                 isLoading = false
             )
         }.stateIn(viewModelScope, SharingStarted.Lazily, TodayUiState(isLoading = true))
@@ -134,3 +140,10 @@ class TodayViewModel @Inject constructor(
             }
     }
 }
+
+private data class DashboardFinanceData(
+    val income: Double,
+    val expense: Double,
+    val recentTx: List<Transaction>,
+    val recentNotes: List<Note>
+)
