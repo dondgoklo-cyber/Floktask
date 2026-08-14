@@ -303,6 +303,30 @@ private fun DraggableTimeBlock(
                     color = AppTheme.colors.onSurfaceVariant
                 )
             }
+            // Resize handle (нижняя граница) — перетаскивание меняет длительность
+            var resizeY by remember { mutableFloatStateOf(0f) }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                    .pointerInput(task.id) {
+                        detectDragGesturesAfterLongPress(
+                            onDragEnd = {
+                                val deltaMinutes = with(density) {
+                                    (resizeY / HOUR_HEIGHT.toPx() * 60).roundToInt()
+                                }
+                                if (deltaMinutes != 0) {
+                                    onResize((duration + deltaMinutes).coerceAtLeast(15))
+                                }
+                                resizeY = 0f
+                            },
+                            onDrag = { change, dragAmount ->
+                                change.consume()
+                                resizeY += dragAmount.y
+                            }
+                        )
+                    }
+            )
         }
     }
 }
