@@ -25,7 +25,7 @@ class TaskManagerApp : Application() {
                 val sw = StringWriter()
                 throwable.printStackTrace(PrintWriter(sw))
                 val crashLog = """
-                    === КРАШ TaskManager ===
+                    === КРАШ WOLFTASK ===
                     Время: ${System.currentTimeMillis()}
                     Поток: ${thread.name}
                     Android API: ${Build.VERSION.SDK_INT}
