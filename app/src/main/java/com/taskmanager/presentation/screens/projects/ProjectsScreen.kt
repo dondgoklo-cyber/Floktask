@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -48,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Project
 import com.taskmanager.presentation.components.EmptyState
+import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
@@ -78,9 +78,8 @@ fun ProjectsScreen(
     ) { padding ->
         when (val s = state) {
             ProjectsState.Loading -> Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+                modifier = Modifier.fillMaxSize().padding(padding)
+            ) { TaskListSkeleton() }
 
             is ProjectsState.Success -> {
                 if (s.projects.isEmpty()) {
