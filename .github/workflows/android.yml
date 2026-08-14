@@ -38,20 +38,11 @@ jobs:
             cp app/google-services.json.example app/google-services.json
           fi
 
-      - name: Generate Gradle wrapper (if missing)
-        shell: bash
-        run: |
-          if [ ! -f gradlew ]; then
-            echo "gradlew missing; generating wrapper with installed gradle."
-            gradle wrapper --gradle-version 8.4 --distribution-type bin
-          fi
-          chmod +x ./gradlew
-
       - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace --no-daemon
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: gradle testDebugUnitTest --stacktrace --no-daemon
 
       - name: Upload debug APK
         if: always()
