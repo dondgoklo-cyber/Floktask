@@ -57,14 +57,22 @@ private data class MoreItem(
 fun MoreScreen(
     onNavigate: (String) -> Unit
 ) {
-    val items = listOf(
-        MoreItem(Icons.Filled.Search, R.string.search, Screen.Search.route),
-        MoreItem(Icons.Filled.ViewKanban, R.string.kanban, Screen.Kanban.route),
-        MoreItem(Icons.Filled.Inbox, R.string.inbox, Screen.Inbox.route),
-        MoreItem(Icons.Filled.CalendarMonth, R.string.upcoming, Screen.Upcoming.route),
-        MoreItem(Icons.Filled.GridView, R.string.eisenhower_matrix, Screen.Eisenhower.route),
-        MoreItem(Icons.Filled.Person, R.string.profile, Screen.Profile.route),
-        MoreItem(Icons.Filled.Settings, R.string.settings, Screen.Settings.route)
+    data class MoreSection(val title: String, val items: List<MoreItem>)
+
+    val sections = listOf(
+        MoreSection("Обзор", listOf(
+            MoreItem(Icons.Filled.Search, R.string.search, Screen.Search.route),
+            MoreItem(Icons.Filled.Inbox, R.string.inbox, Screen.Inbox.route),
+            MoreItem(Icons.Filled.CalendarMonth, R.string.upcoming, Screen.Upcoming.route)
+        )),
+        MoreSection("Рабочее пространство", listOf(
+            MoreItem(Icons.Filled.ViewKanban, R.string.kanban, Screen.Kanban.route),
+            MoreItem(Icons.Filled.GridView, R.string.eisenhower_matrix, Screen.Eisenhower.route)
+        )),
+        MoreSection("Аккаунт", listOf(
+            MoreItem(Icons.Filled.Person, R.string.profile, Screen.Profile.route),
+            MoreItem(Icons.Filled.Settings, R.string.settings, Screen.Settings.route)
+        ))
     )
 
     Scaffold(
@@ -93,12 +101,26 @@ fun MoreScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
-            items(items, key = { it.route }) { item ->
-                MoreCard(
-                    icon = item.icon,
-                    title = stringResource(item.titleRes),
-                    onClick = { onNavigate(item.route) }
-                )
+            sections.forEach { section ->
+                item(key = "header-${section.title}") {
+                    Text(
+                        text = section.title,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = AppTheme.colors.onSurfaceVariant,
+                        modifier = Modifier.padding(
+                            start = Spacing.sm,
+                            top = Spacing.lg,
+                            bottom = Spacing.xs
+                        )
+                    )
+                }
+                items(section.items, key = { it.route }) { item ->
+                    MoreCard(
+                        icon = item.icon,
+                        title = stringResource(item.titleRes),
+                        onClick = { onNavigate(item.route) }
+                    )
+                }
             }
         }
     }
