@@ -21,14 +21,20 @@ fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
         Priority.LOW -> Color(0xFF66BB6A)
         Priority.NONE -> Color(0xFFBDBDBD)
     }
+    val label = when (priority) {
+        Priority.HIGH -> "Высокий"
+        Priority.MEDIUM -> "Средний"
+        Priority.LOW -> "Низкий"
+        Priority.NONE -> "Без приоритета"
+    }
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(color)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
         Text(
-            text = priority.name,
+            text = label,
             style = MaterialTheme.typography.labelSmall,
             color = Color.White
         )

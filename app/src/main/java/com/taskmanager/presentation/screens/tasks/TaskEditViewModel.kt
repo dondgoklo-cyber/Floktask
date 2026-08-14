@@ -3,21 +3,17 @@ package com.taskmanager.presentation.screens.tasks
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
-import com.taskmanager.domain.usecase.ai.AutoPrioritizeTaskUseCase
 import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,19 +23,15 @@ class TaskEditViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    getAllProjectsUseCase: GetAllProjectsUseCase,
-    private val autoPrioritizeTaskUseCase: AutoPrioritizeTaskUseCase
+    getAllProjectsUseCase: GetAllProjectsUseCase
 ) : ViewModel() {
 
+    // Navigation passes taskId as LongType; read it directly as Long.
     private val taskId: Long? = savedStateHandle
-        .get<String>("taskId")
-        ?.toLongOrNull()
+        .get<Long>("taskId")
         ?.takeIf { it > 0 }
 
     val isEditing: Boolean get() = taskId != null
-
-    val projects: StateFlow<List<Project>> = getAllProjectsUseCase()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val _formState = MutableStateFlow(TaskFormState())
     val formState: StateFlow<TaskFormState> = _formState.asStateFlow()
@@ -80,18 +72,6 @@ class TaskEditViewModel @Inject constructor(
 
     fun onRecurrenceChange(value: RecurrenceRule?) {
         _formState.value = _formState.value.copy(recurrenceRule = value)
-    }
-
-    fun autoPrioritize() {
-        val current = _formState.value
-        val task = Task(
-            title = current.title,
-            description = current.description,
-            priority = current.priority,
-            projectId = current.projectId,
-            recurrenceRule = current.recurrenceRule
-        )
-        _formState.value = current.copy(priority = autoPrioritizeTaskUseCase(task))
     }
 
     fun save(onSaved: () -> Unit) {

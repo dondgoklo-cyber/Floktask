@@ -6,7 +6,6 @@ import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.dao.UserStatsDao
-import com.taskmanager.data.local.dao.LocationReminderDao
 import com.taskmanager.data.local.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -40,7 +39,4 @@ object DatabaseModule {
 
     @Provides
     fun provideUserStatsDao(db: AppDatabase): UserStatsDao = db.userStatsDao()
-
-    @Provides
-    fun provideLocationReminderDao(db: AppDatabase): LocationReminderDao = db.locationReminderDao()
 }

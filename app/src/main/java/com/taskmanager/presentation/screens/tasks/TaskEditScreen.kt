@@ -17,10 +17,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,9 +50,12 @@ fun TaskEditScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             )
         }
     ) { padding ->
@@ -60,15 +65,15 @@ fun TaskEditScreen(
                 .padding(padding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
                 value = form.title,
                 onValueChange = viewModel::onTitleChange,
-                label = { Text("Title") },
+                label = { Text(stringResource(R.string.title)) },
                 isError = form.titleError,
                 supportingText = {
-                    if (form.titleError) Text("Title cannot be empty")
+                    if (form.titleError) Text("Введите название задачи")
                 },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -77,37 +82,46 @@ fun TaskEditScreen(
             OutlinedTextField(
                 value = form.description,
                 onValueChange = viewModel::onDescriptionChange,
-                label = { Text("Description") },
+                label = { Text(stringResource(R.string.description)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Button(onClick = viewModel::autoPrioritize, modifier = Modifier.fillMaxWidth()) {
-                Text("Auto-prioritize (AI)")
-            }
-
-            Text("Priority")
+            Text(stringResource(R.string.priority), style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Priority.entries.forEach { priority ->
+                    val label = when (priority) {
+                        Priority.HIGH -> "Высокий"
+                        Priority.MEDIUM -> "Средний"
+                        Priority.LOW -> "Низкий"
+                        Priority.NONE -> "Нет"
+                    }
                     FilterChip(
                         selected = form.priority == priority,
                         onClick = { viewModel.onPriorityChange(priority) },
-                        label = { Text(priority.name) }
+                        label = { Text(label) }
                     )
                 }
             }
 
-            Text("Recurrence")
+            Text(stringResource(R.string.recurrence), style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(
                     selected = form.recurrenceRule == null,
                     onClick = { viewModel.onRecurrenceChange(null) },
-                    label = { Text("None") }
+                    label = { Text(stringResource(R.string.none)) }
                 )
                 RecurrenceRule.entries.forEach { rule ->
+                    val label = when (rule) {
+                        RecurrenceRule.DAILY -> "Ежедневно"
+                        RecurrenceRule.WEEKLY -> "Еженедельно"
+                        RecurrenceRule.MONTHLY -> "Ежемесячно"
+                        RecurrenceRule.YEARLY -> "Ежегодно"
+                        RecurrenceRule.CUSTOM -> "Другое"
+                    }
                     FilterChip(
                         selected = form.recurrenceRule == rule,
                         onClick = { viewModel.onRecurrenceChange(rule) },
-                        label = { Text(rule.name) }
+                        label = { Text(label) }
                     )
                 }
             }

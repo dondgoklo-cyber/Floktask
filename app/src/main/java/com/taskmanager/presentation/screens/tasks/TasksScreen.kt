@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,7 +38,14 @@ fun TasksScreen(
     val tasksState by viewModel.tasksState.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.tasks)) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddTaskClick) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_task))
@@ -59,8 +67,8 @@ fun TasksScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize().padding(paddingValues),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(state.tasks, key = { it.id ?: 0 }) { task ->
                             TaskCard(

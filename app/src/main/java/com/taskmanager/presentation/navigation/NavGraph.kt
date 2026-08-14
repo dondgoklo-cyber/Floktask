@@ -9,8 +9,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -30,19 +28,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.taskmanager.presentation.screens.calendar.CalendarScreen
+import com.taskmanager.presentation.screens.profile.ProfileScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.tasks.TasksScreen
-import com.taskmanager.presentation.screens.profile.ProfileScreen
-import com.taskmanager.presentation.screens.location.LocationRemindersScreen
-import com.taskmanager.presentation.screens.ai.AiAssistantScreen
 
 @Composable
 fun NavGraph() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
-
     val showBottomBar = currentDestination?.route in Screen.bottomNavItems.map { it.route }
 
     Scaffold(
@@ -95,12 +90,6 @@ fun NavGraph() {
             composable(Screen.Profile.route) {
                 ProfileScreen()
             }
-            composable(Screen.Location.route) {
-                LocationRemindersScreen()
-            }
-            composable(Screen.AiAssistant.route) {
-                AiAssistantScreen()
-            }
             composable(Screen.TaskEditNew.route) {
                 TaskEditScreen(onBack = { navController.popBackStack() })
             }
@@ -122,8 +111,6 @@ private val Screen.icon: ImageVector
         Screen.Projects -> Icons.Filled.Folder
         Screen.Calendar -> Icons.Filled.DateRange
         Screen.Profile -> Icons.Filled.Person
-        Screen.Location -> Icons.Filled.LocationOn
-        Screen.AiAssistant -> Icons.Filled.AutoAwesome
         Screen.TaskEditNew,
         Screen.TaskEdit -> Icons.Filled.List
     }

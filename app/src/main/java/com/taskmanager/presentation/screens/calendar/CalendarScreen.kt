@@ -52,7 +52,7 @@ fun CalendarScreen(
                     Box(
                         modifier = Modifier.fillMaxSize().padding(padding),
                         contentAlignment = Alignment.Center
-                    ) { Text("No scheduled tasks") }
+                    ) { Text(stringResource(R.string.no_scheduled_tasks)) }
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize().padding(padding),
