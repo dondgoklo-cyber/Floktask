@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
@@ -24,6 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.taskmanager.domain.model.Task
+import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.Elevation
+import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.presentation.theme.Spacing
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -40,20 +45,21 @@ fun TaskCard(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
+        shape = RoundedCornerShape(Radius.md)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(Spacing.lg)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md)
             ) {
                 IconButton(onClick = { onCheckedChange(!task.isCompleted) }) {
                     Icon(
                         imageVector = if (task.isCompleted) Icons.Filled.CheckCircle
                         else Icons.Filled.RadioButtonUnchecked,
                         contentDescription = null,
-                        tint = if (task.isCompleted) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.outline
+                        tint = if (task.isCompleted) AppTheme.colors.success
+                        else AppTheme.colors.outline
                     )
                 }
                 Column(modifier = Modifier.weight(1f)) {
@@ -62,15 +68,15 @@ fun TaskCard(
                         style = MaterialTheme.typography.titleMedium,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        color = if (task.isCompleted) MaterialTheme.colorScheme.outline
-                        else MaterialTheme.colorScheme.onSurface
+                        color = if (task.isCompleted) AppTheme.colors.outline
+                        else AppTheme.colors.onSurface
                     )
                     task.description?.takeIf { it.isNotBlank() }?.let {
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(Spacing.xs))
                         Text(
                             text = it,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = AppTheme.colors.onSurfaceVariant,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -80,8 +86,8 @@ fun TaskCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 48.dp, top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(start = 48.dp, top = Spacing.md),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 PriorityBadge(task.priority)
@@ -97,9 +103,9 @@ fun TaskCard(
                         else -> date.format(formatter)
                     }
                     val deadlineColor = when {
-                        daysLeft < 0 -> MaterialTheme.colorScheme.error
-                        daysLeft <= 1 -> MaterialTheme.colorScheme.error
-                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                        daysLeft < 0 -> AppTheme.colors.danger
+                        daysLeft <= 1 -> AppTheme.colors.warning
+                        else -> AppTheme.colors.onSurfaceVariant
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -108,13 +114,21 @@ fun TaskCard(
                             tint = deadlineColor,
                             modifier = Modifier.height(16.dp)
                         )
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(Spacing.xs))
                         Text(
                             text = deadlineText,
                             style = MaterialTheme.typography.labelSmall,
                             color = deadlineColor
                         )
                     }
+                }
+                task.startTime?.let { start ->
+                    val time = start.atZone(ZoneId.systemDefault()).toLocalTime()
+                    Text(
+                        time.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppTheme.colors.primary
+                    )
                 }
             }
         }

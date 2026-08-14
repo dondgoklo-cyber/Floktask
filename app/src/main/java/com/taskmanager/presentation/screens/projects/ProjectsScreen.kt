@@ -1,5 +1,6 @@
 package com.taskmanager.presentation.screens.projects
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,15 +8,21 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -23,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,11 +39,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Project
+import com.taskmanager.presentation.components.EmptyState
+import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.Elevation
+import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.presentation.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,10 +61,17 @@ fun ProjectsScreen(
     val showCreate by viewModel.showCreateDialog.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.projects)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.projects)) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.surface
+                )
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = viewModel::openCreateDialog) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_task))
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.new_project))
             }
         }
     ) { padding ->
@@ -61,19 +83,20 @@ fun ProjectsScreen(
 
             is ProjectsState.Success -> {
                 if (s.projects.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize().padding(padding),
-                        contentAlignment = Alignment.Center
-                    ) { Text(stringResource(R.string.no_projects)) }
+                    EmptyState(
+                        icon = Icons.Filled.Folder,
+                        title = stringResource(R.string.no_projects),
+                        subtitle = "Создайте проект, чтобы группировать задачи",
+                        modifier = Modifier.padding(padding)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize().padding(padding),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        contentPadding = PaddingValues(Spacing.lg),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
                         items(s.projects, key = { it.id ?: 0 }) { project ->
-                            ProjectRow(project)
-                            Divider()
+                            ProjectCard(project)
                         }
                     }
                 }
@@ -95,11 +118,43 @@ fun ProjectsScreen(
 }
 
 @Composable
-private fun ProjectRow(project: Project) {
-    Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text(project.title, style = MaterialTheme.typography.titleMedium)
-        project.description?.takeIf { it.isNotBlank() }?.let {
-            Text(it, style = MaterialTheme.typography.bodySmall)
+private fun ProjectCard(project: Project) {
+    val accentColor = project.color?.let { parseColor(it) } ?: AppTheme.colors.primary
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
+        shape = RoundedCornerShape(Radius.lg)
+    ) {
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(accentColor.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Filled.Folder, contentDescription = null, tint = accentColor)
+            }
+            Column(Modifier.weight(1f)) {
+                Text(
+                    project.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                project.description?.takeIf { it.isNotBlank() }?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppTheme.colors.onSurfaceVariant,
+                        maxLines = 2
+                    )
+                }
+            }
         }
     }
 }
@@ -116,7 +171,7 @@ private fun CreateProjectDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.new_project)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
@@ -141,4 +196,13 @@ private fun CreateProjectDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         }
     )
+}
+
+private fun parseColor(hex: String): androidx.compose.ui.graphics.Color {
+    return try {
+        val clean = hex.removePrefix("#")
+        androidx.compose.ui.graphics.Color(android.graphics.Color.parseColor("#$clean"))
+    } catch (_: Throwable) {
+        AppTheme.colors.primary
+    }
 }

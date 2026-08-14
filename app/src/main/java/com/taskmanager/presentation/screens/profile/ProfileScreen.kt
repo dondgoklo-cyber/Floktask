@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
+import com.taskmanager.presentation.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,18 +153,18 @@ private fun AchievementRow(display: AchievementDisplay) {
                 Text(
                     display.achievement.title,
                     style = MaterialTheme.typography.titleSmall,
-                    color = if (display.unlocked) MaterialTheme.colorScheme.onSurface else Color.Gray
+                    color = if (display.unlocked) MaterialTheme.colorScheme.onSurface else AppTheme.colors.onSurfaceVariant
                 )
                 Text(
                     display.achievement.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = AppTheme.colors.onSurfaceVariant
                 )
             }
             Text(
                 "+${display.achievement.pointsReward}",
                 style = MaterialTheme.typography.titleSmall,
-                color = if (display.unlocked) MaterialTheme.colorScheme.primary else Color.Gray
+                color = if (display.unlocked) MaterialTheme.colorScheme.primary else AppTheme.colors.onSurfaceVariant
             )
         }
     }

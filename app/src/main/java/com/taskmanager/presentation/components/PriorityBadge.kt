@@ -13,15 +13,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.Radius
 
 @Composable
 fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
-    val color = when (priority) {
-        Priority.HIGH -> AppTheme.colors.danger
-        Priority.MEDIUM -> AppTheme.colors.warning
-        Priority.LOW -> AppTheme.colors.success
-        Priority.NONE -> AppTheme.colors.outline
-    }
+    val color = priorityColor(priority)
     val label = when (priority) {
         Priority.HIGH -> "Высокий"
         Priority.MEDIUM -> "Средний"
@@ -30,7 +26,7 @@ fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
     }
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(Radius.sm))
             .background(color)
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
