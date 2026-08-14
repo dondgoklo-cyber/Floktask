@@ -93,7 +93,7 @@ fun MoreScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
-            items(items) { item ->
+            items(items, key = { it.route }) { item ->
                 MoreCard(
                     icon = item.icon,
                     title = stringResource(item.titleRes),

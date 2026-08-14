@@ -170,7 +170,7 @@ private fun DayView(state: CalendarUiState, viewModel: CalendarViewModel) {
         // Временная шкала с time blocks
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(state = scrollState) {
-                items((HOURS_START until HOURS_END).toList()) { hour ->
+                items((HOURS_START until HOURS_END).toList(), key = { it }) { hour ->
                     HourRow(hour = hour, tasks = timedTasks, state = state, viewModel = viewModel)
                 }
             }
@@ -360,7 +360,7 @@ private fun WeekView(state: CalendarUiState, viewModel: CalendarViewModel, days:
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.sm)
     ) {
-        items(weekDays) { date ->
+        items(weekDays, key = { it }) { date ->
             val dayTasks = state.timedTasks[date] ?: emptyList()
             DaySection(
                 date = date,
@@ -469,7 +469,7 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 }
             }
         }
-        items(rows) { week ->
+        items(rows, key = { week.hashCode() }) { week ->
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -549,7 +549,7 @@ private fun AgendaView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 }
             }
         } else {
-            items(sortedDays) { date ->
+            items(sortedDays, key = { it }) { date ->
                 val tasks = state.timedTasks[date] ?: emptyList()
                 DaySection(
                     date = date,
