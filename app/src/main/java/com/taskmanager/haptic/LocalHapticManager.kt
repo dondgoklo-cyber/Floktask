@@ -23,6 +23,9 @@ fun rememberHaptic(): (HapticType) -> Unit {
     return remember(context) {
         val prefs = UserPrefs(context)
         val manager = HapticManager(context)
-        { type -> if (prefs.hapticEnabled) manager.perform(type) }
+        val lambda: (HapticType) -> Unit = { type ->
+            if (prefs.hapticEnabled) manager.perform(type)
+        }
+        lambda
     }
 }
