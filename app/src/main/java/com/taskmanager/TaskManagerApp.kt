@@ -1,13 +1,40 @@
 package com.taskmanager
 
 import android.app.Application
+import android.os.Build
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
+import java.io.File
+import java.io.PrintWriter
+import java.io.StringWriter
 
 @HiltAndroidApp
 class TaskManagerApp : Application() {
+
     override fun onCreate() {
         super.onCreate()
+        // Глобальный перехватчик крашей — записывает стек в файл
+        val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                val sw = StringWriter()
+                throwable.printStackTrace(PrintWriter(sw))
+                val crashLog = """
+                    === КРАШ TaskManager ===
+                    Время: ${System.currentTimeMillis()}
+                    Поток: ${thread.name}
+                    Android API: ${Build.VERSION.SDK_INT}
+                    Устройство: ${Build.MANUFACTURER} ${Build.MODEL}
+
+                    Стек:
+                    $sw
+                """.trimIndent()
+                val file = File(getExternalFilesDir(null), "crash_log.txt")
+                file.writeText(crashLog)
+            } catch (_: Throwable) {}
+            oldHandler?.uncaughtException(thread, throwable)
+        }
+
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
