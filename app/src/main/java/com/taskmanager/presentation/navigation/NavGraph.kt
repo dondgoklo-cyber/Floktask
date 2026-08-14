@@ -254,6 +254,7 @@ private val Screen.icon: ImageVector
         Screen.Statistics,
         Screen.Settings,
         Screen.Profile,
+        Screen.ProjectDetail,
         Screen.TaskEditNew,
         Screen.TaskEdit -> Icons.Filled.MoreHoriz
     }
