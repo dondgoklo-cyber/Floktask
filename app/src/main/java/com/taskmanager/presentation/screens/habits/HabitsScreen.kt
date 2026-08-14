@@ -52,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
