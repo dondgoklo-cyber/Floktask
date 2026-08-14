@@ -40,28 +40,42 @@
 - LazyColumn keys везде
 - Оранжевый бренд-цвет: #FF7A00 (light) / #FF8C00 (dark)
 
-### Сессия 7 (текущая — частично)
+### Сессия 7
 - **ProjectDetail экран** (ГОТОВО): List/Kanban переключатель, FAB Add Task, empty state
   - `projectdetail/ProjectDetailViewModel.kt` — загрузка проекта + задач, moveTask
   - `projectdetail/ProjectDetailScreen.kt` — TopAppBar, FilterChip List/Kanban, TaskCard
   - Навигация: `project/{projectId}` route, ProjectsScreen onProjectClick
   - ViewMode сохраняется через rememberSaveable
 
+### Сессия 8 (текущая)
+- **Tags с цветами** (ГОТОВО — Приоритет 1):
+  - `TagDao`: +update, +ORDER BY name
+  - `TagRepository/Impl`: +updateTag
+  - UseCases: `CreateTag`, `UpdateTag`, `DeleteTag`, `GetAllTags` (domain/usecase/tag/)
+  - `TagColorPalette.kt`: 14 цветов, `parseTagColor` (#RRGGBB/#AARRGGBB), `DEFAULT_TAG_COLOR`
+  - `TagsScreen.kt` + `TagsViewModel.kt`: список, создание, переименование, удаление, color picker
+  - `TaskCard.kt`: `TagMiniChip` отображает цвет тега (`tagColors: Map<String,String>`)
+  - `TaskEditScreen/ViewModel`: выбор существующих тегов (с цветом) + создание новых; авто-создание Tag-сущности
+  - `ProjectDetail`: tagColors проводятся в List и Kanban TaskCard
+  - Навигация: `tags` route, MoreScreen entry (Рабочее пространство)
+  - Strings: new_tag, edit_tag, delete_tag_title/message, tag_name, select_color, no_tags
+  - CI: Build & Test — success (6c79ac2)
+
 ---
 
 ## 2. ЧТО НУЖНО СДЕЛАТЬ (по приоритетам)
 
-### ПРИОРИТЕТ 1 — Tags: управление цветами
-- TagEntity УЖЕ имеет поле `color: String?` — но оно не используется в UI
-- TagRepository НЕ имеет `updateTag` — нужно добавить
-- TaskEditScreen: теги добавляются как текст (addTag/removeTag), нет выбора из существующих
-- Нужно:
-  - [ ] Добавить `updateTag` в TagRepository + TagRepositoryImpl
-  - [ ] Создать экран управления тегами (список, создать, переименовать, удалить, выбрать цвет)
-  - [ ] Color picker (палитра из ~14 цветов)
-  - [ ] В TaskEdit: выбор тегов из существующих (с цветом) + создание новых
-  - [ ] Цвет тега отображается в TaskCard (TagMiniChip)
-  - [ ] Цвет сохраняется в БД, переживает перезапуск
+### ПРИОРИТЕТ 1 — Tags: управление цветами ✅ ГОТОВО (сессия 8)
+- TagEntity имеет поле `color: String?` — теперь используется в UI
+- TagRepository имеет `updateTag` — добавлено
+- TaskEditScreen: теги выбираются из существующих (с цветом) + создание новых
+- Сделано:
+  - [x] Добавить `updateTag` в TagRepository + TagRepositoryImpl
+  - [x] Создать экран управления тегами (список, создать, переименовать, удалить, выбрать цвет)
+  - [x] Color picker (палитра из 14 цветов)
+  - [x] В TaskEdit: выбор тегов из существующих (с цветом) + создание новых
+  - [x] Цвет тега отображается в TaskCard (TagMiniChip)
+  - [x] Цвет сохраняется в БД, переживает перезапуск
 
 ### ПРИОРИТЕТ 2 — Add Task из Project (с авто-выбором проекта)
 - Сейчас ProjectDetail FAB → `task/new` (без project context)
@@ -140,4 +154,4 @@
 *Создано для следующей сессии AI-ассистента.*
 *Проект: dondgoklo-cyber/Floktask*
 *Ветвь: vibe/taskmanager-scaffold-8c6512*
-*Последний коммит: 89eb265 (ProjectDetail экран)*
+*Последний коммит: 6c79ac2 (Tags с цветами)*
