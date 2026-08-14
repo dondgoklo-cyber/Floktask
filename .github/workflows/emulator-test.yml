@@ -9,7 +9,7 @@ on:
 
 jobs:
   emulator-test:
-    name: Boot Test (no crash on launch)
+    name: Boot Test
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -48,14 +48,13 @@ jobs:
             adb shell am start -n com.taskmanager.debug/com.taskmanager.presentation.MainActivity
             sleep 10
             adb logcat -d > /tmp/full-logcat.txt
-            echo "=== Проверка крашей ==="
-            if adb logcat -d | grep -qE "FATAL EXCEPTION"; then
-              echo "КРАШ ОБНАРУЖЕН"
-              adb logcat -d | grep -A 30 "FATAL EXCEPTION"
-              exit 1
-            fi
-            echo "КРАШЕЙ НЕТ"
-            adb shell ps | grep taskmanager && echo "ПРОЦЕСС ЖИВ" || echo "ПРОЦЕСС НЕ НАЙДЕН"
+            echo "=== Проверка FATAL ==="
+            adb logcat -d | grep "FATAL EXCEPTION" > /tmp/crash.txt
+            echo "Crash lines: $(wc -l < /tmp/crash.txt)"
+            cat /tmp/crash.txt
+            adb logcat -d | grep "FATAL EXCEPTION" && exit 1
+            echo "NO_CRASH_DETECTED"
+            adb shell ps | grep taskmanager
 
       - name: Upload logcat
         if: always()
