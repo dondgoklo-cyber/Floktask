@@ -9,11 +9,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.presentation.theme.Spacing
 
 @Composable
 fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
@@ -27,13 +28,14 @@ fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(Radius.sm))
-            .background(color)
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+            .background(color.copy(alpha = 0.12f))
+            .padding(horizontal = Spacing.sm, vertical = 3.dp)
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = Color.White
+            fontWeight = FontWeight.Medium,
+            color = color
         )
     }
 }
