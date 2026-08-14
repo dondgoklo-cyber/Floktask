@@ -65,7 +65,7 @@ fun ProfileScreen(
                                 Text("Level ${stats.level}", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                                 Text("${stats.totalPoints} points", style = MaterialTheme.typography.titleMedium)
                                 Spacer8()
-                                LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+                                LinearProgressIndicator(progress = progress, modifier = Modifier.fillMaxWidth())
                                 Spacer8()
                                 Text("$into / $span to level ${stats.level + 1}", style = MaterialTheme.typography.bodySmall)
                             }
