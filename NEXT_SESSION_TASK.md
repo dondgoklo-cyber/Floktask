@@ -73,6 +73,22 @@
 **Новые файлы:** inbox/, upcoming/, search/, onboarding/
 **CI статус:** `Android CI: Build & Test — success` (коммит 5b4289a)
 
+### Сессия 5 (улучшения из ТЗ «Focus»)
+- **Локальные напоминания (ТЗ §4.6):** AlarmManager + уведомления с действиями
+  Выполнить/Отложить (5/15/30/60 мин), BootReceiver для перерегистрации после
+  перезагрузки, карточка напоминания в TaskEdit (DatePicker). Исправлено
+  искажённое имя разрешения POST_NOTIFICATIONS в манифесте.
+- **Kanban-доска (ТЗ §4.5):** новый вид отображения задач по статусам
+  (К выполнению / В процессе / Выполнено) с горизонтальной прокруткой колонок
+  и drag&drop между ними. Вход из More.
+- **Подзадачи 5 уровней (ТЗ §4.1):** parentSubtaskId в Subtask + SubtaskEntity,
+  БД v6, getSubtaskTree строит дерево, рекурсивный SubtaskSection с отступами
+  по уровню и кнопкой + для вложенных подзадач.
+
+**Новые файлы:** notification/ (AlarmScheduler, AlarmReceiver, BootReceiver),
+kanban/ (KanbanScreen, KanbanViewModel)
+**CI статус:** `Android CI: Build & Test — success` (коммит cc53b01)
+
 ---
 
 ## 2. ТЕКУЩЕЕ СОСТОЯНИЕ ПРОЕКТА
