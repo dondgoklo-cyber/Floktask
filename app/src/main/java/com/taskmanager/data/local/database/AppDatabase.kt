@@ -45,7 +45,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         NoteEntity::class,
         NoteFolderEntity::class
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -35,6 +35,7 @@ interface TransactionDao {
     @Query("DELETE FROM transactions WHERE id = :id")
     suspend fun deleteById(id: Long)
 
+    // TRANSFER excluded from income/expense calculations
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'INCOME' AND date BETWEEN :from AND :to")
     fun getIncomeForPeriod(from: Long, to: Long): Flow<Double>
 
@@ -46,4 +47,19 @@ interface TransactionDao {
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'EXPENSE'")
     fun getTotalExpense(): Flow<Double>
+
+    // Per-currency queries for multi-currency dashboard
+    @Query("SELECT currency, COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'INCOME' GROUP BY currency")
+    fun getTotalIncomeByCurrency(): Flow<List<CurrencyTotal>>
+
+    @Query("SELECT currency, COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'EXPENSE' GROUP BY currency")
+    fun getTotalExpenseByCurrency(): Flow<List<CurrencyTotal>>
+
+    @Query("SELECT DISTINCT currency FROM transactions")
+    fun getUsedCurrencies(): Flow<List<String>>
 }
+
+data class CurrencyTotal(
+    val currency: String,
+    val total: Double
+)

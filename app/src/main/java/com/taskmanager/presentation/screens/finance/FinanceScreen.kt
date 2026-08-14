@@ -176,8 +176,8 @@ fun FinanceScreen(
             categories = state.categories,
             accounts = state.accounts,
             onDismiss = { showAddSheet = false },
-            onCreate = { amount, type, categoryId, accountId, date, note ->
-                viewModel.createTransaction(amount, type, categoryId, accountId, date, note)
+            onCreate = { amount, type, currency, categoryId, accountId, date, note ->
+                viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note)
                 showAddSheet = false
             }
         )
@@ -347,7 +347,17 @@ private fun TransactionRow(
     onLongClick: () -> Unit
 ) {
     val isIncome = transaction.type == TransactionType.INCOME
-    val amountColor = if (isIncome) AppTheme.colors.success else AppTheme.colors.danger
+    val isTransfer = transaction.type == TransactionType.TRANSFER
+    val amountColor = when {
+        isTransfer -> AppTheme.colors.info
+        isIncome -> AppTheme.colors.success
+        else -> AppTheme.colors.danger
+    }
+    val displayAmount = when {
+        isTransfer -> -transaction.amount
+        isIncome -> transaction.amount
+        else -> -transaction.amount
+    }
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
@@ -388,7 +398,7 @@ private fun TransactionRow(
                 }
             }
             Text(
-                formatSignedMoney(if (isIncome) transaction.amount else -transaction.amount, currency),
+                formatSignedMoney(displayAmount, transaction.currency),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = amountColor

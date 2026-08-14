@@ -18,6 +18,10 @@ class UserPrefs(private val context: Context) {
         get() = prefs.getBoolean(KEY_HAPTIC_ENABLED, true)
         set(value) = prefs.edit().putBoolean(KEY_HAPTIC_ENABLED, value).apply()
 
+    var baseCurrency: String
+        get() = prefs.getString(KEY_BASE_CURRENCY, "RUB") ?: "RUB"
+        set(value) = prefs.edit().putString(KEY_BASE_CURRENCY, value).apply()
+
     val hasPin: Boolean
         get() = prefs.contains(KEY_PIN_HASH)
 
@@ -47,5 +51,6 @@ class UserPrefs(private val context: Context) {
         private const val KEY_PIN_HASH = "pin_hash"
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_HAPTIC_ENABLED = "haptic_enabled"
+        private const val KEY_BASE_CURRENCY = "base_currency"
     }
 }

@@ -42,4 +42,10 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override fun getTotalExpense(): Flow<Double> =
         transactionDao.getTotalExpense()
+
+    override fun getTotalIncomeByCurrency(): Flow<List<com.taskmanager.data.local.dao.CurrencyTotal>> =
+        transactionDao.getTotalIncomeByCurrency()
+
+    override fun getTotalExpenseByCurrency(): Flow<List<com.taskmanager.data.local.dao.CurrencyTotal>> =
+        transactionDao.getTotalExpenseByCurrency()
 }

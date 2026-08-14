@@ -72,7 +72,7 @@ fun AddTransactionSheet(
     categories: List<Category>,
     accounts: List<Account>,
     onDismiss: () -> Unit,
-    onCreate: (Double, TransactionType, Long?, Long?, Instant, String?) -> Unit,
+    onCreate: (Double, TransactionType, String, Long?, Long?, Instant, String?) -> Unit,
     initialType: TransactionType = TransactionType.EXPENSE
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -80,6 +80,7 @@ fun AddTransactionSheet(
     var amountText by remember { mutableStateOf("") }
     var selectedCategoryId by remember { mutableStateOf<Long?>(null) }
     var selectedAccountId by remember { mutableStateOf<Long?>(accounts.firstOrNull()?.id) }
+    var selectedCurrency by remember { mutableStateOf("RUB") }
     var note by remember { mutableStateOf("") }
     var date by remember { mutableStateOf(LocalDate.now()) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -127,6 +128,17 @@ fun AddTransactionSheet(
                     },
                     modifier = Modifier.weight(1f)
                 )
+            }
+
+            // Currency selector
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                SUPPORTED_CURRENCIES.forEach { curr ->
+                    FilterChip(
+                        selected = selectedCurrency == curr,
+                        onClick = { selectedCurrency = curr },
+                        label = { Text(curr) }
+                    )
+                }
             }
 
             // Amount — главное поле, авто-фокус
@@ -220,7 +232,7 @@ fun AddTransactionSheet(
                     val amount = amountText.toDoubleOrNull() ?: 0.0
                     if (amount > 0) {
                         val instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                        onCreate(amount, type, selectedCategoryId, selectedAccountId, instant, note)
+                        onCreate(amount, type, selectedCurrency, selectedCategoryId, selectedAccountId, instant, note)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

@@ -128,6 +128,7 @@ class FinanceViewModel @Inject constructor(
     fun createTransaction(
         amount: Double,
         type: TransactionType,
+        currency: String,
         categoryId: Long?,
         accountId: Long?,
         date: Instant,
@@ -138,6 +139,7 @@ class FinanceViewModel @Inject constructor(
                 Transaction(
                     amount = amount,
                     type = type,
+                    currency = currency,
                     categoryId = categoryId,
                     accountId = accountId,
                     date = date,

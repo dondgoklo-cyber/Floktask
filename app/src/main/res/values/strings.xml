@@ -111,6 +111,12 @@
     <string name="pinned">Закреплённые</string>
     <string name="recent">Недавние</string>
     <string name="related_notes">Связанные заметки</string>
+    <!-- Multi-currency + Transfer -->
+    <string name="currency">Валюта</string>
+    <string name="base_currency">Основная валюта</string>
+    <string name="transfer">Перевод</string>
+    <string name="to_account">В счёт</string>
+    <string name="destination_amount">Сумма получения</string>
     <!-- Haptic -->
     <string name="haptic_feedback">Тактильный отклик</string>
     <string name="haptic_feedback_desc">Использовать тактильный отклик при взаимодействии с интерфейсом</string>

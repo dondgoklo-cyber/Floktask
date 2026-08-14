@@ -16,4 +16,7 @@ interface TransactionRepository {
     fun getExpenseForPeriod(fromEpoch: Long, toEpoch: Long): Flow<Double>
     fun getTotalIncome(): Flow<Double>
     fun getTotalExpense(): Flow<Double>
+
+    fun getTotalIncomeByCurrency(): Flow<List<com.taskmanager.data.local.dao.CurrencyTotal>>
+    fun getTotalExpenseByCurrency(): Flow<List<com.taskmanager.data.local.dao.CurrencyTotal>>
 }

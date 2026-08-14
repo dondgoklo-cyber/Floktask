@@ -17,4 +17,9 @@ object AppModule {
     @Singleton
     fun provideHapticManager(@ApplicationContext context: Context): HapticManager =
         HapticManager(context)
+
+    @Provides
+    @Singleton
+    fun provideExchangeRateProvider(): com.taskmanager.domain.finance.ExchangeRateProvider =
+        com.taskmanager.data.repository.LocalExchangeRateProvider()
 }
