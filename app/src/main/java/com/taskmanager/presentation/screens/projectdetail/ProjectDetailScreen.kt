@@ -44,7 +44,10 @@ import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.components.EmptyState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import com.taskmanager.presentation.components.TaskCard
+import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
