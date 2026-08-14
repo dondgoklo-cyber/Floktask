@@ -568,10 +568,10 @@ private fun NotesPreviewCard(state: TodayUiState, onAllNotes: () -> Unit) {
                     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(Spacing.sm),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    androidx.compose.foundation.layout.Box(
-                        modifier = Modifier
-                            .then(androidx.compose.foundation.layout.size(8.dp))
-                            .then(androidx.compose.foundation.background(AppTheme.colors.info, androidx.compose.foundation.shape.CircleShape))
+                    Text(
+                        "●",
+                        color = AppTheme.colors.info,
+                        style = MaterialTheme.typography.labelSmall
                     )
                     androidx.compose.material3.Text(
                         note.title.ifBlank { "Без названия" },
