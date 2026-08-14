@@ -99,7 +99,9 @@ fun InboxScreen(
                     icon = Icons.Filled.Inbox,
                     title = stringResource(R.string.inbox_empty_title),
                     subtitle = stringResource(R.string.inbox_empty_subtitle),
-                    modifier = Modifier.padding(padding)
+                    modifier = Modifier.padding(padding),
+                    actionText = stringResource(R.string.add_task),
+                    onAction = { showQuickAdd = true }
                 )
             }
             else -> {
