@@ -469,7 +469,7 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 }
             }
         }
-        items(rows, key = { week.hashCode() }) { week ->
+        items(rows, key = { it.hashCode() }) { week ->
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
