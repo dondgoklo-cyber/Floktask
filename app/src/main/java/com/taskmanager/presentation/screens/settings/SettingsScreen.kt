@@ -63,7 +63,6 @@ fun SettingsScreen(
     var nameInput by remember { mutableStateOf(userPrefs.userName) }
     var showPinScreen by remember { mutableStateOf<PinMode?>(null) }
     var showRemovePinDialog by remember { mutableStateOf(false) }
-    var nameInput by remember { mutableStateOf(state.userName) }
 
     if (showPinScreen != null) {
         PinScreen(
