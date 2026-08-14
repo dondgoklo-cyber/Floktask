@@ -98,7 +98,7 @@ fun NavGraph() {
                         navController.navigate(Screen.TaskEdit.buildRoute(taskId))
                     },
                     onAddTaskClick = { navController.navigate(Screen.TaskEditNew.route) },
-                    onStartFocus = { navController.navigate(Screen.Focus.route) }
+                    onStartFocus = { _ -> navController.navigate(Screen.Focus.route) }
                 )
             }
             composable(Screen.Projects.route) { ProjectsScreen() }

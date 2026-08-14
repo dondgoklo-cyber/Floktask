@@ -63,7 +63,7 @@ fun TodayScreen(
     viewModel: TodayViewModel = hiltViewModel(),
     onTaskClick: (Long) -> Unit,
     onAddTaskClick: () -> Unit,
-    onStartFocus: () -> Unit = {}
+    onStartFocus: (Long) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
