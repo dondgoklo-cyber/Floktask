@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.taskmanager.R
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.components.PrimaryButton
 import com.taskmanager.presentation.theme.Spacing
 import kotlinx.coroutines.launch
 
@@ -106,7 +107,10 @@ fun OnboardingScreen(
             TextButton(onClick = onFinish) {
                 Text(stringResource(R.string.onboarding_skip))
             }
-            Button(
+            PrimaryButton(
+                text = if (pagerState.currentPage == pages.size - 1)
+                        stringResource(R.string.onboarding_get_started)
+                    else stringResource(R.string.done),
                 onClick = {
                     if (pagerState.currentPage < pages.size - 1) {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
@@ -114,13 +118,7 @@ fun OnboardingScreen(
                         onFinish()
                     }
                 }
-            ) {
-                Text(
-                    if (pagerState.currentPage == pages.size - 1)
-                        stringResource(R.string.onboarding_get_started)
-                    else stringResource(R.string.done)
-                )
-            }
+            )
         }
     }
 }

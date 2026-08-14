@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.components.AppTextButton
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
 import com.taskmanager.security.PinMode
@@ -148,13 +149,14 @@ fun SettingsScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
-                    TextButton(
+                    AppTextButton(
+                        text = stringResource(R.string.save),
                         onClick = {
                             userPrefs.userName = nameInput.trim()
                             userName = nameInput.trim()
                         },
                         enabled = nameInput.trim().isNotEmpty() && nameInput.trim() != userName
-                    ) { Text(stringResource(R.string.save)) }
+                    )
                 }
             )
 

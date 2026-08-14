@@ -53,6 +53,7 @@ import com.taskmanager.R
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.components.TaskListSkeleton
+import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,9 +74,11 @@ fun HabitsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = viewModel::openCreateDialog) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.new_habit))
-            }
+            com.taskmanager.presentation.components.AppFloatingActionButton(
+                icon = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.new_habit),
+                onClick = viewModel::openCreateDialog
+            )
         }
     ) { padding ->
         if (state.isLoading) {

@@ -94,9 +94,11 @@ fun TodayScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { showQuickAdd = true }) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_task))
-            }
+            com.taskmanager.presentation.components.AppFloatingActionButton(
+                icon = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.add_task),
+                onClick = { showQuickAdd = true }
+            )
         }
     ) { padding ->
         if (state.isLoading) {

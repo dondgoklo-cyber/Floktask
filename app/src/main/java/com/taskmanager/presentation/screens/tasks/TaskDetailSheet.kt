@@ -58,6 +58,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Subtask
 import com.taskmanager.domain.model.Task
+import com.taskmanager.presentation.components.PrimaryButton
+import com.taskmanager.presentation.components.SecondaryButton
 import com.taskmanager.presentation.components.PriorityBadge
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
@@ -279,19 +281,17 @@ private fun TaskDetailContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.md)
             ) {
-                Button(
+                PrimaryButton(
+                    text = stringResource(R.string.start_pomodoro),
                     onClick = onStartFocus,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Icon(Icons.Filled.Bolt, contentDescription = null)
-                    Text(stringResource(R.string.start_pomodoro))
-                }
-                Button(
+                    modifier = Modifier.weight(1f),
+                    leadingIcon = Icons.Filled.Bolt
+                )
+                SecondaryButton(
+                    text = stringResource(R.string.edit_task),
                     onClick = onEdit,
                     modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.edit_task))
-                }
+                )
             }
         }
     }

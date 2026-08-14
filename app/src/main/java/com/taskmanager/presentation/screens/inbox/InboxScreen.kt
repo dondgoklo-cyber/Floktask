@@ -33,6 +33,7 @@ import com.taskmanager.R
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.TaskCard
 import com.taskmanager.presentation.components.TaskListSkeleton
+import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.screens.tasks.QuickAddSheet
 import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 import com.taskmanager.presentation.theme.AppTheme
@@ -80,9 +81,11 @@ fun InboxScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showQuickAdd = true }) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_task))
-            }
+            com.taskmanager.presentation.components.AppFloatingActionButton(
+                icon = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.add_task),
+                onClick = { showQuickAdd = true }
+            )
         }
     ) { padding ->
         when {
