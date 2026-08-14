@@ -35,7 +35,7 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val task = taskRepository.getTaskById(taskId)
             val projectName = task?.projectId?.let { projectRepository.getProjectById(it)?.title }
-            val subtasks = task?.let { subtaskRepository.getByTask(it.id ?: 0) } ?: emptyList()
+            val subtasks = task?.let { subtaskRepository.getSubtaskTree(it.id ?: 0) } ?: emptyList()
             _state.value = TaskDetailState(
                 task = task,
                 projectName = projectName,
@@ -60,15 +60,29 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
-    fun addSubtask(taskId: Long, title: String) {
+    fun addSubtask(taskId: Long, title: String, parentSubtaskId: Long? = null) {
         if (title.isBlank()) return
         viewModelScope.launch {
-            val orderIndex = (_state.value.subtasks.maxOfOrNull { it.orderIndex } ?: -1) + 1
+            val siblings = if (parentSubtaskId != null) {
+                findAllById(_state.value.subtasks, parentSubtaskId)?.children ?: emptyList()
+            } else {
+                _state.value.subtasks
+            }
+            val orderIndex = (siblings.maxOfOrNull { it.orderIndex } ?: -1) + 1
             subtaskRepository.createSubtask(
-                Subtask(taskId = taskId, title = title.trim(), orderIndex = orderIndex)
+                Subtask(taskId = taskId, title = title.trim(), orderIndex = orderIndex, parentSubtaskId = parentSubtaskId)
             )
             loadSubtasks(taskId)
         }
+    }
+
+    private fun findAllById(tree: List<Subtask>, id: Long): Subtask? {
+        for (s in tree) {
+            if (s.id == id) return s
+            val found = findAllById(s.children, id)
+            if (found != null) return found
+        }
+        return null
     }
 
     fun deleteSubtask(subtask: Subtask) {
@@ -95,7 +109,7 @@ class TaskDetailViewModel @Inject constructor(
 
     private fun loadSubtasks(taskId: Long) {
         viewModelScope.launch {
-            val subtasks = subtaskRepository.getByTask(taskId)
+            val subtasks = subtaskRepository.getSubtaskTree(taskId)
             _state.value = _state.value.copy(subtasks = subtasks)
         }
     }

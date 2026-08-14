@@ -225,5 +225,6 @@ data class TaskFormState(
     val eisenhowerQuadrant: EisenhowerQuadrant? = null,
     val tags: List<String> = emptyList(),
     val recurrenceRule: RecurrenceRule? = null,
+    val reminderDateTime: LocalDateTime? = null,
     val titleError: Boolean = false
 )

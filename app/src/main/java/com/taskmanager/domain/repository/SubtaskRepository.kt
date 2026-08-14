@@ -12,6 +12,9 @@ interface SubtaskRepository {
     fun observeByTask(taskId: Long): Flow<List<Subtask>>
     suspend fun getByTask(taskId: Long): List<Subtask>
 
+    /** Все подзадачи задачи (любой уровень вложенности) в виде дерева (до 5 уровней). */
+    suspend fun getSubtaskTree(taskId: Long): List<Subtask>
+
     /** Переупорядочивает подзадачи задачи: перенести подзадачу [fromIndex] в [toIndex]. */
     suspend fun reorderSubtasks(taskId: Long, fromIndex: Int, toIndex: Int)
 }

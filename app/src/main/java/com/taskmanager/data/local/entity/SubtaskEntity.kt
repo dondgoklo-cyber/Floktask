@@ -13,11 +13,12 @@ import androidx.room.PrimaryKey
         childColumns = ["taskId"],
         onDelete = ForeignKey.CASCADE
     )],
-    indices = [Index("taskId")]
+    indices = [Index("taskId"), Index("parentSubtaskId")]
 )
 data class SubtaskEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val taskId: Long,
+    val parentSubtaskId: Long? = null,
     val title: String,
     val isCompleted: Boolean = false,
     val orderIndex: Int = 0,

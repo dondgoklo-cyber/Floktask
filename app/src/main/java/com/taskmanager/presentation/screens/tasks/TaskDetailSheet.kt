@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -23,13 +22,11 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Tag
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -106,7 +103,7 @@ fun TaskDetailSheet(
                     onToggleComplete = { viewModel.toggleComplete(task) },
                     onEdit = { onEdit(task.id ?: 0) },
                     onStartFocus = { onStartFocus(task.id ?: 0) },
-                    onAddSubtask = { title -> viewModel.addSubtask(task.id ?: 0, title) },
+                    onAddSubtask = { title, parentId -> viewModel.addSubtask(task.id ?: 0, title, parentId) },
                     onToggleSubtask = { viewModel.toggleSubtask(it) },
                     onDeleteSubtask = { viewModel.deleteSubtask(it) },
                     onRenameSubtask = { subtask, title -> viewModel.renameSubtask(subtask, title) },
@@ -127,7 +124,7 @@ private fun TaskDetailContent(
     onToggleComplete: () -> Unit,
     onEdit: () -> Unit,
     onStartFocus: () -> Unit,
-    onAddSubtask: (String) -> Unit,
+    onAddSubtask: (String, Long?) -> Unit,
     onToggleSubtask: (Subtask) -> Unit,
     onDeleteSubtask: (Subtask) -> Unit,
     onRenameSubtask: (Subtask, String) -> Unit,
@@ -268,11 +265,11 @@ private fun TaskDetailContent(
         item {
             SubtaskSection(
                 subtasks = subtasks,
+                depth = 0,
                 onAdd = onAddSubtask,
                 onToggle = onToggleSubtask,
                 onDelete = onDeleteSubtask,
-                onRename = onRenameSubtask,
-                onReorder = onReorderSubtask
+                onRename = onRenameSubtask
             )
         }
 
@@ -374,125 +371,173 @@ private fun SubtaskProgress(subtasks: List<Subtask>) {
 @Composable
 private fun SubtaskSection(
     subtasks: List<Subtask>,
-    onAdd: (String) -> Unit,
+    depth: Int,
+    onAdd: (String, Long?) -> Unit,
     onToggle: (Subtask) -> Unit,
     onDelete: (Subtask) -> Unit,
-    onRename: (Subtask, String) -> Unit,
-    onReorder: (Int, Int) -> Unit
+    onRename: (Subtask, String) -> Unit
 ) {
     var newSubtaskTitle by remember { mutableStateOf("") }
     var editingSubtask by remember { mutableStateOf<Subtask?>(null) }
     var editingTitle by remember { mutableStateOf("") }
-    var draggedFrom by remember { mutableStateOf<Int?>(null) }
 
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-        Text(
-            stringResource(R.string.subtasks),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold
-        )
-        subtasks.forEachIndexed { index, subtask ->
+        if (depth == 0) {
+            Text(
+                stringResource(R.string.subtasks),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+        subtasks.forEach { subtask ->
             if (editingSubtask?.id == subtask.id) {
-                OutlinedTextField(
-                    value = editingTitle,
-                    onValueChange = { editingTitle = it },
-                    singleLine = true,
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                onRename(subtask, editingTitle)
-                                editingSubtask = null
-                            },
-                            enabled = editingTitle.isNotBlank()
-                        ) { Icon(Icons.Filled.Check, contentDescription = null) }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .pointerInput(subtask.id) {
-                            detectDragGesturesAfterLongPress(
-                                onDragStart = { draggedFrom = index },
-                                onDragEnd = { draggedFrom = null },
-                                onDrag = { change, _ -> change.consume() }
-                            )
-                        },
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+                    modifier = Modifier.padding(start = (depth * 16).dp)
                 ) {
-                    Icon(
-                        Icons.Filled.DragHandle,
-                        contentDescription = stringResource(R.string.drag_to_reorder),
-                        tint = AppTheme.colors.outline,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    IconButton(onClick = { onToggle(subtask) }) {
-                        Icon(
-                            imageVector = if (subtask.isCompleted) Icons.Filled.CheckCircle
-                            else Icons.Filled.RadioButtonUnchecked,
-                            contentDescription = null,
-                            tint = if (subtask.isCompleted) AppTheme.colors.success
-                            else AppTheme.colors.outline
-                        )
-                    }
-                    Text(
-                        subtask.title,
-                        style = MaterialTheme.typography.bodyMedium,
+                    OutlinedTextField(
+                        value = editingTitle,
+                        onValueChange = { editingTitle = it },
+                        singleLine = true,
                         modifier = Modifier.weight(1f),
-                        color = if (subtask.isCompleted) AppTheme.colors.onSurfaceVariant
-                        else AppTheme.colors.onSurface
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    onRename(subtask, editingTitle)
+                                    editingSubtask = null
+                                },
+                                enabled = editingTitle.isNotBlank()
+                            ) { Icon(Icons.Filled.Check, contentDescription = null) }
+                        }
                     )
-                    IconButton(onClick = {
+                    IconButton(onClick = { editingSubtask = null }) {
+                        Icon(Icons.Filled.Close, contentDescription = null, tint = AppTheme.colors.outline)
+                    }
+                }
+            } else {
+                SubtaskRow(
+                    subtask = subtask,
+                    depth = depth,
+                    onToggle = { onToggle(subtask) },
+                    onEdit = {
                         editingSubtask = subtask
                         editingTitle = subtask.title
-                    }) {
-                        Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.edit_subtask), tint = AppTheme.colors.outline)
-                    }
-                    IconButton(onClick = { onDelete(subtask) }) {
-                        Icon(Icons.Filled.Delete, contentDescription = null, tint = AppTheme.colors.outline)
-                    }
+                    },
+                    onDelete = { onDelete(subtask) },
+                    onAddChild = { title -> onAdd(title, subtask.id) }
+                )
+            }
+            // Рекурсивный рендеринг дочерних подзадач (до 5 уровней)
+            if (subtask.children.isNotEmpty() && depth < 4) {
+                Column(modifier = Modifier.padding(start = (depth + 1) * 16.dp)) {
+                    SubtaskSection(
+                        subtasks = subtask.children,
+                        depth = depth + 1,
+                        onAdd = onAdd,
+                        onToggle = onToggle,
+                        onDelete = onDelete,
+                        onRename = onRename
+                    )
                 }
             }
         }
-        // Drop zones between items
-        if (subtasks.isNotEmpty()) {
-            subtasks.indices.forEach { i ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .pointerInput(i) {
-                            detectDragGesturesAfterLongPress(
-                                onDrag = { change, _ -> change.consume() },
-                                onDragEnd = {
-                                    draggedFrom?.let { from ->
-                                        if (from != i) onReorder(from, i)
-                                    }
-                                    draggedFrom = null
-                                }
-                            )
-                        }
-                )
-            }
-        }
+        // Поле добавления подзадачи на текущем уровне
         OutlinedTextField(
             value = newSubtaskTitle,
             onValueChange = { newSubtaskTitle = it },
-            placeholder = { Text("Добавить подзадачу...") },
+            placeholder = {
+                Text(
+                    if (depth == 0) "Добавить подзадачу..." else "Добавить вложенную...",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            },
             singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = (depth * 16).dp),
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        onAdd(newSubtaskTitle)
+                        val parentId = if (depth == 0) null else null
+                        onAdd(newSubtaskTitle, parentId)
                         newSubtaskTitle = ""
                     },
                     enabled = newSubtaskTitle.isNotBlank()
                 ) { Icon(Icons.Filled.Add, contentDescription = null) }
-            },
-            modifier = Modifier.fillMaxWidth()
+            }
         )
+    }
+}
+
+@Composable
+private fun SubtaskRow(
+    subtask: Subtask,
+    depth: Int,
+    onToggle: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onAddChild: (String) -> Unit
+) {
+    var showAddChild by remember { mutableStateOf(false) }
+    var childTitle by remember { mutableStateOf("") }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(start = (depth * 16).dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+        ) {
+            IconButton(onClick = onToggle) {
+                Icon(
+                    imageVector = if (subtask.isCompleted) Icons.Filled.CheckCircle
+                    else Icons.Filled.RadioButtonUnchecked,
+                    contentDescription = null,
+                    tint = if (subtask.isCompleted) AppTheme.colors.success
+                    else AppTheme.colors.outline
+                )
+            }
+            Text(
+                subtask.title,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+                color = if (subtask.isCompleted) AppTheme.colors.onSurfaceVariant
+                else AppTheme.colors.onSurface
+            )
+            // Кнопка добавления дочерней подзадачи (до 4 уровня вложенности)
+            if (depth < 4) {
+                IconButton(onClick = { showAddChild = !showAddChild }) {
+                    Icon(Icons.Filled.Add, contentDescription = null, tint = AppTheme.colors.outline)
+                }
+            }
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.edit_subtask), tint = AppTheme.colors.outline)
+            }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Filled.Delete, contentDescription = null, tint = AppTheme.colors.outline)
+            }
+        }
+        if (showAddChild && depth < 4) {
+            OutlinedTextField(
+                value = childTitle,
+                onValueChange = { childTitle = it },
+                placeholder = { Text("Вложенная подзадача...", style = MaterialTheme.typography.bodySmall) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(start = Spacing.lg),
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            if (childTitle.isNotBlank()) {
+                                onAddChild(childTitle)
+                                childTitle = ""
+                                showAddChild = false
+                            }
+                        },
+                        enabled = childTitle.isNotBlank()
+                    ) { Icon(Icons.Filled.Check, contentDescription = null) }
+                }
+            )
+        }
     }
 }
 

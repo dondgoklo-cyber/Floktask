@@ -32,6 +32,22 @@ class SubtaskRepositoryImpl @Inject constructor(
     override suspend fun getByTask(taskId: Long): List<Subtask> =
         subtaskDao.getListByTask(taskId).map { it.toDomain() }
 
+    override suspend fun getSubtaskTree(taskId: Long): List<Subtask> {
+        val all = subtaskDao.getListByTask(taskId).map { it.toDomain() }
+        return buildTree(all, maxDepth = 5)
+    }
+
+    private fun buildTree(all: List<Subtask>, maxDepth: Int): List<Subtask> {
+        val byParent = all.groupBy { it.parentSubtaskId }
+        fun childrenOf(parentId: Long?, depth: Int): List<Subtask> {
+            if (depth > maxDepth) return emptyList()
+            return (byParent[parentId] ?: emptyList()).map { subtask ->
+                subtask.copy(children = childrenOf(subtask.id, depth + 1))
+            }
+        }
+        return childrenOf(null, 1)
+    }
+
     override suspend fun reorderSubtasks(taskId: Long, fromIndex: Int, toIndex: Int) {
         val list = subtaskDao.getListByTask(taskId).toMutableList()
         if (fromIndex !in list.indices || toIndex !in list.indices) return

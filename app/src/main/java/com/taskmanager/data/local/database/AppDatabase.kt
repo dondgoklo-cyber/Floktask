@@ -30,7 +30,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         HabitLogEntity::class,
         PomodoroSessionEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
