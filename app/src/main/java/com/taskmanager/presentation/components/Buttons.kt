@@ -1,5 +1,9 @@
 package com.taskmanager.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,8 +18,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.taskmanager.presentation.theme.AppTheme
@@ -35,10 +42,18 @@ fun PrimaryButton(
     enabled: Boolean = true,
     leadingIcon: ImageVector? = null
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        animationSpec = tween(durationMillis = 150),
+        label = "primaryButtonScale"
+    )
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier,
+        modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
+        interactionSource = interactionSource,
         shape = RoundedCornerShape(Radius.md),
         colors = ButtonDefaults.buttonColors(
             containerColor = AppTheme.colors.primary,
@@ -169,9 +184,17 @@ fun AppFloatingActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.92f else 1f,
+        animationSpec = tween(durationMillis = 150),
+        label = "fabScale"
+    )
     FloatingActionButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
+        interactionSource = interactionSource,
         shape = RoundedCornerShape(Radius.lg),
         containerColor = AppTheme.colors.primary,
         contentColor = AppTheme.colors.onPrimary,
