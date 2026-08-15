@@ -1,6 +1,7 @@
 package com.taskmanager.di
 
 import com.taskmanager.data.repository.AccountRepositoryImpl
+import com.taskmanager.data.repository.BudgetRepositoryImpl
 import com.taskmanager.data.repository.NoteFolderRepositoryImpl
 import com.taskmanager.data.repository.NoteRepositoryImpl
 import com.taskmanager.data.repository.CategoryRepositoryImpl
@@ -15,6 +16,7 @@ import com.taskmanager.data.repository.TransactionRepositoryImpl
 import com.taskmanager.data.repository.UserStatsRepositoryImpl
 import com.taskmanager.domain.repository.HabitLogRepository
 import com.taskmanager.domain.repository.AccountRepository
+import com.taskmanager.domain.repository.BudgetRepository
 import com.taskmanager.domain.repository.NoteFolderRepository
 import com.taskmanager.domain.repository.NoteRepository
 import com.taskmanager.domain.repository.CategoryRepository
@@ -87,4 +89,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindNoteFolderRepository(impl: NoteFolderRepositoryImpl): NoteFolderRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBudgetRepository(impl: BudgetRepositoryImpl): BudgetRepository
 }

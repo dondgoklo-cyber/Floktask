@@ -3,6 +3,7 @@ package com.taskmanager.di
 import android.content.Context
 import androidx.room.Room
 import com.taskmanager.data.local.dao.AccountDao
+import com.taskmanager.data.local.dao.BudgetDao
 import com.taskmanager.data.local.dao.CategoryDao
 import com.taskmanager.data.local.dao.HabitDao
 import com.taskmanager.data.local.dao.NoteDao
@@ -70,4 +71,6 @@ object DatabaseModule {
     fun provideNoteDao(db: AppDatabase): NoteDao = db.noteDao()
     @Provides
     fun provideNoteFolderDao(db: AppDatabase): NoteFolderDao = db.noteFolderDao()
+    @Provides
+    fun provideBudgetDao(db: AppDatabase): BudgetDao = db.budgetDao()
 }

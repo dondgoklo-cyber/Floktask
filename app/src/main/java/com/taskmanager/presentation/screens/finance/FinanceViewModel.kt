@@ -3,11 +3,13 @@ package com.taskmanager.presentation.screens.finance
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Account
+import com.taskmanager.domain.model.Budget
 import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.model.CategoryType
 import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
 import com.taskmanager.domain.repository.AccountRepository
+import com.taskmanager.domain.repository.BudgetRepository
 import com.taskmanager.domain.usecase.finance.CreateTransactionUseCase
 import com.taskmanager.domain.usecase.finance.DeleteTransactionUseCase
 import com.taskmanager.domain.usecase.finance.GetAccountsUseCase
@@ -69,6 +71,7 @@ data class FinanceUiState(
     val avgMonthlySpending: Double = 0.0,
     val topIncomeSource: String? = null,
     val savingsRate: Double = 0.0,
+    val budgets: List<Pair<Category, Budget>> = emptyList(),
     val accounts: List<Account> = emptyList(),
     val categories: List<Category> = emptyList(),
     val currency: String = "RUB",
@@ -86,6 +89,7 @@ class FinanceViewModel @Inject constructor(
     private val updateTransactionUseCase: UpdateTransactionUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val accountRepository: AccountRepository,
+    private val budgetRepository: BudgetRepository,
     private val exchangeRateProvider: ExchangeRateProvider,
     private val app: Application
 ) : ViewModel() {
@@ -107,8 +111,9 @@ class FinanceViewModel @Inject constructor(
         _selectedPeriod,
         financeDataFlow,
         getCategoriesUseCase.all(),
-        getAccountsUseCase()
-    ) { period, finance, categories, accounts ->
+        getAccountsUseCase(),
+        budgetRepository.getAllBudgets()
+    ) { period, finance, categories, accounts, budgets ->
         val transactions = finance.transactions
         val totalIncome = finance.totalIncome
         val totalExpense = finance.totalExpense
@@ -160,6 +165,10 @@ class FinanceViewModel @Inject constructor(
             ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
         } else 0.0
 
+        val budgetPairs = budgets.mapNotNull { budget ->
+            categories.find { it.id == budget.categoryId }?.let { cat -> cat to budget }
+        }
+
         val currency = accounts.firstOrNull()?.currency ?: "RUB"
 
         FinanceUiState(
@@ -178,6 +187,7 @@ class FinanceViewModel @Inject constructor(
             avgMonthlySpending = avgMonthlySpending,
             topIncomeSource = topIncomeSource,
             savingsRate = savingsRate,
+            budgets = budgetPairs,
             accounts = accounts,
             categories = categories,
             currency = currency,
@@ -216,6 +226,18 @@ class FinanceViewModel @Inject constructor(
     fun updateTransaction(transaction: Transaction) {
         viewModelScope.launch {
             updateTransactionUseCase(transaction)
+        }
+    }
+
+    fun setBudget(categoryId: Long, amount: Double, currency: String) {
+        viewModelScope.launch {
+            budgetRepository.upsertBudget(Budget(categoryId = categoryId, amount = amount, currency = currency))
+        }
+    }
+
+    fun deleteBudget(id: Long) {
+        viewModelScope.launch {
+            budgetRepository.deleteBudget(id)
         }
     }
 

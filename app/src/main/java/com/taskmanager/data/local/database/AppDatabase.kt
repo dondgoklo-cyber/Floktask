@@ -3,6 +3,7 @@ package com.taskmanager.data.local.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.taskmanager.data.local.dao.AccountDao
+import com.taskmanager.data.local.dao.BudgetDao
 import com.taskmanager.data.local.dao.CategoryDao
 import com.taskmanager.data.local.dao.HabitDao
 import com.taskmanager.data.local.dao.NoteDao
@@ -16,6 +17,7 @@ import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.dao.TransactionDao
 import com.taskmanager.data.local.dao.UserStatsDao
 import com.taskmanager.data.local.entity.AccountEntity
+import com.taskmanager.data.local.entity.BudgetEntity
 import com.taskmanager.data.local.entity.CategoryEntity
 import com.taskmanager.data.local.entity.HabitEntity
 import com.taskmanager.data.local.entity.NoteEntity
@@ -43,9 +45,10 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         CategoryEntity::class,
         AccountEntity::class,
         NoteEntity::class,
-        NoteFolderEntity::class
+        NoteFolderEntity::class,
+        BudgetEntity::class
     ],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -62,6 +65,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun noteDao(): NoteDao
     abstract fun noteFolderDao(): NoteFolderDao
+    abstract fun budgetDao(): BudgetDao
 
     companion object {
         const val DATABASE_NAME = "taskmanager.db"

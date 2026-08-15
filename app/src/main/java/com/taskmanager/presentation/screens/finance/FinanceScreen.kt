@@ -188,6 +188,13 @@ fun FinanceScreen(
                 }
             }
 
+            // Budgets
+            if (state.budgets.isNotEmpty()) {
+                item {
+                    BudgetCard(state)
+                }
+            }
+
             // Analytics
             if (state.periodExpense > 0 || state.periodIncome > 0) {
                 item {
@@ -482,6 +489,46 @@ private fun CategoryBreakdown(
                         color = AppTheme.colors.onSurface
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BudgetCard(state: FinanceUiState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+        ) {
+            Text("Бюджеты", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            state.budgets.forEach { (cat, budget) ->
+                val spent = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: 0.0
+                val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(0.0, 1.0) else 0.0
+                val isOverBudget = spent > budget.amount
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(cat.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Text(
+                        "${formatMoney(spent, budget.currency)} / ${formatMoney(budget.amount, budget.currency)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isOverBudget) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant
+                    )
+                }
+                androidx.compose.material3.LinearProgressIndicator(
+                    progress = { progress.toFloat() },
+                    modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(Radius.full)),
+                    color = if (isOverBudget) AppTheme.colors.danger else AppTheme.colors.primary,
+                    trackColor = AppTheme.colors.surfaceVariant
+                )
             }
         }
     }
