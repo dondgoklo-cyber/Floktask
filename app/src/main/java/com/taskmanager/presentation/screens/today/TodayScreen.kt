@@ -672,7 +672,7 @@ private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     androidx.compose.material3.Icon(
-                        Icons.Filled.RadioButtonUnchecked,
+                        Icons.Filled.CheckCircle,
                         contentDescription = null,
                         tint = AppTheme.colors.outline,
                         modifier = Modifier.size(16.dp)
