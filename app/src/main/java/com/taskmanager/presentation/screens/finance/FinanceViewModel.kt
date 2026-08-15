@@ -169,8 +169,8 @@ class FinanceViewModel @Inject constructor(
             ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
         } else 0.0
 
-        val accounts: List<Account> = budgetData.first
-        val goals: List<Goal> = budgetData.second
+        val accounts: List<Account> = budgetData.component1()
+        val goals: List<Goal> = budgetData.component2()
         val budgetPairs = budgets.mapNotNull { budget ->
             categories.find { it.id == budget.categoryId }?.let { cat -> cat to budget }
         }
