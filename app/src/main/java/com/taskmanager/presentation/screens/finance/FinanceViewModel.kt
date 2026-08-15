@@ -101,44 +101,44 @@ class FinanceViewModel @Inject constructor(
     private val _selectedPeriod = MutableStateFlow(FinancePeriod.MONTH)
     val selectedPeriod: StateFlow<FinancePeriod> = _selectedPeriod.asStateFlow()
 
-    private val financeDataFlow = combine(
-        getAllTransactionsUseCase(),
-        getFinanceSummaryUseCase.totalIncome(),
-        getFinanceSummaryUseCase.totalExpense(),
-        getFinanceSummaryUseCase.totalIncomeByCurrency(),
-        getFinanceSummaryUseCase.totalExpenseByCurrency()
-    ) { transactions, totalIncome, totalExpense, incomeByCur, expenseByCur ->
-        FinanceData(transactions, totalIncome, totalExpense, incomeByCur, expenseByCur)
-    }
-
     private val _goals = MutableStateFlow<List<Goal>>(emptyList())
     private val _budgets = MutableStateFlow<List<Budget>>(emptyList())
+    private val _allTransactions = MutableStateFlow<List<Transaction>>(emptyList())
+    private val _totalIncome = MutableStateFlow(0.0)
+    private val _totalExpense = MutableStateFlow(0.0)
+    private val _incomeByCurrency = MutableStateFlow<List<com.taskmanager.data.local.dao.CurrencyTotal>>(emptyList())
+    private val _expenseByCurrency = MutableStateFlow<List<com.taskmanager.data.local.dao.CurrencyTotal>>(emptyList())
 
     init {
-        viewModelScope.launch {
-            goalRepository.getAllGoals().collect { _goals.value = it }
-        }
-        viewModelScope.launch {
-            budgetRepository.getAllBudgets().collect { _budgets.value = it }
-        }
+        viewModelScope.launch { goalRepository.getAllGoals().collect { _goals.value = it } }
+        viewModelScope.launch { budgetRepository.getAllBudgets().collect { _budgets.value = it } }
+        viewModelScope.launch { getAllTransactionsUseCase().collect { _allTransactions.value = it } }
+        viewModelScope.launch { getFinanceSummaryUseCase.totalIncome().collect { _totalIncome.value = it } }
+        viewModelScope.launch { getFinanceSummaryUseCase.totalExpense().collect { _totalExpense.value = it } }
+        viewModelScope.launch { getFinanceSummaryUseCase.totalIncomeByCurrency().collect { _incomeByCurrency.value = it } }
+        viewModelScope.launch { getFinanceSummaryUseCase.totalExpenseByCurrency().collect { _expenseByCurrency.value = it } }
     }
 
     val state: StateFlow<FinanceUiState> = combine(
         _selectedPeriod,
-        financeDataFlow,
         getCategoriesUseCase.all(),
-        getAccountsUseCase(),
-        getAccountsUseCase(),
         getAccountsUseCase()
-    ) { period: FinancePeriod, finance: FinanceData, categories: List<Category>, accounts: List<Account> ->
-        val transactions = finance.transactions
+    ) { period, categories, accounts ->
+        val transactions = _allTransactions.value
+        val totalIncome = _totalIncome.value
+        val totalExpense = _totalExpense.value
+        val baseCurrency = UserPrefs(app).baseCurrency
+
+        val incomeByCur = _incomeByCurrency.value.associate { it.currency to it.total }
+        val expenseByCur = _expenseByCurrency.value.associate { it.currency to it.total }
+        
         val totalIncome = finance.totalIncome
         val totalExpense = finance.totalExpense
         val baseCurrency = UserPrefs(app).baseCurrency
 
         // Balance by currency
-        val incomeByCur = finance.incomeByCurrency.associate { it.currency to it.total }
-        val expenseByCur = finance.expenseByCurrency.associate { it.currency to it.total }
+        // incomeByCur already defined above { it.currency to it.total }
+        // expenseByCur already defined above { it.currency to it.total }
         val allCurrencies = (incomeByCur.keys + expenseByCur.keys).distinct()
         val balancesByCurrency = allCurrencies.map { cur ->
             val bal = (incomeByCur[cur] ?: 0.0) - (expenseByCur[cur] ?: 0.0)
@@ -328,10 +328,3 @@ class FinanceViewModel @Inject constructor(
     }
 }
 
-private data class FinanceData(
-    val transactions: List<Transaction>,
-    val totalIncome: Double,
-    val totalExpense: Double,
-    val incomeByCurrency: List<CurrencyTotal>,
-    val expenseByCurrency: List<CurrencyTotal>
-)
