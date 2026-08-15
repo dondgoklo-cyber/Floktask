@@ -24,6 +24,10 @@ import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.IosShare
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -35,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +47,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import com.taskmanager.data.repository.NoteExportManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -82,6 +89,31 @@ fun NoteEditScreen(
                     }
                 },
                 actions = {
+                    val context = LocalContext.current
+                    val exportManager = remember { NoteExportManager() }
+                    val mdLauncher = rememberLauncherForActivityResult(
+                        ActivityResultContracts.CreateDocument("text/markdown")
+                    ) { uri ->
+                        uri?.let {
+                            context.contentResolver.openOutputStream(it)?.use { stream ->
+                                val writer = stream.bufferedWriter()
+                                exportManager.exportToMarkdown(
+                                    com.taskmanager.domain.model.Note(
+                                        title = state.title,
+                                        contentMarkdown = state.content
+                                    ),
+                                    writer
+                                )
+                                Toast.makeText(context, "Markdown экспортирован", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                    IconButton(onClick = {
+                        viewModel.saveNow()
+                        mdLauncher.launch(exportManager.generateNoteFileName(state.title))
+                    }) {
+                        Icon(Icons.Filled.IosShare, contentDescription = "Экспорт Markdown")
+                    }
                     IconButton(onClick = {
                         haptic(HapticType.SELECTION)
                         mode = if (mode == NoteEditMode.EDIT) NoteEditMode.PREVIEW else NoteEditMode.EDIT
