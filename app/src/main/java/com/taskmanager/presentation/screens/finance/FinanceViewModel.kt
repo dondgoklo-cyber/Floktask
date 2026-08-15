@@ -131,14 +131,6 @@ class FinanceViewModel @Inject constructor(
 
         val incomeByCur = _incomeByCurrency.value.associate { it.currency to it.total }
         val expenseByCur = _expenseByCurrency.value.associate { it.currency to it.total }
-        
-        val totalIncome = finance.totalIncome
-        val totalExpense = finance.totalExpense
-        val baseCurrency = UserPrefs(app).baseCurrency
-
-        // Balance by currency
-        // incomeByCur already defined above { it.currency to it.total }
-        // expenseByCur already defined above { it.currency to it.total }
         val allCurrencies = (incomeByCur.keys + expenseByCur.keys).distinct()
         val balancesByCurrency = allCurrencies.map { cur ->
             val bal = (incomeByCur[cur] ?: 0.0) - (expenseByCur[cur] ?: 0.0)
