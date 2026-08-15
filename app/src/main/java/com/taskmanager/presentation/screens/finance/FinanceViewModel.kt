@@ -13,7 +13,11 @@ import com.taskmanager.domain.usecase.finance.DeleteTransactionUseCase
 import com.taskmanager.domain.usecase.finance.GetAccountsUseCase
 import com.taskmanager.domain.usecase.finance.GetCategoriesUseCase
 import com.taskmanager.domain.usecase.finance.GetAllTransactionsUseCase
+import com.taskmanager.domain.finance.ExchangeRateProvider
 import com.taskmanager.domain.usecase.finance.GetFinanceSummaryUseCase
+import com.taskmanager.data.local.dao.CurrencyTotal
+import android.app.Application
+import com.taskmanager.security.UserPrefs
 import com.taskmanager.domain.usecase.finance.UpdateTransactionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,8 +47,17 @@ data class CategoryExpense(
     val total: Double
 )
 
+data class AccountBalance(
+    val currency: String,
+    val balance: Double,
+    val convertedBalance: Double
+)
+
 data class FinanceUiState(
     val balance: Double = 0.0,
+    val balanceInBaseCurrency: Double = 0.0,
+    val balancesByCurrency: List<AccountBalance> = emptyList(),
+    val baseCurrency: String = "RUB",
     val periodIncome: Double = 0.0,
     val periodExpense: Double = 0.0,
     val net: Double = 0.0,
@@ -67,7 +80,9 @@ class FinanceViewModel @Inject constructor(
     private val createTransactionUseCase: CreateTransactionUseCase,
     private val updateTransactionUseCase: UpdateTransactionUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val exchangeRateProvider: ExchangeRateProvider,
+    private val app: Application
 ) : ViewModel() {
 
     private val _selectedPeriod = MutableStateFlow(FinancePeriod.MONTH)
@@ -76,9 +91,11 @@ class FinanceViewModel @Inject constructor(
     private val financeDataFlow = combine(
         getAllTransactionsUseCase(),
         getFinanceSummaryUseCase.totalIncome(),
-        getFinanceSummaryUseCase.totalExpense()
-    ) { transactions, totalIncome, totalExpense ->
-        Triple(transactions, totalIncome, totalExpense)
+        getFinanceSummaryUseCase.totalExpense(),
+        getFinanceSummaryUseCase.totalIncomeByCurrency(),
+        getFinanceSummaryUseCase.totalExpenseByCurrency()
+    ) { transactions, totalIncome, totalExpense, incomeByCur, expenseByCur ->
+        FinanceData(transactions, totalIncome, totalExpense, incomeByCur, expenseByCur)
     }
 
     val state: StateFlow<FinanceUiState> = combine(
@@ -87,9 +104,24 @@ class FinanceViewModel @Inject constructor(
         getCategoriesUseCase.all(),
         getAccountsUseCase()
     ) { period, finance, categories, accounts ->
-        val transactions = finance.first
-        val totalIncome = finance.second
-        val totalExpense = finance.third
+        val transactions = finance.transactions
+        val totalIncome = finance.totalIncome
+        val totalExpense = finance.totalExpense
+        val baseCurrency = UserPrefs(app).baseCurrency
+
+        // Balance by currency
+        val incomeByCur = finance.incomeByCurrency.associate { it.currency to it.total }
+        val expenseByCur = finance.expenseByCurrency.associate { it.currency to it.total }
+        val allCurrencies = (incomeByCur.keys + expenseByCur.keys).distinct()
+        val balancesByCurrency = allCurrencies.map { cur ->
+            val bal = (incomeByCur[cur] ?: 0.0) - (expenseByCur[cur] ?: 0.0)
+            AccountBalance(
+                currency = cur,
+                balance = bal,
+                convertedBalance = exchangeRateProvider.convert(bal, cur, baseCurrency)
+            )
+        }
+        val balanceInBaseCurrency = balancesByCurrency.sumOf { it.convertedBalance }
         val zone = ZoneId.systemDefault()
         val (from, to) = periodRange(period, zone)
         val periodTx = transactions.filter { tx ->
@@ -108,6 +140,9 @@ class FinanceViewModel @Inject constructor(
 
         FinanceUiState(
             balance = balance,
+            balanceInBaseCurrency = balanceInBaseCurrency,
+            balancesByCurrency = balancesByCurrency,
+            baseCurrency = baseCurrency,
             periodIncome = periodIncome,
             periodExpense = periodExpense,
             net = net,
@@ -209,3 +244,11 @@ class FinanceViewModel @Inject constructor(
             .sortedByDescending { it.total }
     }
 }
+
+private data class FinanceData(
+    val transactions: List<Transaction>,
+    val totalIncome: Double,
+    val totalExpense: Double,
+    val incomeByCurrency: List<CurrencyTotal>,
+    val expenseByCurrency: List<CurrencyTotal>
+)

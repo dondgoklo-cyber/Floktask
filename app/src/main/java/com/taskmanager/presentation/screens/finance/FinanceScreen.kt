@@ -94,8 +94,9 @@ fun FinanceScreen(
             // Balance card
             item {
                 BalanceCard(
-                    balance = state.balance,
-                    currency = state.currency
+                    balance = state.balanceInBaseCurrency,
+                    currency = state.baseCurrency,
+                    balancesByCurrency = state.balancesByCurrency
                 )
             }
 
@@ -185,7 +186,11 @@ fun FinanceScreen(
 }
 
 @Composable
-private fun BalanceCard(balance: Double, currency: String) {
+private fun BalanceCard(
+    balance: Double,
+    currency: String,
+    balancesByCurrency: List<AccountBalance> = emptyList()
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
@@ -208,6 +213,28 @@ private fun BalanceCard(balance: Double, currency: String) {
                 fontWeight = FontWeight.Bold,
                 color = AppTheme.colors.onPrimary
             )
+            // Per-currency balances
+            if (balancesByCurrency.size > 1) {
+                Spacer(Modifier.height(Spacing.md))
+                balancesByCurrency.forEach { ab ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            ab.currency,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppTheme.colors.onPrimary.copy(alpha = 0.7f)
+                        )
+                        Text(
+                            formatMoney(ab.balance, ab.currency),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = AppTheme.colors.onPrimary.copy(alpha = 0.9f)
+                        )
+                    }
+                }
+            }
         }
     }
 }
