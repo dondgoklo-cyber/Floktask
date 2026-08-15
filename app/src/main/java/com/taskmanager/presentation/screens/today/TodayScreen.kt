@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -224,8 +225,22 @@ private fun ProgressCard(state: TodayUiState) {
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
         shape = RoundedCornerShape(Radius.lg),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
+        colors = CardDefaults.cardColors(
+            containerColor = AppTheme.colors.surface
+        )
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            AppTheme.colors.primary.copy(alpha = 0.08f),
+                            AppTheme.colors.primaryContainer.copy(alpha = 0.04f)
+                        )
+                    )
+                )
+        ) {
         Column(Modifier.padding(Spacing.xl)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -251,6 +266,7 @@ private fun ProgressCard(state: TodayUiState) {
                 color = AppTheme.colors.primary,
                 trackColor = AppTheme.colors.surfaceVariant
             )
+        }
         }
     }
 }
@@ -471,9 +487,21 @@ private fun FinanceSummaryCard(state: TodayUiState, onAllFinance: () -> Unit) {
         elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.lg),
         colors = androidx.compose.material3.CardDefaults.cardColors(
-            containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f)
+            containerColor = AppTheme.colors.surface
         )
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            AppTheme.colors.success.copy(alpha = 0.06f),
+                            AppTheme.colors.primary.copy(alpha = 0.04f)
+                        )
+                    )
+                )
+        ) {
         androidx.compose.foundation.layout.Column(
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg)
         ) {
@@ -547,6 +575,7 @@ private fun FinanceSummaryCard(state: TodayUiState, onAllFinance: () -> Unit) {
                     androidx.compose.material3.Text("Все финансы →")
                 }
             }
+        }
         }
     }
 }
