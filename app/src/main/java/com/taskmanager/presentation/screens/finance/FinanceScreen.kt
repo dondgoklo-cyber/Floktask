@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -68,6 +69,7 @@ fun FinanceScreen(
     val state by viewModel.state.collectAsState()
     val selectedPeriod by viewModel.selectedPeriod.collectAsState()
     var showAddSheet by remember { mutableStateOf(false) }
+    var pendingDeleteTx by remember { mutableStateOf<com.taskmanager.domain.model.Transaction?>(null) }
 
     Scaffold(
         topBar = {
@@ -231,8 +233,8 @@ fun FinanceScreen(
                             categoryName = state.categories.find { it.id == tx.categoryId }?.name,
                             categoryColor = state.categories.find { it.id == tx.categoryId }?.color,
                             currency = state.currency,
-                            onClick = { /* TODO: edit */ },
-                            onLongClick = { tx.id?.let { viewModel.deleteTransaction(it) } }
+                            onClick = { },
+                            onLongClick = { pendingDeleteTx = tx }
                         )
                     }
                 }
@@ -248,6 +250,25 @@ fun FinanceScreen(
                 }
             }
         }
+    }
+
+    pendingDeleteTx?.let { tx ->
+        AlertDialog(
+            onDismissRequest = { pendingDeleteTx = null },
+            title = { Text("Удалить операцию?") },
+            text = { Text(formatMoney(tx.amount, tx.currency)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    tx.id?.let { viewModel.deleteTransaction(it) }
+                    pendingDeleteTx = null
+                }) { Text(stringResource(R.string.delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDeleteTx = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     if (showAddSheet) {
