@@ -64,6 +64,11 @@ data class FinanceUiState(
     val transactions: List<Transaction> = emptyList(),
     val groupedTransactions: List<TransactionGroup> = emptyList(),
     val categoryExpenses: List<CategoryExpense> = emptyList(),
+    val largestExpense: Transaction? = null,
+    val avgDailySpending: Double = 0.0,
+    val avgMonthlySpending: Double = 0.0,
+    val topIncomeSource: String? = null,
+    val savingsRate: Double = 0.0,
     val accounts: List<Account> = emptyList(),
     val categories: List<Category> = emptyList(),
     val currency: String = "RUB",
@@ -136,6 +141,25 @@ class FinanceViewModel @Inject constructor(
         val grouped = groupByDateLabel(periodTx, zone)
         val catExpenses = buildCategoryExpenses(periodTx, categories)
 
+        // Analytics
+        val largestExpense = periodTx.filter { it.type == TransactionType.EXPENSE }
+            .maxByOrNull { it.amount }
+        val daysInPeriod = when (period) {
+            FinancePeriod.TODAY -> 1
+            FinancePeriod.WEEK -> 7
+            FinancePeriod.MONTH -> 30
+            FinancePeriod.YEAR -> 365
+        }
+        val avgDailySpending = if (daysInPeriod > 0) periodExpense / daysInPeriod else 0.0
+        val avgMonthlySpending = avgDailySpending * 30
+        val topIncomeSource = periodTx.filter { it.type == TransactionType.INCOME }
+            .groupBy { it.categoryId }
+            .maxByOrNull { it.value.sumOf { tx -> tx.amount } }
+            ?.let { entry -> categories.find { it.id == entry.key }?.name }
+        val savingsRate = if (periodIncome > 0) {
+            ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
+        } else 0.0
+
         val currency = accounts.firstOrNull()?.currency ?: "RUB"
 
         FinanceUiState(
@@ -149,6 +173,11 @@ class FinanceViewModel @Inject constructor(
             transactions = periodTx,
             groupedTransactions = grouped,
             categoryExpenses = catExpenses,
+            largestExpense = largestExpense,
+            avgDailySpending = avgDailySpending,
+            avgMonthlySpending = avgMonthlySpending,
+            topIncomeSource = topIncomeSource,
+            savingsRate = savingsRate,
             accounts = accounts,
             categories = categories,
             currency = currency,

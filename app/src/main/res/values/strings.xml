@@ -103,6 +103,7 @@
     <string name="no_transactions">Пока нет операций</string>
     <string name="expenses_by_category">Расходы по категориям</string>
     <string name="all_finance">Все финансы</string>
+    <string name="analytics">Аналитика</string>
     <!-- Заметки -->
     <string name="notes">Заметки</string>
     <string name="add_note">Добавить заметку</string>

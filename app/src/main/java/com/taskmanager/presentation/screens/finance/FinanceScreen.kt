@@ -128,6 +128,13 @@ fun FinanceScreen(
                 }
             }
 
+            // Analytics
+            if (state.periodExpense > 0 || state.periodIncome > 0) {
+                item {
+                    AnalyticsCard(state)
+                }
+            }
+
             // Transactions
             if (state.groupedTransactions.isNotEmpty()) {
                 item {
@@ -361,6 +368,48 @@ private fun CategoryBreakdown(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AnalyticsCard(state: FinanceUiState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+        ) {
+            Text(
+                stringResource(R.string.analytics),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold
+            )
+            AnalyticsRow("Средние траты в день", formatMoney(state.avgDailySpending, state.baseCurrency))
+            AnalyticsRow("Средние траты в месяц", formatMoney(state.avgMonthlySpending, state.baseCurrency))
+            AnalyticsRow("Норма сбережений", "${state.savingsRate.toInt()}%")
+            state.topIncomeSource?.let { source ->
+                AnalyticsRow("Основной источник дохода", source)
+            }
+            state.largestExpense?.let { tx ->
+                val catName = state.categories.find { it.id == tx.categoryId }?.name ?: tx.note ?: "Расход"
+                AnalyticsRow("Крупнейший расход", "${formatMoney(tx.amount, tx.currency)} — $catName")
+            }
+        }
+    }
+}
+
+@Composable
+private fun AnalyticsRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, style = MaterialTheme.typography.bodySmall, color = AppTheme.colors.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
     }
 }
 
