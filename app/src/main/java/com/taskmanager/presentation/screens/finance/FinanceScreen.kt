@@ -72,6 +72,7 @@ fun FinanceScreen(
     val selectedPeriod by viewModel.selectedPeriod.collectAsState()
     var showAddSheet by remember { mutableStateOf(false) }
     var pendingDeleteTx by remember { mutableStateOf<com.taskmanager.domain.model.Transaction?>(null) }
+    var editingTx by remember { mutableStateOf<com.taskmanager.domain.model.Transaction?>(null) }
 
     Scaffold(
         topBar = {
@@ -239,7 +240,7 @@ fun FinanceScreen(
                             categoryName = state.categories.find { it.id == tx.categoryId }?.name,
                             categoryColor = state.categories.find { it.id == tx.categoryId }?.color,
                             currency = state.currency,
-                            onClick = { },
+                            onClick = { editingTx = tx },
                             onLongClick = { pendingDeleteTx = tx }
                         )
                     }
@@ -277,15 +278,32 @@ fun FinanceScreen(
         )
     }
 
-    if (showAddSheet) {
+    if (showAddSheet || editingTx != null) {
         AddTransactionSheet(
             categories = state.categories,
             accounts = state.accounts,
-            onDismiss = { showAddSheet = false },
-            onCreate = { amount, type, currency, categoryId, accountId, date, note ->
-                viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note)
+            onDismiss = {
                 showAddSheet = false
-            }
+                editingTx = null
+            },
+            onCreate = { amount, type, currency, categoryId, accountId, date, note ->
+                if (editingTx != null) {
+                    viewModel.updateTransaction(editingTx!!.copy(
+                        amount = amount,
+                        type = type,
+                        currency = currency,
+                        categoryId = categoryId,
+                        accountId = accountId,
+                        date = date,
+                        note = note
+                    ))
+                } else {
+                    viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note)
+                }
+                showAddSheet = false
+                editingTx = null
+            },
+            editingTransaction = editingTx
         )
     }
 }

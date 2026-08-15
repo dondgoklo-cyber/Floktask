@@ -73,16 +73,17 @@ fun AddTransactionSheet(
     accounts: List<Account>,
     onDismiss: () -> Unit,
     onCreate: (Double, TransactionType, String, Long?, Long?, Instant, String?) -> Unit,
-    initialType: TransactionType = TransactionType.EXPENSE
+    initialType: TransactionType = TransactionType.EXPENSE,
+    editingTransaction: com.taskmanager.domain.model.Transaction? = null
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var type by remember { mutableStateOf(initialType) }
-    var amountText by remember { mutableStateOf("") }
-    var selectedCategoryId by remember { mutableStateOf<Long?>(null) }
-    var selectedAccountId by remember { mutableStateOf<Long?>(accounts.firstOrNull()?.id) }
-    var selectedCurrency by remember { mutableStateOf("RUB") }
-    var note by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf(LocalDate.now()) }
+    var type by remember { mutableStateOf(editingTransaction?.type ?: initialType) }
+    var amountText by remember { mutableStateOf(editingTransaction?.amount?.toString() ?: "") }
+    var selectedCategoryId by remember { mutableStateOf(editingTransaction?.categoryId) }
+    var selectedAccountId by remember { mutableStateOf(editingTransaction?.accountId ?: accounts.firstOrNull()?.id) }
+    var selectedCurrency by remember { mutableStateOf(editingTransaction?.currency ?: "RUB") }
+    var note by remember { mutableStateOf(editingTransaction?.note ?: "") }
+    var date by remember { mutableStateOf(editingTransaction?.date?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()) }
     var showDatePicker by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
