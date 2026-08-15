@@ -161,6 +161,7 @@ fun CategoryPieChart(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Pie chart canvas
+                val chartColors = colors
                 Canvas(
                     modifier = Modifier.size(100.dp)
                 ) {
@@ -168,7 +169,7 @@ fun CategoryPieChart(
                     categories.take(6).forEachIndexed { index, cat ->
                         val sweep = (cat.total / total * 360).toFloat()
                         drawArc(
-                            color = colors[index % colors.size],
+                            color = chartColors[index % chartColors.size],
                             startAngle = startAngle,
                             sweepAngle = sweep,
                             useCenter = true
