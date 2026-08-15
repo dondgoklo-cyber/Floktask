@@ -117,7 +117,7 @@ class FinanceViewModel @Inject constructor(
         getCategoriesUseCase.all(),
         getAccountsUseCase(),
         combine(getAccountsUseCase(), goalRepository.getAllGoals()) { accs, gals -> accs to gals }
-    ) { period, finance, categories, budgetData, budgets ->
+    ) { period: FinancePeriod, finance: FinanceData, categories: List<Category>, budgetData: kotlin.Pair<List<Account>, List<Goal>>, budgets: List<Budget> ->
         val transactions = finance.transactions
         val totalIncome = finance.totalIncome
         val totalExpense = finance.totalExpense
@@ -169,8 +169,8 @@ class FinanceViewModel @Inject constructor(
             ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
         } else 0.0
 
-        val accounts: List<Account> = budgetData.component1()
-        val goals: List<Goal> = budgetData.component2()
+        val accounts: List<Account> = budgetData.first
+        val goals: List<Goal> = budgetData.second
         val budgetPairs = budgets.mapNotNull { budget ->
             categories.find { it.id == budget.categoryId }?.let { cat -> cat to budget }
         }
