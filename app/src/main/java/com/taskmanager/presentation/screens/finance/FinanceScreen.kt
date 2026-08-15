@@ -120,6 +120,23 @@ fun FinanceScreen(
                 }
             }
         }
+        val importLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenDocument()
+        ) { uri ->
+            uri?.let {
+                context.contentResolver.openInputStream(it)?.use { stream ->
+                    val json = stream.bufferedReader().readText()
+                    val imported = exportManager.importFromJson(json)
+                    imported.forEach { tx ->
+                        viewModel.createTransaction(
+                            tx.amount, tx.type, tx.currency, tx.categoryId,
+                            tx.accountId, tx.date, tx.note
+                        )
+                    }
+                    Toast.makeText(context, "Импортировано: ${imported.size} операций", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.md),
@@ -182,6 +199,9 @@ fun FinanceScreen(
                         TextButton(onClick = {
                             jsonLauncher.launch(exportManager.generateFileName("wolftask_finance", "json"))
                         }) { Text("📦 JSON") }
+                        TextButton(onClick = {
+                            importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+                        }) { Text("📥 Импорт") }
                     }
                 }
             }

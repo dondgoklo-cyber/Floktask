@@ -108,6 +108,38 @@ class FinanceExportManager {
     }
 
     /**
+     * Импортирует финансовые данные из JSON.
+     * Возвращает список транзакций для создания.
+     * Валидирует сумму (>0), дату, тип.
+     */
+    fun importFromJson(jsonStr: String): List<Transaction> {
+        val result = mutableListOf<Transaction>()
+        val root = runCatching { JSONObject(jsonStr) }.getOrNull() ?: return emptyList()
+        val txArray = root.optJSONArray("transactions") ?: return emptyList()
+
+        for (i in 0 until txArray.length()) {
+            val txJson = txArray.optJSONObject(i) ?: continue
+            val amount = txJson.optDouble("amount", 0.0)
+            if (amount <= 0) continue
+            val typeStr = txJson.optString("type", "EXPENSE")
+            val type = runCatching { TransactionType.valueOf(typeStr) }.getOrDefault(TransactionType.EXPENSE)
+            val dateMillis = txJson.optLong("date", System.currentTimeMillis())
+            val currency = txJson.optString("currency", "RUB")
+
+            result.add(Transaction(
+                amount = amount,
+                type = type,
+                currency = currency,
+                categoryId = if (txJson.isNull("categoryId")) null else txJson.optLong("categoryId", 0),
+                accountId = if (txJson.isNull("accountId")) null else txJson.optLong("accountId", 0),
+                date = java.time.Instant.ofEpochMilli(dateMillis),
+                note = if (txJson.isNull("note")) null else txJson.optString("note", null)
+            ))
+        }
+        return result
+    }
+
+    /**
      * Генерирует имя файла для экспорта.
      */
     fun generateFileName(prefix: String, extension: String): String {
