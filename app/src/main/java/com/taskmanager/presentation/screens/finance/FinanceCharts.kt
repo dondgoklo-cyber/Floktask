@@ -95,22 +95,19 @@ private fun BarRow(
             Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = color)
         }
         Spacer(Modifier.height(Spacing.xs))
+        val trackColor = AppTheme.colors.surfaceVariant
+        val barColor = color
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(12.dp)
                 .clip(RoundedCornerShape(Radius.full))
         ) {
-            // Track
-            drawRect(
-                color = AppTheme.colors.surfaceVariant,
-                size = size
-            )
-            // Bar
+            drawRect(color = trackColor, size = size)
             if (fraction > 0f) {
                 drawRect(
                     brush = Brush.horizontalGradient(
-                        colors = listOf(color, color.copy(alpha = 0.7f))
+                        colors = listOf(barColor, barColor.copy(alpha = 0.7f))
                     ),
                     size = Size(size.width * fraction, size.height)
                 )
