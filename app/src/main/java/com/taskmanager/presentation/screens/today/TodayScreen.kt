@@ -671,11 +671,10 @@ private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
                     horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(Spacing.sm),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    androidx.compose.material3.Icon(
-                        Icons.Filled.CheckCircle,
-                        contentDescription = null,
-                        tint = AppTheme.colors.outline,
-                        modifier = Modifier.size(16.dp)
+                    Text(
+                        "•",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppTheme.colors.outline
                     )
                     androidx.compose.material3.Text(
                         task.title,
