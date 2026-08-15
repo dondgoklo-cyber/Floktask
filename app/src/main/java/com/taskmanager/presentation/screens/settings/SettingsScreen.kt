@@ -21,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +70,7 @@ fun SettingsScreen(
     var showPinScreen by remember { mutableStateOf<PinMode?>(null) }
     var showRemovePinDialog by remember { mutableStateOf(false) }
     var hapticEnabled by remember { mutableStateOf(userPrefs.hapticEnabled) }
+    var baseCurrency by remember { mutableStateOf(userPrefs.baseCurrency) }
 
     if (showPinScreen != null) {
         PinScreen(
@@ -231,6 +233,29 @@ fun SettingsScreen(
                             hapticEnabled = value
                             userPrefs.hapticEnabled = value
                         }
+                    )
+                }
+            }
+
+            // Основная валюта
+            Text(
+                stringResource(R.string.base_currency),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = Spacing.sm)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+            ) {
+                listOf("RUB", "USD", "EUR", "GBP").forEach { curr ->
+                    FilterChip(
+                        selected = baseCurrency == curr,
+                        onClick = {
+                            baseCurrency = curr
+                            userPrefs.baseCurrency = curr
+                        },
+                        label = { Text(curr) }
                     )
                 }
             }
