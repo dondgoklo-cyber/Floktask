@@ -130,7 +130,7 @@ class FinanceViewModel @Inject constructor(
         getAccountsUseCase(),
         getAccountsUseCase(),
         getAccountsUseCase()
-    ) { period, finance, categories, accounts ->
+    ) { period: FinancePeriod, finance: FinanceData, categories: List<Category>, accounts: List<Account> ->
         val transactions = finance.transactions
         val totalIncome = finance.totalIncome
         val totalExpense = finance.totalExpense
