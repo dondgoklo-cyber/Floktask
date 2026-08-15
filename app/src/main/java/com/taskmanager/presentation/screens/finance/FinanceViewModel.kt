@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Account
 import com.taskmanager.domain.model.Budget
+import com.taskmanager.domain.model.Goal
 import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.model.CategoryType
 import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
 import com.taskmanager.domain.repository.AccountRepository
 import com.taskmanager.domain.repository.BudgetRepository
+import com.taskmanager.domain.repository.GoalRepository
 import com.taskmanager.domain.usecase.finance.CreateTransactionUseCase
 import com.taskmanager.domain.usecase.finance.DeleteTransactionUseCase
 import com.taskmanager.domain.usecase.finance.GetAccountsUseCase
@@ -72,6 +74,7 @@ data class FinanceUiState(
     val topIncomeSource: String? = null,
     val savingsRate: Double = 0.0,
     val budgets: List<Pair<Category, Budget>> = emptyList(),
+    val goals: List<Goal> = emptyList(),
     val accounts: List<Account> = emptyList(),
     val categories: List<Category> = emptyList(),
     val currency: String = "RUB",
@@ -90,6 +93,7 @@ class FinanceViewModel @Inject constructor(
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val accountRepository: AccountRepository,
     private val budgetRepository: BudgetRepository,
+    private val goalRepository: GoalRepository,
     private val exchangeRateProvider: ExchangeRateProvider,
     private val app: Application
 ) : ViewModel() {
@@ -112,8 +116,8 @@ class FinanceViewModel @Inject constructor(
         financeDataFlow,
         getCategoriesUseCase.all(),
         getAccountsUseCase(),
-        budgetRepository.getAllBudgets()
-    ) { period, finance, categories, accounts, budgets ->
+        combine(getAccountsUseCase(), goalRepository.getAllGoals()) { accs, gals -> accs to gals }
+    ) { period, finance, categories, budgetData, budgets ->
         val transactions = finance.transactions
         val totalIncome = finance.totalIncome
         val totalExpense = finance.totalExpense
@@ -165,6 +169,8 @@ class FinanceViewModel @Inject constructor(
             ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
         } else 0.0
 
+        val accounts = budgetData.first
+        val goals = budgetData.second
         val budgetPairs = budgets.mapNotNull { budget ->
             categories.find { it.id == budget.categoryId }?.let { cat -> cat to budget }
         }
@@ -188,6 +194,7 @@ class FinanceViewModel @Inject constructor(
             topIncomeSource = topIncomeSource,
             savingsRate = savingsRate,
             budgets = budgetPairs,
+            goals = goals,
             accounts = accounts,
             categories = categories,
             currency = currency,
@@ -226,6 +233,18 @@ class FinanceViewModel @Inject constructor(
     fun updateTransaction(transaction: Transaction) {
         viewModelScope.launch {
             updateTransactionUseCase(transaction)
+        }
+    }
+
+    fun createGoal(title: String, targetAmount: Double, currency: String) {
+        viewModelScope.launch {
+            goalRepository.createGoal(Goal(title = title, targetAmount = targetAmount, currency = currency))
+        }
+    }
+
+    fun deleteGoal(id: Long) {
+        viewModelScope.launch {
+            goalRepository.deleteGoal(id)
         }
     }
 

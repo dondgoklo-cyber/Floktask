@@ -2,6 +2,7 @@ package com.taskmanager.di
 
 import com.taskmanager.data.repository.AccountRepositoryImpl
 import com.taskmanager.data.repository.BudgetRepositoryImpl
+import com.taskmanager.data.repository.GoalRepositoryImpl
 import com.taskmanager.data.repository.NoteFolderRepositoryImpl
 import com.taskmanager.data.repository.NoteRepositoryImpl
 import com.taskmanager.data.repository.CategoryRepositoryImpl
@@ -17,6 +18,7 @@ import com.taskmanager.data.repository.UserStatsRepositoryImpl
 import com.taskmanager.domain.repository.HabitLogRepository
 import com.taskmanager.domain.repository.AccountRepository
 import com.taskmanager.domain.repository.BudgetRepository
+import com.taskmanager.domain.repository.GoalRepository
 import com.taskmanager.domain.repository.NoteFolderRepository
 import com.taskmanager.domain.repository.NoteRepository
 import com.taskmanager.domain.repository.CategoryRepository
@@ -93,4 +95,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindBudgetRepository(impl: BudgetRepositoryImpl): BudgetRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGoalRepository(impl: GoalRepositoryImpl): GoalRepository
 }

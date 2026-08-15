@@ -195,6 +195,13 @@ fun FinanceScreen(
                 }
             }
 
+            // Goals
+            if (state.goals.isNotEmpty()) {
+                item {
+                    GoalCard(state)
+                }
+            }
+
             // Analytics
             if (state.periodExpense > 0 || state.periodIncome > 0) {
                 item {
@@ -489,6 +496,44 @@ private fun CategoryBreakdown(
                         color = AppTheme.colors.onSurface
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GoalCard(state: FinanceUiState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+        ) {
+            Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            state.goals.forEach { goal ->
+                val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount).coerceIn(0.0, 1.0) else 0.0
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(goal.title, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Text(
+                        "${formatMoney(goal.savedAmount, goal.currency)} / ${formatMoney(goal.targetAmount, goal.currency)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppTheme.colors.onSurfaceVariant
+                    )
+                }
+                androidx.compose.material3.LinearProgressIndicator(
+                    progress = { progress.toFloat() },
+                    modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(Radius.full)),
+                    color = AppTheme.colors.success,
+                    trackColor = AppTheme.colors.surfaceVariant
+                )
             }
         }
     }
