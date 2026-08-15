@@ -53,6 +53,8 @@ import com.taskmanager.R
 import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
 import com.taskmanager.presentation.components.AppFloatingActionButton
+import com.taskmanager.haptic.HapticType
+import com.taskmanager.haptic.rememberHaptic
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.parseTagColor
 import com.taskmanager.presentation.theme.AppTheme
@@ -87,10 +89,14 @@ fun FinanceScreen(
             )
         },
         floatingActionButton = {
+            val haptic = rememberHaptic()
             AppFloatingActionButton(
                 icon = Icons.Filled.Add,
                 contentDescription = stringResource(R.string.add_transaction),
-                onClick = { showAddSheet = true }
+                onClick = {
+                    haptic(HapticType.LIGHT)
+                    showAddSheet = true
+                }
             )
         }
     ) { padding ->
