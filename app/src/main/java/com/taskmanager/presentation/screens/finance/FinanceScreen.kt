@@ -188,6 +188,14 @@ fun FinanceScreen(
                 }
             }
 
+            // Charts
+            if (state.periodIncome > 0 || state.periodExpense > 0) {
+                item { IncomeExpenseBarChart(state.periodIncome, state.periodExpense, state.baseCurrency) }
+            }
+            if (state.categoryExpenses.isNotEmpty()) {
+                item { CategoryPieChart(state.categoryExpenses, state.baseCurrency) }
+            }
+
             // Budgets
             if (state.budgets.isNotEmpty()) {
                 item {
