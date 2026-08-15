@@ -46,6 +46,7 @@ data class TodayUiState(
     val financeExpense: Double = 0.0,
     val recentTransactions: List<Transaction> = emptyList(),
     val recentNotes: List<Note> = emptyList(),
+    val inboxTasks: List<Task> = emptyList(),
     val isLoading: Boolean = true
 )
 
@@ -66,8 +67,13 @@ class TodayViewModel @Inject constructor(
     private val _state = MutableStateFlow(TodayUiState(isLoading = true))
     val state: StateFlow<TodayUiState> = _state.asStateFlow()
 
+    private val _inboxTasks = MutableStateFlow<List<Task>>(emptyList())
+
     init {
         observeTodayData()
+        viewModelScope.launch {
+            taskRepository.getInboxTasks().collect { _inboxTasks.value = it.take(3) }
+        }
     }
 
     private fun observeTodayData() {
@@ -130,6 +136,7 @@ class TodayViewModel @Inject constructor(
                 financeExpense = data.expense,
                 recentTransactions = data.recentTx,
                 recentNotes = data.recentNotes,
+                inboxTasks = _inboxTasks.value,
                 isLoading = false
             )
         }.stateIn(viewModelScope, SharingStarted.Lazily, TodayUiState(isLoading = true))

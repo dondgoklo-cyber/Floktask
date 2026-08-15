@@ -176,6 +176,9 @@ fun TodayScreen(
                 item { GreetingHeader() }
                 item { ProgressCard(state) }
                 item { SummaryRow(state) }
+                if (state.inboxTasks.isNotEmpty()) {
+                    item { InboxPreviewCard(state, onTaskClick) }
+                }
                 if (state.recentTransactions.isNotEmpty() || state.financeBalance != 0.0) {
                     item { FinanceSummaryCard(state, onAllFinance) }
                 }
@@ -621,6 +624,61 @@ private fun NotesPreviewCard(state: TodayUiState, onAllNotes: () -> Unit) {
                     )
                     androidx.compose.material3.Text(
                         note.title.ifBlank { "Без названия" },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppTheme.colors.onSurface,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
+    androidx.compose.material3.Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {},
+        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.lg),
+        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
+    ) {
+        androidx.compose.foundation.layout.Column(
+            modifier = Modifier.fillMaxWidth().padding(Spacing.lg)
+        ) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                androidx.compose.material3.Text(
+                    "Входящие",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
+                )
+                androidx.compose.material3.Text(
+                    "${state.inboxTasks.size}",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = AppTheme.colors.primary,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+            }
+            state.inboxTasks.forEach { task ->
+                androidx.compose.foundation.layout.Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(Spacing.sm),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    androidx.compose.material3.Icon(
+                        Icons.Filled.RadioButtonUnchecked,
+                        contentDescription = null,
+                        tint = AppTheme.colors.outline,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    androidx.compose.material3.Text(
+                        task.title,
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppTheme.colors.onSurface,
                         maxLines = 1,

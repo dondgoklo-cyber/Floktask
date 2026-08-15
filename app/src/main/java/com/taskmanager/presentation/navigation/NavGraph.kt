@@ -89,6 +89,7 @@ fun NavGraph() {
                                     restoreState = true
                                 }
                             },
+                            alwaysShowLabel = false,
                             icon = {
                                 Icon(
                                     screen.icon,
@@ -112,13 +113,14 @@ fun NavGraph() {
                                 selectedTextColor = AppTheme.colors.primary,
                                 unselectedIconColor = AppTheme.colors.onSurfaceVariant,
                                 unselectedTextColor = AppTheme.colors.onSurfaceVariant,
-                                indicatorColor = AppTheme.colors.primaryContainer.copy(alpha = 0.25f)
+                                indicatorColor = AppTheme.colors.primaryContainer.copy(alpha = 0.35f)
                             )
                         )
                     }
                     NavigationBarItem(
                         selected = currentRoute == Screen.More.route,
                         onClick = { navController.navigate(Screen.More.route) },
+                        alwaysShowLabel = false,
                         icon = {
                             Icon(
                                 Icons.Filled.MoreHoriz,
@@ -142,7 +144,7 @@ fun NavGraph() {
                             selectedTextColor = AppTheme.colors.primary,
                             unselectedIconColor = AppTheme.colors.onSurfaceVariant,
                             unselectedTextColor = AppTheme.colors.onSurfaceVariant,
-                            indicatorColor = AppTheme.colors.primaryContainer.copy(alpha = 0.25f)
+                            indicatorColor = AppTheme.colors.primaryContainer.copy(alpha = 0.35f)
                         )
                     )
                 }
