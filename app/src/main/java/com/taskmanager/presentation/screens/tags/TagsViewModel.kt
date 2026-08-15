@@ -28,12 +28,13 @@ sealed class TagsState {
 
 /** Состояние диалога создания/редактирования тега. */
 data class TagDialogState(
+    val show: Boolean = false,
     val editingTag: Tag? = null,
     val name: String = "",
     val colorHex: String? = null,
     val nameError: Boolean = false
 ) {
-    val isOpen: Boolean get() = editingTag != null || name.isNotEmpty() || colorHex != null
+    val isOpen: Boolean get() = show
 }
 
 @HiltViewModel
@@ -58,11 +59,12 @@ class TagsViewModel @Inject constructor(
     }
 
     fun openCreateDialog() {
-        _dialogState.value = TagDialogState()
+        _dialogState.value = TagDialogState(show = true)
     }
 
     fun openEditDialog(tag: Tag) {
         _dialogState.value = TagDialogState(
+            show = true,
             editingTag = tag,
             name = tag.name,
             colorHex = tag.color
