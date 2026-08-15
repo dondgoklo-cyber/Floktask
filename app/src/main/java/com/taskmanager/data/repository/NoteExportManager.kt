@@ -47,6 +47,21 @@ class NoteExportManager {
     /**
      * Генерирует имя файла для одной заметки.
      */
+    fun importFromMarkdown(markdown: String): Note {
+        val lines = markdown.trim().lines()
+        var title = ""
+        var contentStart = 0
+
+        if (lines.isNotEmpty() && lines[0].startsWith("# ")) {
+            title = lines[0].removePrefix("# ").trim()
+            contentStart = 1
+            if (lines.size > 1 && lines[1].isBlank()) contentStart = 2
+        }
+
+        val content = lines.drop(contentStart).joinToString("\n")
+        return Note(title = title, contentMarkdown = content)
+    }
+
     fun generateNoteFileName(title: String): String {
         val safeTitle = title.ifBlank { "note" }
             .replace(Regex("[^a-zA-Zа-яА-Я0-9\\s-]"), "")

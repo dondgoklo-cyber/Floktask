@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.AlertDialog
@@ -35,13 +36,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +63,7 @@ import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.data.repository.NoteExportManager
 import com.taskmanager.presentation.theme.Spacing
 import java.time.Instant
 import java.time.ZoneId
@@ -87,6 +93,24 @@ fun NotesScreen(
                     )
                 },
                 actions = {
+                    val context = LocalContext.current
+                    val exportManager = remember { NoteExportManager() }
+                    val importLauncher = rememberLauncherForActivityResult(
+                        ActivityResultContracts.OpenDocument()
+                    ) { uri ->
+                        uri?.let {
+                            context.contentResolver.openInputStream(it)?.use { stream ->
+                                val md = stream.bufferedReader().readText()
+                                val note = exportManager.importFromMarkdown(md)
+                                viewModel.createNote { id -> onNoteClick(id) }
+                            }
+                        }
+                    }
+                    IconButton(onClick = {
+                        importLauncher.launch(arrayOf("text/markdown", "text/plain", "*/*"))
+                    }) {
+                        Icon(Icons.Filled.FileUpload, contentDescription = "Импорт Markdown")
+                    }
                     IconButton(onClick = {
                         haptic(HapticType.LIGHT)
                         viewModel.openCreateFolderDialog()
