@@ -112,10 +112,14 @@ class FinanceViewModel @Inject constructor(
     }
 
     private val _goals = MutableStateFlow<List<Goal>>(emptyList())
+    private val _budgets = MutableStateFlow<List<Budget>>(emptyList())
 
     init {
         viewModelScope.launch {
             goalRepository.getAllGoals().collect { _goals.value = it }
+        }
+        viewModelScope.launch {
+            budgetRepository.getAllBudgets().collect { _budgets.value = it }
         }
     }
 
@@ -125,8 +129,8 @@ class FinanceViewModel @Inject constructor(
         getCategoriesUseCase.all(),
         getAccountsUseCase(),
         getAccountsUseCase(),
-        budgetRepository.getAllBudgets()
-    ) { period: FinancePeriod, finance: FinanceData, categories: List<Category>, accounts: List<Account>, budgets: List<Budget> ->
+        getAccountsUseCase()
+    ) { period, finance, categories, accounts ->
         val transactions = finance.transactions
         val totalIncome = finance.totalIncome
         val totalExpense = finance.totalExpense
@@ -179,6 +183,7 @@ class FinanceViewModel @Inject constructor(
         } else 0.0
 
         val goals = _goals.value
+        val budgets = _budgets.value
         val budgetPairs = budgets.mapNotNull { budget ->
             categories.find { it.id == budget.categoryId }?.let { cat -> cat to budget }
         }
