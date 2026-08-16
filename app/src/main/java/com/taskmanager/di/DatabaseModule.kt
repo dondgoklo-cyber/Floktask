@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.data.local.dao.TimeBlockDao
 import com.taskmanager.data.local.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -24,7 +25,7 @@ object DatabaseModule {
     ): AppDatabase = Room.databaseBuilder(
         context,
         AppDatabase::class.java,
-        "taskmanager.db"
+        AppDatabase.DATABASE_NAME
     ).fallbackToDestructiveMigration().build()
 
     @Provides
@@ -35,4 +36,7 @@ object DatabaseModule {
 
     @Provides
     fun provideTagDao(db: AppDatabase): TagDao = db.tagDao()
+
+    @Provides
+    fun provideTimeBlockDao(db: AppDatabase): TimeBlockDao = db.timeBlockDao()
 }
