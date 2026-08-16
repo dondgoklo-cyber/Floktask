@@ -106,7 +106,7 @@ object RussianVoiceParser {
 
         // "через час" / "через 2 часа"
         if (lower.contains("через час") || lower.contains("через 2 часа") || lower.contains("через два часа")) {
-            return DateResult(today, text.replace(Regex("""через\s+(\d+\s*)?(час|часа|часов)"""), "", ignoreCase = true).trim())
+            return DateResult(today, text.replace("через час", "", ignoreCase = true).replace("через 2 часа", "", ignoreCase = true).replace("через два часа", "", ignoreCase = true).trim())
         }
 
         // "через N минут"
@@ -117,7 +117,7 @@ object RussianVoiceParser {
 
         // "на следующей неделе"
         if (lower.contains("на следующей неделе") || lower.contains("следующая неделя")) {
-            return DateResult(today.plusWeeks(1), text.replace(Regex("""на следующей неделе|следующая неделя"""), "", ignoreCase = true).trim())
+            return DateResult(today.plusWeeks(1), text.replace("на следующей неделе", "", ignoreCase = true).replace("следующая неделя", "", ignoreCase = true).trim())
         }
 
         // "в выходные" — ближайшая суббота
