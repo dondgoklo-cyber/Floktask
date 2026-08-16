@@ -110,6 +110,7 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Testing
     testImplementation(libs.junit)
