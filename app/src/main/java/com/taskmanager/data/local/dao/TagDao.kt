@@ -23,6 +23,12 @@ interface TagDao {
     @Query("SELECT * FROM tags ORDER BY name COLLATE NOCASE ASC")
     fun getAll(): Flow<List<TagEntity>>
 
+    @Query("SELECT * FROM tags WHERE id = :id")
+    suspend fun getById(id: Long): TagEntity?
+
+    @Query("SELECT * FROM tags WHERE name = :name LIMIT 1")
+    suspend fun getByName(name: String): TagEntity?
+
     @Query("DELETE FROM tags WHERE id = :id")
     suspend fun deleteById(id: Long)
 }
