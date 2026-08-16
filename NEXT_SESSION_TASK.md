@@ -160,3 +160,8 @@ CI: Build & Test — success (4a675ca)
 *Проект: dondgoklo-cyber/Floktask*
 *Ветвь: vibe/taskmanager-scaffold-8c6512*
 *Последний коммит: 173d94c (Finance Charts)*
+
+---
+
+## Дополнительные материалы
+- [Полное ТЗ](TZ.md) — Детальные требования и инструкции для AI Code
