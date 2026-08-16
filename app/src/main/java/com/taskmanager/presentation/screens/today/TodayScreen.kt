@@ -641,8 +641,9 @@ private fun NotesPreviewCard(state: TodayUiState, onAllNotes: () -> Unit) {
 @Composable
 private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
     androidx.compose.material3.Card(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onTaskClick,
+        modifier = Modifier.fillMaxWidth().androidx.compose.foundation.clickable { 
+            state.inboxTasks.firstOrNull()?.id?.let(onTaskClick)
+        },
         elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.lg),
         colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
