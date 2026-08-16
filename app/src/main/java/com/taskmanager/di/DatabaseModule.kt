@@ -15,6 +15,7 @@ import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.SubtaskDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.data.local.dao.TaskTagDao
 import com.taskmanager.data.local.dao.TransactionDao
 import com.taskmanager.data.local.dao.UserStatsDao
 import com.taskmanager.data.local.database.AppDatabase
@@ -76,4 +77,6 @@ object DatabaseModule {
     fun provideBudgetDao(db: AppDatabase): BudgetDao = db.budgetDao()
     @Provides
     fun provideGoalDao(db: AppDatabase): GoalDao = db.goalDao()
+    @Provides
+    fun provideTaskTagDao(db: AppDatabase): TaskTagDao = db.taskTagDao()
 }

@@ -15,6 +15,7 @@ import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.SubtaskDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.data.local.dao.TaskTagDao
 import com.taskmanager.data.local.dao.TransactionDao
 import com.taskmanager.data.local.dao.UserStatsDao
 import com.taskmanager.data.local.entity.AccountEntity
@@ -30,6 +31,7 @@ import com.taskmanager.data.local.entity.ProjectEntity
 import com.taskmanager.data.local.entity.SubtaskEntity
 import com.taskmanager.data.local.entity.TagEntity
 import com.taskmanager.data.local.entity.TaskEntity
+import com.taskmanager.data.local.entity.TaskTagEntity
 import com.taskmanager.data.local.entity.TransactionEntity
 import com.taskmanager.data.local.entity.UserStatsEntity
 
@@ -49,9 +51,10 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         NoteEntity::class,
         NoteFolderEntity::class,
         BudgetEntity::class,
-        GoalEntity::class
+        GoalEntity::class,
+        TaskTagEntity::class
     ],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -70,6 +73,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun noteFolderDao(): NoteFolderDao
     abstract fun budgetDao(): BudgetDao
     abstract fun goalDao(): GoalDao
+    abstract fun taskTagDao(): TaskTagDao
 
     companion object {
         const val DATABASE_NAME = "taskmanager.db"

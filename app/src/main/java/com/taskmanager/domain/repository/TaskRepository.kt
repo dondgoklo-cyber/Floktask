@@ -16,6 +16,11 @@ interface TaskRepository {
     fun getIncompleteTasks(): Flow<List<Task>>
     fun searchTasks(query: String): Flow<List<Task>>
 
+    // Tag management (many-to-many)
+    suspend fun setTaskTags(taskId: Long, tagIds: List<Long>)
+    suspend fun getTaskTags(taskId: Long): List<String>
+    fun getTasksByTag(tagId: Long): Flow<List<Task>>
+
     /** Задачи с запланированным временем (time blocks) за день [dayStart, dayEnd). */
     fun getTimedTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>>
 

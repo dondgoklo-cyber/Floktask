@@ -1,6 +1,9 @@
 package com.taskmanager.data.repository
 
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.data.local.dao.TaskTagDao
+import com.taskmanager.data.local.dao.TagDao
+import com.taskmanager.data.local.entity.TaskTagEntity
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +12,9 @@ import java.time.Instant
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
-    private val taskDao: TaskDao
+    private val taskDao: TaskDao,
+    private val taskTagDao: TaskTagDao,
+    private val tagDao: TagDao
 ) : TaskRepository {
 
     override suspend fun createTask(task: Task): Long =
@@ -59,4 +64,17 @@ class TaskRepositoryImpl @Inject constructor(
 
     override fun getUpcomingTasks(fromEpoch: Long): Flow<List<Task>> =
         taskDao.getUpcomingTasks(fromEpoch).map { list -> list.map { it.toDomain() } }
+
+    override suspend fun setTaskTags(taskId: Long, tagIds: List<Long>) {
+        taskTagDao.deleteByTaskId(taskId)
+        taskTagDao.insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it) })
+    }
+
+    override suspend fun getTaskTags(taskId: Long): List<String> {
+        val tagIds = taskTagDao.getTagIdsForTask(taskId)
+        return tagIds.mapNotNull { id -> tagDao.getById(id)?.name }
+    }
+
+    override fun getTasksByTag(tagId: Long): Flow<List<Task>> =
+        taskTagDao.getTasksForTag(tagId).map { list -> list.map { it.toDomain() } }
 }
