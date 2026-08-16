@@ -2,6 +2,7 @@ package com.taskmanager.di
 
 import android.content.Context
 import androidx.room.Room
+import com.taskmanager.data.local.dao.PomodoroSessionDao
 import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
@@ -24,7 +25,7 @@ object DatabaseModule {
     ): AppDatabase = Room.databaseBuilder(
         context,
         AppDatabase::class.java,
-        "taskmanager.db"
+        AppDatabase.DATABASE_NAME
     ).fallbackToDestructiveMigration().build()
 
     @Provides
@@ -35,4 +36,8 @@ object DatabaseModule {
 
     @Provides
     fun provideTagDao(db: AppDatabase): TagDao = db.tagDao()
+
+    @Provides
+    fun providePomodoroSessionDao(db: AppDatabase): PomodoroSessionDao =
+        db.pomodoroSessionDao()
 }
