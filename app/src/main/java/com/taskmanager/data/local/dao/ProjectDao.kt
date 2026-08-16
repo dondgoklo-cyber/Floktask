@@ -37,4 +37,10 @@ interface ProjectDao {
 
     @Query("UPDATE projects SET isArchived = :archived, updatedAt = :updatedAt WHERE id = :id")
     suspend fun setArchived(id: Long, archived: Boolean, updatedAt: Long)
+
+    @Query("SELECT * FROM projects")
+    suspend fun getAllSnapshot(): List<ProjectEntity>
+
+    @Query("DELETE FROM projects")
+    suspend fun clearAll()
 }

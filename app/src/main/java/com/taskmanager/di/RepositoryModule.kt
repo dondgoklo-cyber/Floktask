@@ -1,8 +1,10 @@
 package com.taskmanager.di
 
+import com.taskmanager.data.backup.BackupRepositoryImpl
 import com.taskmanager.data.repository.ProjectRepositoryImpl
 import com.taskmanager.data.repository.TagRepositoryImpl
 import com.taskmanager.data.repository.TaskRepositoryImpl
+import com.taskmanager.domain.repository.BackupRepository
 import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.TagRepository
 import com.taskmanager.domain.repository.TaskRepository
@@ -27,4 +29,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTagRepository(impl: TagRepositoryImpl): TagRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBackupRepository(impl: BackupRepositoryImpl): BackupRepository
 }
