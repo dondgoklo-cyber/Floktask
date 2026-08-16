@@ -58,6 +58,17 @@ import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.TaskStatus
 import com.taskmanager.presentation.components.AppTextField
+import com.taskmanager.domain.model.TaskTemplates
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Slideshow
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.EventNote
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.ShoppingCart
 import com.taskmanager.presentation.components.parseTagColor
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
@@ -119,6 +130,25 @@ fun TaskEditScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            // Шаблоны (только при создании новой задачи)
+            if (!viewModel.isEditing) {
+                Text("Шаблоны", style = MaterialTheme.typography.labelLarge, color = AppTheme.colors.onSurfaceVariant)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    TaskTemplates.all.forEach { template ->
+                        FilterChip(
+                            selected = false,
+                            onClick = {
+                                viewModel.onTitleChange(template.title)
+                                viewModel.onPriorityChange(template.priority)
+                                viewModel.onDurationChange(template.durationMinutes)
+                                viewModel.onPomodoroEstimateChange(template.pomodoroEstimate)
+                            },
+                            label = { Text(template.title) }
+                        )
+                    }
+                }
+            }
 
             // Описание
             AppTextField(

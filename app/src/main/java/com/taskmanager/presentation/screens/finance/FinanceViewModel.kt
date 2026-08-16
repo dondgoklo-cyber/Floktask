@@ -75,6 +75,7 @@ data class FinanceUiState(
     val savingsRate: Double = 0.0,
     val budgets: List<Pair<Category, Budget>> = emptyList(),
     val goals: List<Goal> = emptyList(),
+    val dailyBalances: List<Double> = emptyList(),
     val accounts: List<Account> = emptyList(),
     val categories: List<Category> = emptyList(),
     val currency: String = "RUB",
@@ -155,6 +156,9 @@ class FinanceViewModel @Inject constructor(
         val grouped = groupByDateLabel(periodTx, zone)
         val catExpenses = buildCategoryExpenses(periodTx, categories)
 
+        // Daily balances (cumulative)
+        val dailyBalances = buildDailyBalances(periodTx, zone)
+
         // Analytics
         val largestExpense = periodTx.filter { it.type == TransactionType.EXPENSE }
             .maxByOrNull { it.amount }
@@ -200,6 +204,7 @@ class FinanceViewModel @Inject constructor(
             savingsRate = savingsRate,
             budgets = budgetPairs,
             goals = goals,
+            dailyBalances = dailyBalances,
             accounts = accounts,
             categories = categories,
             currency = currency,
@@ -279,6 +284,31 @@ class FinanceViewModel @Inject constructor(
             FinancePeriod.MONTH -> today.withDayOfMonth(1) to today
             FinancePeriod.YEAR -> today.withDayOfYear(1) to today
         }
+    }
+
+    private fun buildDailyBalances(
+        transactions: List<Transaction>,
+        zone: ZoneId
+    ): List<Double> {
+        val sorted = transactions.sortedBy { it.date }
+        var running = 0.0
+        val result = mutableListOf<Double>()
+        var currentDate: LocalDate? = null
+        
+        for (tx in sorted) {
+            val txDate = tx.date.atZone(zone).toLocalDate()
+            if (currentDate != null && txDate != currentDate) {
+                result.add(running)
+            }
+            currentDate = txDate
+            when (tx.type) {
+                TransactionType.INCOME -> running += tx.amount
+                TransactionType.EXPENSE -> running -= tx.amount
+                TransactionType.TRANSFER -> {}
+            }
+        }
+        result.add(running)
+        return result
     }
 
     private fun groupByDateLabel(

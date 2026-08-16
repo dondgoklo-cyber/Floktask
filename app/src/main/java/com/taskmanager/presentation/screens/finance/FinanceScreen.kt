@@ -196,6 +196,11 @@ fun FinanceScreen(
                 item { CategoryPieChart(state.categoryExpenses, state.baseCurrency) }
             }
 
+            // Balance line chart
+            if (state.dailyBalances.size >= 2) {
+                item { BalanceLineChart(state.dailyBalances, state.baseCurrency) }
+            }
+
             // Budgets
             if (state.budgets.isNotEmpty()) {
                 item {
