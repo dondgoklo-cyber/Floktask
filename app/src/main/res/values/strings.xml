@@ -10,4 +10,5 @@
     <string name="priority_medium">Medium</string>
     <string name="priority_low">Low</string>
     <string name="priority_none">No priority</string>
+    <string name="time_block">Time Block</string>
 </resources>
