@@ -111,6 +111,9 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
+    // Leak detection (debug only) — issue 42
+    debugImplementation(libs.leakcanary)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
