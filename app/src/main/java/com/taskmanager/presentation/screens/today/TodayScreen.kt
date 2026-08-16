@@ -90,6 +90,7 @@ fun TodayScreen(
     var showVoice by remember { mutableStateOf(false) }
     var addTransactionType by remember { mutableStateOf<TransactionType?>(null) }
     val financeViewModel: FinanceViewModel = hiltViewModel()
+    val quickAddViewModel: com.taskmanager.presentation.screens.tasks.QuickAddViewModel = hiltViewModel()
     val financeState by financeViewModel.state.collectAsState()
 
     if (detailTaskId != null) {
@@ -147,8 +148,9 @@ fun TodayScreen(
         VoiceTaskSheet(
             onDismiss = { showVoice = false },
             onCreate = { title, date, time, priority, recurrence ->
-                // Create task via QuickAddViewModel or direct creation
                 showVoice = false
+                // Создаём задачу через QuickAddViewModel
+                quickAddViewModel.createTaskFromVoice(title, date, time, priority, recurrence)
             }
         )
     }
@@ -640,7 +642,7 @@ private fun NotesPreviewCard(state: TodayUiState, onAllNotes: () -> Unit) {
 private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
     androidx.compose.material3.Card(
         modifier = Modifier.fillMaxWidth(),
-        onClick = {},
+        onClick = onTaskClick,
         elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.lg),
         colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = AppTheme.colors.surface)

@@ -102,7 +102,7 @@ fun NotesScreen(
                             context.contentResolver.openInputStream(it)?.use { stream ->
                                 val md = stream.bufferedReader().readText()
                                 val note = exportManager.importFromMarkdown(md)
-                                viewModel.createNote { id -> onNoteClick(id) }
+                                viewModel.createNoteWithContent(note.title, note.contentMarkdown) { id -> onNoteClick(id) }
                             }
                         }
                     }

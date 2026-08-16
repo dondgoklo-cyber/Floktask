@@ -57,6 +57,8 @@ fun SearchScreen(
     onBack: () -> Unit,
     onTaskClick: (Long) -> Unit,
     onNoteClick: (Long) -> Unit = {},
+    onProjectClick: (Long) -> Unit = {},
+    onHabitClick: () -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -138,7 +140,7 @@ fun SearchScreen(
                                 iconColor = AppTheme.colors.info,
                                 title = project.title,
                                 subtitle = project.description,
-                                onClick = {}
+                                onClick = { project.id?.let { onProjectClick(it) } }
                             )
                         }
                     }
@@ -152,7 +154,7 @@ fun SearchScreen(
                                 iconColor = AppTheme.colors.success,
                                 title = habit.name,
                                 subtitle = habit.description,
-                                onClick = {}
+                                onClick = { onHabitClick() }
                             )
                         }
                     }

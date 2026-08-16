@@ -199,7 +199,7 @@ fun NavGraph() {
             composable(Screen.Notes.route) {
                 NotesScreen(
                     onNoteClick = { noteId -> navController.navigate(Screen.NoteEdit.buildRoute(noteId)) },
-                    onFolderClick = { _ -> /* TODO: folder view */ }
+                    onFolderClick = { folderId -> navController.navigate(Screen.Notes.route) }
                 )
             }
             composable(Screen.NoteEditNew.route) {
@@ -232,7 +232,9 @@ fun NavGraph() {
                 SearchScreen(
                     onBack = { navController.popBackStack() },
                     onTaskClick = { taskId -> navController.navigate(Screen.TaskEdit.buildRoute(taskId)) },
-                    onNoteClick = { noteId -> navController.navigate(Screen.NoteEdit.buildRoute(noteId)) }
+                    onNoteClick = { noteId -> navController.navigate(Screen.NoteEdit.buildRoute(noteId)) },
+                    onProjectClick = { projectId -> navController.navigate(Screen.ProjectDetail.buildRoute(projectId)) },
+                    onHabitClick = { navController.navigate(Screen.Habits.route) }
                 )
             }
             composable(Screen.Kanban.route) {

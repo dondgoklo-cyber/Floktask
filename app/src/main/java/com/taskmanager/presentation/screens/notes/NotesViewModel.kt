@@ -67,6 +67,13 @@ class NotesViewModel @Inject constructor(
         }
     }
 
+    fun createNoteWithContent(title: String, content: String, onCreated: (Long) -> Unit) {
+        viewModelScope.launch {
+            val id = createNoteUseCase(Note(title = title, contentMarkdown = content))
+            onCreated(id)
+        }
+    }
+
     fun togglePin(note: Note) {
         viewModelScope.launch {
             noteRepository.setPinned(note.id ?: 0, !note.pinned)
