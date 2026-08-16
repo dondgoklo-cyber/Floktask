@@ -1,0 +1,84 @@
+# Detekt configuration for Floktask
+# https://detekt.dev/docs/introduction/configurations
+
+complexity:
+  active: true
+  LongMethod:
+    active: true
+    threshold: 120
+  LongParameterList:
+    active: true
+    functionThreshold: 7
+    constructorThreshold: 8
+    ignoreDefaultParameters: true
+  ComplexCondition:
+    active: true
+    threshold: 5
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 18
+  TooManyFunctions:
+    active: false  # ViewModels/screens often have many small functions
+  LargeClass:
+    active: true
+    threshold: 250
+
+style:
+  active: true
+  MaxLineLength:
+    active: true
+    maxLength: 120
+    excludePackageStatements: true
+    excludeImportStatements: true
+  MagicNumber:
+    active: false  # too noisy for Android resource ids / Room versions
+  ReturnCount:
+    active: true
+    max: 4
+  WildcardImport:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**']
+  ForbiddenComment:
+    active: true
+    values: ['STOPSHIP', 'XXX']
+  LibraryCodeMustSpecifyReturnType:
+    active: true
+
+empty-blocks:
+  active: true
+
+exceptions:
+  active: true
+  SwallowedException:
+    active: true
+  TooGenericExceptionCaught:
+    active: true
+
+naming:
+  active: true
+  FunctionNaming:
+    active: true
+    functionPattern: '([a-z][a-zA-Z0-9]*)|(`.*`)'
+    excludes: ['**/Composable*.kt', '**/*Screen.kt', '**/*ViewModel.kt']
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+
+performance:
+  active: true
+  ForEachOnRange:
+    active: true
+  SpreadOperator:
+    active: true
+
+potential-bugs:
+  active: true
+  UnsafeCallOnNullableType:
+    active: true
+  IteratorNotThrowingNoSuchElementException:
+    active: true
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage:
+    active: true

@@ -1,0 +1,5 @@
+#!/bin/sh
+message_file="${1:-}"
+if [ -z "$message_file" ] || [ ! -f "$message_file" ]; then exit 0; fi
+grep -Fq 'Co-authored-by: dondgoklo-cyber <dondgoklo-cyber@users.noreply.github.com>' "$message_file" && exit 0
+printf '\n%s\n' 'Co-authored-by: dondgoklo-cyber <dondgoklo-cyber@users.noreply.github.com>' >> "$message_file"

@@ -2,6 +2,8 @@
 agp = "8.1.2"
 kotlin = "1.9.10"
 kapt = "1.9.10"
+detekt = "1.23.3"
+ktlintPlugin = "11.6.1"
 coreKtx = "1.12.0"
 lifecycle = "2.6.2"
 activityCompose = "1.7.2"
@@ -82,3 +84,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kapt" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version = "4.3.15" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }

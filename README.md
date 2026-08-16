@@ -99,6 +99,31 @@ app/src/main/java/com/taskmanager/
 | 4. Unique features     | Mar–May 2027    | Pending  |
 | 5. Release             | Jun 2027        | Pending  |
 
+## Code quality
+
+The project uses **Detekt** (static analysis) and **ktlint** (formatting) configured via
+`detekt.yml` and `.editorconfig`.
+
+### Install git hooks (one-time setup)
+
+```bash
+git config core.hooksPath .githooks
+```
+
+This enables a `pre-commit` hook that runs `ktlintCheck` + `detekt` on staged Kotlin
+files, and a `commit-msg` hook that appends co-author metadata. Bypass once with
+`git commit --no-verify`.
+
+### Run checks manually
+
+```bash
+./gradlew detekt          # static analysis
+./gradlew ktlintCheck     # format check
+./gradlew ktlintFormat    # auto-format
+```
+
+CI (`.github/workflows/lint.yml`, `build.yml`) runs these checks on every PR and push to `main`.
+
 ## License
 
 Proprietary — all rights reserved.

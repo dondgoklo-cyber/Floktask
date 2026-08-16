@@ -1,0 +1,32 @@
+#!/bin/sh
+# Pre-commit hook: run ktlint + detekt on staged Kotlin files.
+# Enable with:  git config core.hooksPath .githooks
+# Skip once:     git commit --no-verify
+
+STAGED_KT=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.kt$|\.kts$' || true)
+
+if [ -z "$STAGED_KT" ]; then
+    echo "[pre-commit] No staged Kotlin files; skipping lint."
+    exit 0
+fi
+
+echo "[pre-commit] Running ktlintCheck ..."
+./gradlew ktlintCheck -q --no-daemon >/dev/null 2>&1
+KT_EXIT=$?
+if [ "$KT_EXIT" -ne 0 ]; then
+    echo "[pre-commit] ktlint failed. Fix formatting or run with --no-verify to skip."
+    ./gradlew ktlintCheck --no-daemon
+    exit "$KT_EXIT"
+fi
+
+echo "[pre-commit] Running detekt ..."
+./gradlew detekt -q --no-daemon >/dev/null 2>&1
+DET_EXIT=$?
+if [ "$DET_EXIT" -ne 0 ]; then
+    echo "[pre-commit] detekt failed. Fix issues or run with --no-verify to skip."
+    ./gradlew detekt --no-daemon
+    exit "$DET_EXIT"
+fi
+
+echo "[pre-commit] Lint passed."
+exit 0
