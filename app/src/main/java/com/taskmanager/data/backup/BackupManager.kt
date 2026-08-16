@@ -14,6 +14,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.security.MessageDigest
+import android.util.Base64
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,11 +32,25 @@ class BackupManager @Inject constructor(
     private val projectDao: ProjectDao,
     private val habitDao: HabitDao
 ) {
+    companion object {
+        private const val BACKUP_VERSION = 2
+        private const val ENCRYPTION_KEY = "WOLFTASK_BACKUP_KEY_2026"
+    }
+
     suspend fun exportToUri(uri: Uri): Boolean = withContext(Dispatchers.IO) {
         try {
             val json = buildExportJson()
+            val jsonStr = json.toString(2)
+            val checksum = sha256(jsonStr)
+            
+            val backup = JSONObject()
+            backup.put("version", BACKUP_VERSION)
+            backup.put("checksum", checksum)
+            backup.put("encrypted", false)
+            backup.put("data", jsonStr)
+            
             context.contentResolver.openOutputStream(uri)?.use { out ->
-                out.write(json.toString(2).toByteArray(Charsets.UTF_8))
+                out.write(backup.toString(2).toByteArray(Charsets.UTF_8))
             } ?: return@withContext false
             true
         } catch (e: Exception) {
@@ -42,10 +60,23 @@ class BackupManager @Inject constructor(
 
     suspend fun importFromUri(uri: Uri): Boolean = withContext(Dispatchers.IO) {
         try {
-            val jsonStr = context.contentResolver.openInputStream(uri)?.use { input ->
+            val backupStr = context.contentResolver.openInputStream(uri)?.use { input ->
                 input.bufferedReader(Charsets.UTF_8).readText()
             } ?: return@withContext false
-            val root = JSONObject(jsonStr)
+            
+            val backup = JSONObject(backupStr)
+            val dataStr = backup.optString("data", backupStr)
+            val expectedChecksum = backup.optString("checksum", "")
+            
+            // Проверка целостности
+            if (expectedChecksum.isNotEmpty()) {
+                val actualChecksum = sha256(dataStr)
+                if (actualChecksum != expectedChecksum) {
+                    return@withContext false
+                }
+            }
+            
+            val root = JSONObject(dataStr)
             importProjects(root.optJSONArray("projects"))
             importTasks(root.optJSONArray("tasks"))
             importHabits(root.optJSONArray("habits"))
@@ -53,6 +84,12 @@ class BackupManager @Inject constructor(
         } catch (e: Exception) {
             false
         }
+    }
+    
+    private fun sha256(input: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hash = digest.digest(input.toByteArray(Charsets.UTF_8))
+        return hash.joinToString("") { "%02x".format(it) }
     }
 
     private suspend fun buildExportJson(): JSONObject {
