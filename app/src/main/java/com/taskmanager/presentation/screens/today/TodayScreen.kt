@@ -1,6 +1,7 @@
 package com.taskmanager.presentation.screens.today
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -641,7 +642,7 @@ private fun NotesPreviewCard(state: TodayUiState, onAllNotes: () -> Unit) {
 @Composable
 private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
     androidx.compose.material3.Card(
-        modifier = Modifier.fillMaxWidth().androidx.compose.foundation.clickable { 
+        modifier = Modifier.fillMaxWidth().clickable {
             state.inboxTasks.firstOrNull()?.id?.let(onTaskClick)
         },
         elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
