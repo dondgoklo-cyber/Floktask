@@ -3,6 +3,10 @@ package com.taskmanager.data.repository
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
@@ -28,6 +32,12 @@ class TaskRepositoryImpl @Inject constructor(
 
     override fun getAllTasks(): Flow<List<Task>> =
         taskDao.getAll().map { list -> list.map { it.toDomain() } }
+
+    override fun pagedTasks(pageSize: Int): Flow<PagingData<Task>> =
+        Pager(
+            config = PagingConfig(pageSize = pageSize, prefetchDistance = pageSize, enablePlaceholders = false),
+            pagingSourceFactory = { taskDao.pagingSource() }
+        ).flow.map { pagingData -> pagingData.map { it.toDomain() } }
 
     override fun getTasksByProject(projectId: Long): Flow<List<Task>> =
         taskDao.getByProject(projectId).map { list -> list.map { it.toDomain() } }

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.paging.PagingSource
 import com.taskmanager.data.local.entity.TaskEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -23,8 +24,11 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE id = :id")
     suspend fun getById(id: Long): TaskEntity?
 
-    @Query("SELECT * FROM tasks")
+    @Query("SELECT * FROM tasks ORDER BY createdAt DESC")
     fun getAll(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks ORDER BY createdAt DESC")
+    fun pagingSource(): PagingSource<Int, TaskEntity>
 
     @Query("SELECT * FROM tasks WHERE projectId = :projectId")
     fun getByProject(projectId: Long): Flow<List<TaskEntity>>

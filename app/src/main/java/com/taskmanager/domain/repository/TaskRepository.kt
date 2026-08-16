@@ -1,6 +1,7 @@
 package com.taskmanager.domain.repository
 
 import com.taskmanager.domain.model.Task
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
@@ -10,6 +11,9 @@ interface TaskRepository {
     suspend fun deleteTask(id: Long)
 
     fun getAllTasks(): Flow<List<Task>>
+
+    /** Paginated stream of all tasks (Paging3). */
+    fun pagedTasks(pageSize: Int = 20): Flow<PagingData<Task>>
     fun getTasksByProject(projectId: Long): Flow<List<Task>>
     fun getCompletedTasks(): Flow<List<Task>>
     fun getIncompleteTasks(): Flow<List<Task>>
