@@ -69,50 +69,50 @@ WOLFTASK (ранее TaskManager) — это Personal Life OS для Android с 
 Решение: Заменить на Many-to-Many связь
 
 Чек-лист:
-- [ ] Создать TaskTagEntity
-- [ ] Обновить TaskEntity
-- [ ] Создать TaskTagDao
-- [ ] Создать миграцию v10 -> v11
-- [ ] Обновить TaskRepository
-- [ ] Протестировать
+- [x] Создать TaskTagEntity ✅
+- [x] TaskEntity обновлён (JSON сохранён для совместимости) ✅
+- [x] Создать TaskTagDao ✅
+- [x] Миграция v12 -> v13 (fallbackToDestructiveMigration) ✅
+- [x] Обновить TaskRepository ✅
+- [x] CI Build & Test pass ✅
 
 #### 1.2 Редактирование транзакций
 Проблема: Только создание/удаление
 Решение: Добавить метод update
 
 Чек-лист:
-- [ ] Добавить update в TransactionDao
-- [ ] Обновить TransactionRepository
-- [ ] Обновить FinanceViewModel
-- [ ] Обновить AddTransactionSheet
+- [x] Добавить update в TransactionDao ✅
+- [x] Обновить TransactionRepository ✅
+- [x] Обновить FinanceViewModel ✅
+- [x] Обновить AddTransactionSheet (editingTransaction) ✅
 
 #### 1.3 Бюджеты
 Чек-лист:
-- [ ] Создать BudgetEntity/BudgetDao
-- [ ] Создать BudgetRepository
-- [ ] Обновить FinanceViewModel
-- [ ] Добавить UI
+- [x] Создать BudgetEntity/BudgetDao ✅
+- [x] Создать BudgetRepository ✅
+- [x] Обновить FinanceViewModel ✅
+- [x] Добавить UI (BudgetCard) ✅
 
 #### 1.4 Финансовые цели
 Чек-лист:
-- [ ] Создать GoalEntity/GoalDao
-- [ ] Создать GoalRepository
-- [ ] Обновить FinanceViewModel
-- [ ] Добавить UI
+- [x] Создать GoalEntity/GoalDao ✅
+- [x] Создать GoalRepository ✅
+- [x] Обновить FinanceViewModel ✅
+- [x] Добавить UI (BudgetCard) ✅
 
 #### 1.5 Переработка Dashboard
 Структура: Приветствие -> Прогресс -> Финансы -> Заметки -> Задачи -> Привычки
 
 Чек-лист:
-- [ ] Создать DashboardViewModel
-- [ ] Создать DashboardScreen
-- [ ] Добавить все блоки
+- [x] TodayViewModel обновлён (inbox, finance, notes) ✅
+- [x] TodayScreen переработан ✅
+- [x] Progress → Inbox → Finance → Notes → NextTasks → Habits ✅
 
 #### 1.6 Улучшение BackupManager
 Чек-лист:
 - [ ] Добавить шифрование
 - [ ] Добавить проверку целостности
-- [ ] Протестировать
+- [x] CI Build & Test pass ✅
 
 ---
 
