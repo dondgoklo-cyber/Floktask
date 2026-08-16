@@ -12,6 +12,7 @@ room = "2.6.1"
 hilt = "2.48"
 hiltNavigationCompose = "1.0.0"
 timber = "5.0.1"
+work = "2.9.0"
 kotlinxCoroutines = "1.7.3"
 kotlinxSerialization = "1.5.0"
 desugar = "2.0.4"
@@ -58,6 +59,7 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 
 # Timber
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
 # Desugaring
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }

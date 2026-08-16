@@ -102,6 +102,7 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Core library desugaring (java.time on minSdk 24)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
