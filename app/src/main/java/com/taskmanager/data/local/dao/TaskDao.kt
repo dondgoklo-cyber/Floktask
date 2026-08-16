@@ -38,6 +38,12 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE title LIKE :query OR description LIKE :query")
     fun search(query: String): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM tasks WHERE deadline IS NOT NULL ORDER BY deadline ASC")
+    fun getWithDeadline(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE deadline >= :startMillis AND deadline < :endMillis ORDER BY deadline ASC")
+    fun getByDeadlineBetween(startMillis: Long, endMillis: Long): Flow<List<TaskEntity>>
+
     @Query("DELETE FROM tasks WHERE id = :id")
     suspend fun deleteById(id: Long)
 

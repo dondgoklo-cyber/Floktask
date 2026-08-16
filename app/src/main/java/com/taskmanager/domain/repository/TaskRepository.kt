@@ -14,4 +14,10 @@ interface TaskRepository {
     fun getCompletedTasks(): Flow<List<Task>>
     fun getIncompleteTasks(): Flow<List<Task>>
     fun searchTasks(query: String): Flow<List<Task>>
+
+    /** Tasks that have a deadline, ordered by deadline ascending. */
+    fun getTasksWithDeadline(): Flow<List<Task>>
+
+    /** Tasks whose deadline falls within [startEpochMillis, endEpochMillis). */
+    fun getTasksByDeadlineBetween(startEpochMillis: Long, endEpochMillis: Long): Flow<List<Task>>
 }

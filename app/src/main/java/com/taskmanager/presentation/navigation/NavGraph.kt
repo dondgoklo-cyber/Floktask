@@ -2,9 +2,9 @@ package com.taskmanager.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -21,9 +21,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.taskmanager.presentation.screens.calendar.CalendarScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.tasks.TasksScreen
+import com.taskmanager.presentation.screens.timeline.UnifiedTimelineScreen
 
 @Composable
 fun NavGraph() {
@@ -69,8 +69,8 @@ fun NavGraph() {
             composable(Screen.Projects.route) {
                 ProjectsScreen()
             }
-            composable(Screen.Calendar.route) {
-                CalendarScreen()
+            composable(Screen.Timeline.route) {
+                UnifiedTimelineScreen()
             }
         }
     }
@@ -80,5 +80,5 @@ private val Screen.icon: ImageVector
     get() = when (this) {
         Screen.Tasks -> Icons.Filled.List
         Screen.Projects -> Icons.Filled.Folder
-        Screen.Calendar -> Icons.Filled.DateRange
+        Screen.Timeline -> Icons.Filled.Timeline
     }

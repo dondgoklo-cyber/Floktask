@@ -40,4 +40,10 @@ class TaskRepositoryImpl @Inject constructor(
 
     override fun searchTasks(query: String): Flow<List<Task>> =
         taskDao.search("%$query%").map { list -> list.map { it.toDomain() } }
+
+    override fun getTasksWithDeadline(): Flow<List<Task>> =
+        taskDao.getWithDeadline().map { list -> list.map { it.toDomain() } }
+
+    override fun getTasksByDeadlineBetween(startEpochMillis: Long, endEpochMillis: Long): Flow<List<Task>> =
+        taskDao.getByDeadlineBetween(startEpochMillis, endEpochMillis).map { list -> list.map { it.toDomain() } }
 }
