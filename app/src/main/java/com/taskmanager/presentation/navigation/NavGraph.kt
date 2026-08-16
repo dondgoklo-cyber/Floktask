@@ -2,9 +2,10 @@ package com.taskmanager.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -21,9 +22,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.taskmanager.presentation.screens.calendar.CalendarScreen
-import com.taskmanager.presentation.screens.projects.ProjectsScreen
+import com.taskmanager.presentation.screens.focus.FocusScreen
+import com.taskmanager.presentation.screens.insights.InsightsScreen
 import com.taskmanager.presentation.screens.tasks.TasksScreen
+import com.taskmanager.presentation.screens.today.TodayScreen
 
 @Composable
 fun NavGraph() {
@@ -57,20 +59,23 @@ fun NavGraph() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Tasks.route,
+            startDestination = Screen.Today.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Tasks.route) {
+            composable(Screen.Today.route) {
+                TodayScreen()
+            }
+            composable(Screen.Plan.route) {
                 TasksScreen(
                     onTaskClick = { },
                     onAddTaskClick = { }
                 )
             }
-            composable(Screen.Projects.route) {
-                ProjectsScreen()
+            composable(Screen.Focus.route) {
+                FocusScreen()
             }
-            composable(Screen.Calendar.route) {
-                CalendarScreen()
+            composable(Screen.Insights.route) {
+                InsightsScreen()
             }
         }
     }
@@ -78,7 +83,8 @@ fun NavGraph() {
 
 private val Screen.icon: ImageVector
     get() = when (this) {
-        Screen.Tasks -> Icons.Filled.List
-        Screen.Projects -> Icons.Filled.Folder
-        Screen.Calendar -> Icons.Filled.DateRange
+        Screen.Today -> Icons.Filled.CheckCircle
+        Screen.Plan -> Icons.Filled.CalendarMonth
+        Screen.Focus -> Icons.Filled.Timer
+        Screen.Insights -> Icons.Filled.BarChart
     }
