@@ -103,6 +103,27 @@ object RussianVoiceParser {
             val days = match.groupValues[1].toIntOrNull() ?: 1
             return DateResult(today.plusDays(days.toLong()), text.replace(match.value, "", ignoreCase = true).trim())
         }
+
+        // "через час" / "через 2 часа"
+        if (lower.contains("через час") || lower.contains("через 2 часа") || lower.contains("через два часа")) {
+            return DateResult(today, text.replace(Regex("через\s+(\d+\s*)?(час|часа|часов)"), "", ignoreCase = true).trim())
+        }
+
+        // "через N минут"
+        val throughMinutesRegex = Regex("""через\s+(\d+)\s*(минут|минуты|минуту|мин)""")
+        throughMinutesRegex.find(lower)?.let { match ->
+            return DateResult(today, text.replace(match.value, "", ignoreCase = true).trim())
+        }
+
+        // "на следующей неделе"
+        if (lower.contains("на следующей неделе") || lower.contains("следующая неделя")) {
+            return DateResult(today.plusWeeks(1), text.replace(Regex("на следующей неделе|следующая неделя"), "", ignoreCase = true).trim())
+        }
+
+        // "в выходные" — ближайшая суббота
+        if (lower.contains("в выходные") || lower.contains("выходные")) {
+            return DateResult(nextDayOfWeek(DayOfWeek.SATURDAY, today, false), removeWord(text, "в выходные", "выходные"))
+        }
         if (lower.contains("через неделю")) {
             return DateResult(today.plusWeeks(1), text.replace("через неделю", "", ignoreCase = true).trim())
         }
@@ -211,7 +232,9 @@ object RussianVoiceParser {
             "одиннадцать" to 11, "двенадцать" to 12, "тринадцать" to 13,
             "четырнадцать" to 14, "пятнадцать" to 15, "шестнадцать" to 16,
             "семнадцать" to 17, "восемнадцать" to 18, "девятнадцать" to 19,
-            "двадцать" to 20
+            "двадцать" to 20,
+            "тридцать" to 30, "сорок" to 40, "пятьдесят" to 50,
+            "шестьдесят" to 60, "сто" to 100
         )
 
         // "в три часа дня" / "в три часа вечера"
@@ -330,6 +353,50 @@ object RussianVoiceParser {
             }
         }
         return RecurrenceResult(null, text)
+    }
+
+    /**
+     * Парсит финансовую команду.
+     * "расход 1500 на продукты" -> FinanceDraft(EXPENSE, 1500, "продукты")
+     * "доход 120000 зарплата" -> FinanceDraft(INCOME, 120000, "зарплата")
+     */
+    fun parseFinance(text: String): FinanceDraft {
+        val lower = text.lowercase().trim()
+        var type = com.taskmanager.domain.model.TransactionType.EXPENSE
+        var amount = 0.0
+        var category: String? = null
+        var currency = "RUB"
+        var cleaned = lower
+
+        if (cleaned.contains("доход") || cleaned.contains("получил")) {
+            type = com.taskmanager.domain.model.TransactionType.INCOME
+            cleaned = cleaned.replace("доход", "").replace("получил", "").trim()
+        } else {
+            cleaned = cleaned.replace("расход", "").replace("потратил", "").replace("потратить", "").trim()
+        }
+
+        val amountRegex = Regex("(\d+(?:[.,]\d+)?)\s*(тысяч[а-я]?|тыс|миллион[а-я]?|млн|рублей|руб|р|долларов|доллар|баксов|евро)?")
+        amountRegex.find(cleaned)?.let { match ->
+            var num = match.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 0.0
+            val unit = match.groupValues[2]
+            when {
+                unit.startsWith("тысяч") || unit == "тыс" -> num *= 1000
+                unit.startsWith("миллион") || unit == "млн" -> num *= 1000000
+                unit.startsWith("доллар") || unit == "баксов" -> currency = "USD"
+                unit.startsWith("евро") -> currency = "EUR"
+            }
+            amount = num
+            cleaned = cleaned.replace(match.value, "").trim()
+        }
+
+        val onIdx = cleaned.indexOf(" на ")
+        if (onIdx >= 0) {
+            category = cleaned.substring(onIdx + 4).trim().ifBlank { null }
+        } else if (cleaned.isNotBlank()) {
+            category = cleaned.trim().ifBlank { null }
+        }
+
+        return FinanceDraft(type = type, amount = amount, category = category, currency = currency, rawText = text)
     }
 
     // === HELPERS ===

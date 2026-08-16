@@ -21,3 +21,14 @@ data class TaskDraft(
     val rawText: String = "",
     val isAmbiguousTime: Boolean = false
 )
+
+/**
+ * Результат парсинга финансовой голосовой команды.
+ */
+data class FinanceDraft(
+    val type: com.taskmanager.domain.model.TransactionType,
+    val amount: Double,
+    val category: String? = null,
+    val currency: String = "RUB",
+    val rawText: String = ""
+)
