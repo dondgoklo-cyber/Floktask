@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.GridOn
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -22,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.taskmanager.presentation.screens.calendar.CalendarScreen
+import com.taskmanager.presentation.screens.eisenhower.EisenhowerScreen
 import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.tasks.TasksScreen
 
@@ -72,6 +74,9 @@ fun NavGraph() {
             composable(Screen.Calendar.route) {
                 CalendarScreen()
             }
+            composable(Screen.Matrix.route) {
+                EisenhowerScreen()
+            }
         }
     }
 }
@@ -81,4 +86,5 @@ private val Screen.icon: ImageVector
         Screen.Tasks -> Icons.Filled.List
         Screen.Projects -> Icons.Filled.Folder
         Screen.Calendar -> Icons.Filled.DateRange
+        Screen.Matrix -> Icons.Filled.GridOn
     }
