@@ -23,6 +23,9 @@ interface ProjectDao {
     @Query("SELECT * FROM projects WHERE id = :id")
     suspend fun getById(id: Long): ProjectEntity?
 
+    @Query("SELECT * FROM projects WHERE title = :name COLLATE NOCASE LIMIT 1")
+    suspend fun findByName(name: String): ProjectEntity?
+
     @Query("SELECT * FROM projects")
     fun getAll(): Flow<List<ProjectEntity>>
 

@@ -18,6 +18,9 @@ class ProjectRepositoryImpl @Inject constructor(
     override suspend fun getProjectById(id: Long): Project? =
         projectDao.getById(id)?.toDomain()
 
+    override suspend fun findProjectByName(name: String): Project? =
+        projectDao.findByName(name)?.toDomain()
+
     override suspend fun updateProject(project: Project) {
         projectDao.update(project.copy(updatedAt = Instant.now()).toEntity())
     }

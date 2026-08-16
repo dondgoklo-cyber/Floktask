@@ -2,6 +2,7 @@ package com.taskmanager.di
 
 import com.taskmanager.data.remote.AuthService
 import com.taskmanager.data.remote.FirebaseService
+import com.taskmanager.domain.nlp.QuickAddParser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,4 +21,8 @@ object AppModule {
     @Singleton
     fun provideAuthService(firebaseService: FirebaseService): AuthService =
         AuthService(firebaseService)
+
+    @Provides
+    @Singleton
+    fun provideQuickAddParser(): QuickAddParser = QuickAddParser()
 }
