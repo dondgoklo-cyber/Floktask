@@ -15,20 +15,15 @@ import com.taskmanager.domain.model.Priority
 
 @Composable
 fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
-    val color = when (priority) {
-        Priority.HIGH -> Color(0xFFEF5350)
-        Priority.MEDIUM -> Color(0xFFFFA726)
-        Priority.LOW -> Color(0xFF66BB6A)
-        Priority.NONE -> Color(0xFFBDBDBD)
-    }
+    val style = PriorityStyles.forPriority(priority)
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(color)
+            .background(style.accentColor)
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
-            text = priority.name,
+            text = PriorityStyles.priorityLabel(priority),
             style = MaterialTheme.typography.labelSmall,
             color = Color.White
         )
