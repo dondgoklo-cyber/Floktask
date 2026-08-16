@@ -106,7 +106,7 @@ object RussianVoiceParser {
 
         // "через час" / "через 2 часа"
         if (lower.contains("через час") || lower.contains("через 2 часа") || lower.contains("через два часа")) {
-            return DateResult(today, text.replace(Regex("через\s+(\d+\s*)?(час|часа|часов)"), "", ignoreCase = true).trim())
+            return DateResult(today, text.replace(Regex("""через\s+(\d+\s*)?(час|часа|часов)"""), "", ignoreCase = true).trim())
         }
 
         // "через N минут"
@@ -375,7 +375,7 @@ object RussianVoiceParser {
             cleaned = cleaned.replace("расход", "").replace("потратил", "").replace("потратить", "").trim()
         }
 
-        val amountRegex = Regex("(\d+(?:[.,]\d+)?)\s*(тысяч[а-я]?|тыс|миллион[а-я]?|млн|рублей|руб|р|долларов|доллар|баксов|евро)?")
+        val amountRegex = Regex("""(\d+(?:[.,]\d+)?)\s*(тысяч[а-я]?|тыс|миллион[а-я]?|млн|рублей|руб|р|долларов|доллар|баксов|евро)?""")
         amountRegex.find(cleaned)?.let { match ->
             var num = match.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 0.0
             val unit = match.groupValues[2]
