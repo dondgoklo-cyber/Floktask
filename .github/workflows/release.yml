@@ -1,0 +1,54 @@
+name: Release APK
+
+on:
+  push:
+    branches: [main, "vibe/**"]
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Build & Release APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "8.4"
+
+      - name: Build debug APK
+        run: gradle assembleDebug --stacktrace --no-daemon
+
+      - name: Rename APK
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk \
+             app/build/outputs/apk/debug/TaskManager-debug.apk
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-debug
+          name: TaskManager v1.0.0-debug (APK)
+          body: |
+            ## TaskManager debug build
+
+            Smart Android task manager with gamification.
+
+            ### Установка
+            1. Скачай файл TaskManager-debug.apk ниже
+            2. Открой его на телефоне (Android 7.0+)
+            3. Разреши установку из неизвестных источников
+            4. Готово
+          prerelease: true
+          files: app/build/outputs/apk/debug/TaskManager-debug.apk

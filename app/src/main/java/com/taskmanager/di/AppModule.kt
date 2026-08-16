@@ -1,10 +1,11 @@
 package com.taskmanager.di
 
-import com.taskmanager.data.remote.AuthService
-import com.taskmanager.data.remote.FirebaseService
+import android.content.Context
+import com.taskmanager.haptic.HapticManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -14,10 +15,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseService(): FirebaseService = FirebaseService()
+    fun provideHapticManager(@ApplicationContext context: Context): HapticManager =
+        HapticManager(context)
 
     @Provides
     @Singleton
-    fun provideAuthService(firebaseService: FirebaseService): AuthService =
-        AuthService(firebaseService)
+    fun provideExchangeRateProvider(): com.taskmanager.domain.finance.ExchangeRateProvider =
+        com.taskmanager.data.repository.LocalExchangeRateProvider()
 }

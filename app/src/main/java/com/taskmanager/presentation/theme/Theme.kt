@@ -5,28 +5,64 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+// Брендовые цвета (обратная совместимость с существующими импортами)
+val Orange = Color(0xFFFF7A00)
+val OrangeLight = Color(0xFFFFB74D)
+val OrangeDark = Color(0xFFFF8C00)
+
+/** Локальная композиция для доступа к расширенной палитре [AppColors] из любого компонента. */
+val LocalAppColors = staticCompositionLocalOf { LightAppColors }
+
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF6200EE),
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFE9DDFF),
-    onPrimaryContainer = Color(0xFF1E0054),
-    secondary = Color(0xFF00897B),
-    onSecondary = Color.White,
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = LightAppColors.primary,
+    onPrimary = LightAppColors.onPrimary,
+    primaryContainer = LightAppColors.primaryContainer,
+    onPrimaryContainer = LightAppColors.onPrimaryContainer,
+    secondary = LightAppColors.secondary,
+    onSecondary = LightAppColors.onSecondary,
+    secondaryContainer = LightAppColors.secondaryContainer,
+    onSecondaryContainer = LightAppColors.onSecondaryContainer,
+    tertiary = LightAppColors.warning,
+    onTertiary = LightAppColors.onWarning,
+    background = LightAppColors.background,
+    onBackground = LightAppColors.onBackground,
+    surface = LightAppColors.surface,
+    onSurface = LightAppColors.onSurface,
+    surfaceVariant = LightAppColors.surfaceVariant,
+    onSurfaceVariant = LightAppColors.onSurfaceVariant,
+    surfaceTint = LightAppColors.primary,
+    outline = LightAppColors.outline,
+    outlineVariant = LightAppColors.outlineVariant,
+    error = LightAppColors.error,
+    onError = LightAppColors.onError
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFFBB86FC),
-    onPrimary = Color(0xFF3700B3),
-    primaryContainer = Color(0xFF4B00B4),
-    onPrimaryContainer = Color(0xFFE9DDFF),
-    secondary = Color(0xFF80CBC4),
-    onSecondary = Color(0xFF003734),
-    background = Color(0xFF1C1B1F),
-    surface = Color(0xFF1C1B1F),
+    primary = DarkAppColors.primary,
+    onPrimary = DarkAppColors.onPrimary,
+    primaryContainer = DarkAppColors.primaryContainer,
+    onPrimaryContainer = DarkAppColors.onPrimaryContainer,
+    secondary = DarkAppColors.secondary,
+    onSecondary = DarkAppColors.onSecondary,
+    secondaryContainer = DarkAppColors.secondaryContainer,
+    onSecondaryContainer = DarkAppColors.onSecondaryContainer,
+    tertiary = DarkAppColors.warning,
+    onTertiary = DarkAppColors.onWarning,
+    background = DarkAppColors.background,
+    onBackground = DarkAppColors.onBackground,
+    surface = DarkAppColors.surface,
+    onSurface = DarkAppColors.onSurface,
+    surfaceVariant = DarkAppColors.surfaceVariant,
+    onSurfaceVariant = DarkAppColors.onSurfaceVariant,
+    surfaceTint = DarkAppColors.primary,
+    outline = DarkAppColors.outline,
+    outlineVariant = DarkAppColors.outlineVariant,
+    error = DarkAppColors.error,
+    onError = DarkAppColors.onError
 )
 
 @Composable
@@ -35,9 +71,19 @@ fun TaskManagerTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColors else LightColors
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = MaterialTheme.typography,
-        content = content
-    )
+    val appColors = if (darkTheme) DarkAppColors else LightAppColors
+
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = appTypography(),
+            content = content
+        )
+    }
+}
+
+/** Удобный доступ к расширенной палитре из любого composable. */
+object AppTheme {
+    val colors: AppColors
+        @Composable get() = LocalAppColors.current
 }

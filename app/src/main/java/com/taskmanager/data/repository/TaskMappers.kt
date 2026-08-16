@@ -1,10 +1,13 @@
 package com.taskmanager.data.repository
 
 import com.taskmanager.data.local.entity.TaskEntity
+import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.Task
+import com.taskmanager.domain.model.TaskStatus
 import java.time.Instant
+import org.json.JSONArray
 
 fun Task.toEntity(): TaskEntity = TaskEntity(
     id = id ?: 0,
@@ -12,13 +15,20 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     description = description,
     projectId = projectId,
     priority = priority.value,
+    status = status.name,
     deadline = deadline?.toEpochMilli(),
+    startTime = startTime?.toEpochMilli(),
+    durationMinutes = durationMinutes,
     isCompleted = isCompleted,
+    pomodoroEstimate = pomodoroEstimate,
+    timeEstimateMinutes = timeEstimateMinutes,
+    eisenhowerQuadrant = eisenhowerQuadrant?.name,
     createdAt = createdAt.toEpochMilli(),
     updatedAt = updatedAt.toEpochMilli(),
     color = color,
     reminderDate = reminderDate?.toEpochMilli(),
-    recurrenceRule = recurrenceRule?.name
+    recurrenceRule = recurrenceRule?.name,
+    tags = if (tags.isNotEmpty()) JSONArray(tags).toString() else null
 )
 
 private fun Int.toPriority(): Priority =
@@ -27,17 +37,39 @@ private fun Int.toPriority(): Priority =
 private fun String.toRecurrenceRule(): RecurrenceRule? =
     runCatching { RecurrenceRule.valueOf(this) }.getOrNull()
 
+private fun String.toTaskStatus(): TaskStatus =
+    runCatching { TaskStatus.valueOf(this) }.getOrDefault(TaskStatus.TODO)
+
+private fun String.toEisenhowerQuadrant(): EisenhowerQuadrant? =
+    runCatching { EisenhowerQuadrant.valueOf(this) }.getOrNull()
+
 fun TaskEntity.toDomain(): Task = Task(
     id = id,
     title = title,
     description = description,
     projectId = projectId,
     priority = priority.toPriority(),
+    status = status.toTaskStatus(),
     deadline = deadline?.let { Instant.ofEpochMilli(it) },
+    startTime = startTime?.let { Instant.ofEpochMilli(it) },
+    durationMinutes = durationMinutes,
     isCompleted = isCompleted,
+    pomodoroEstimate = pomodoroEstimate,
+    timeEstimateMinutes = timeEstimateMinutes,
+    eisenhowerQuadrant = eisenhowerQuadrant?.toEisenhowerQuadrant(),
     createdAt = Instant.ofEpochMilli(createdAt),
     updatedAt = Instant.ofEpochMilli(updatedAt),
     color = color,
     reminderDate = reminderDate?.let { Instant.ofEpochMilli(it) },
-    recurrenceRule = recurrenceRule?.toRecurrenceRule()
+    recurrenceRule = recurrenceRule?.toRecurrenceRule(),
+    tags = parseTags(tags)
 )
+
+
+private fun parseTags(json: String?): List<String> {
+    if (json.isNullOrBlank()) return emptyList()
+    return runCatching {
+        val arr = JSONArray(json)
+        (0 until arr.length()).map { arr.getString(it) }
+    }.getOrDefault(emptyList())
+}

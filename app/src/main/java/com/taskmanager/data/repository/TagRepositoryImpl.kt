@@ -14,6 +14,10 @@ class TagRepositoryImpl @Inject constructor(
     override suspend fun createTag(tag: Tag): Long =
         tagDao.insert(tag.toEntity())
 
+    override suspend fun updateTag(tag: Tag) {
+        tagDao.update(tag.toEntity())
+    }
+
     override suspend fun deleteTag(id: Long) {
         tagDao.deleteById(id)
     }

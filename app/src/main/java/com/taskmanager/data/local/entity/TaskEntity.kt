@@ -17,7 +17,9 @@ import androidx.room.PrimaryKey
         Index("projectId"),
         Index("priority"),
         Index("deadline"),
-        Index("isCompleted")
+        Index("startTime"),
+        Index("isCompleted"),
+        Index("eisenhowerQuadrant")
     ]
 )
 data class TaskEntity(
@@ -26,11 +28,18 @@ data class TaskEntity(
     val description: String? = null,
     val projectId: Long? = null,
     val priority: Int = 4,
+    val status: String = "TODO",
     val deadline: Long? = null,
+    val startTime: Long? = null,
+    val durationMinutes: Long? = null,
     val isCompleted: Boolean = false,
+    val pomodoroEstimate: Int? = null,
+    val timeEstimateMinutes: Long? = null,
+    val eisenhowerQuadrant: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val color: String? = null,
     val reminderDate: Long? = null,
-    val recurrenceRule: String? = null
+    val recurrenceRule: String? = null,
+    val tags: String? = null
 )

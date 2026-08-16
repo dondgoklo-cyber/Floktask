@@ -1,104 +1,76 @@
 # TaskManager
 
-Smart Android task manager with an AI assistant, geolocation reminders, and gamification.
-Built with **Clean Architecture + MVVM**, **Jetpack Compose**, **Room**, **Hilt**, and **Firebase**.
+Productivity-приложение для Android: задачи, проекты, календарь с time blocking,
+привычки, Pomodoro, матрица Эйзенхауэра и статистика.
+Построено на **Clean Architecture + MVVM**, **Jetpack Compose**, **Room**, **Hilt**.
 
-> Status: Stage 2 (MVP) — scaffolding complete. Target API 34, min SDK 24.
+> Статус: активная разработка. Target API 34, min SDK 24.
 
-## Features
+## Возможности
 
-### MVP (current scaffold)
-- Tasks and subtasks model
-- Projects and tags
-- Priorities (HIGH / MEDIUM / LOW / NONE)
-- Deadlines and reminders
-- Recurring tasks (`RecurrenceRule`)
-- Search and filtering
-- Local storage (Room)
-- Cloud sync scaffold (Firebase Auth + Realtime Database)
+### Реализовано
+- **Задачи**: создание, редактирование, приоритеты, статусы, дедлайн, время начала,
+  длительность, теги, подзадачи, повтор, оценка Pomodoro, квадрант Эйзенхауэра
+- **Проекты**: создание, цвета, иконки, архивирование, связь с задачами
+- **Календарь**: 5 режимов (День, 3 дня, Неделя, Месяц, Список), time blocking,
+  drag&drop задач по временной шкале, двусторонняя связь Task↔Calendar
+- **Привычки**: создание с цветом/частотой, streak (текущая/лучшая),
+  процент выполнения за 30 дней, отметка выполнения
+- **Pomodoro**: таймер (25/5/15), режимы Work/Short/Long break,
+  автопереключение, привязка к задаче, статистика (день/неделя/месяц)
+- **Матрица Эйзенхауэра**: 4 квадранта, авто-распределение по importance+urgency,
+  ручное переопределение через drag&drop
+- **Dashboard (Today)**: приветствие, прогресс дня, ближайшие задачи,
+  фокус-время, привычки, сводка (всего/выполнено/просрочено)
+- **Task Detail**: bottom sheet с progressive disclosure, подзадачи, запуск Pomodoro
+- **Quick Add**: быстрое создание с парсингом ключевых слов
+  («завтра», «15:00», «на час»)
+- **Дизайн-система**: централизованные design tokens (цвета, spacing, radius,
+  typography), light/dark темы, semantic colors (Success/Warning/Danger/Info)
+- **Геймификация**: уровни, очки, достижения
 
-### Planned
-- Kanban board, Gantt diagrams, Pomodoro timer, habit tracker
-- Natural-language input, collaboration, statistics
-- **AI assistant** (auto prioritization)
-- **Geolocation reminders**
-- **Gamification** (achievements, points, leaderboard)
-- Integrations (Google Calendar, Telegram, Notion)
+## Технологии
 
-## Tech stack
-
-| Category        | Technology                |
+| Категория        | Технология                |
 |-----------------|---------------------------|
-| Language        | Kotlin 1.9.10            |
-| UI              | Jetpack Compose (BOM)     |
-| Local DB        | Room 2.5.2               |
-| DI              | Hilt 2.48               |
-| Auth            | Firebase Auth            |
-| Cloud DB        | Firebase Realtime DB     |
-| HTTP            | Retrofit 2 + Gson        |
-| Async           | Coroutines + Flow        |
-| Navigation      | Navigation Compose 2.7.3 |
-| Logging         | Timber                    |
+| Язык             | Kotlin 1.9.22             |
+| UI               | Jetpack Compose (BOM 2024.02.00) |
+| Локальная БД     | Room 2.6.1 (v5)           |
+| DI               | Hilt 2.48                |
+| Навигация        | Navigation Compose 2.7.3  |
+| Архитектура      | Clean Architecture + MVVM |
+| Асинхронность    | Coroutines + Flow        |
 
-## Project structure
+## Структура
 
 ```
 app/src/main/java/com/taskmanager/
-├── TaskManagerApp.kt          # @HiltAndroidApp Application
-├── di/                        # Hilt modules
-│   ├── AppModule.kt
-│   ├── DatabaseModule.kt
-│   ├── NetworkModule.kt
-│   └── RepositoryModule.kt
+├── TaskManagerApp.kt          # @HiltAndroidApp + crash logger
+├── di/                        # Hilt модули (DB, репозитории, сеть)
 ├── data/                      # Data layer
-│   ├── local/                # Room (dao, entity, database)
-│   ├── remote/               # FirebaseService, AuthService
-│   └── repository/           # Repository implementations + mappers
+│   ├── local/                 # Room (dao, entity, database)
+│   └── repository/            # RepositoryImpl + Mappers
 ├── domain/                    # Domain layer
-│   ├── model/                # Task, Project, Tag, enums
-│   ├── repository/           # Repository interfaces
-│   └── usecase/              # Use cases (task, project)
+│   ├── model/                 # Task, Project, Tag, Habit, Subtask, PomodoroSession
+│   ├── repository/            # Repository interfaces
+│   └── usecase/               # task/, project/, habit/, pomodoro/, eisenhower/, gamification/
 └── presentation/              # Presentation layer
     ├── MainActivity.kt
-    ├── theme/                # Material3 light/dark
-    ├── navigation/           # NavGraph, Screen
-    ├── components/           # TaskCard, PriorityBadge
-    └── screens/              # tasks, projects, calendar
+    ├── theme/                 # DesignTokens, Theme (light/dark)
+    ├── navigation/            # NavGraph, Screen
+    ├── components/            # TaskCard, PriorityBadge, Skeleton, EmptyState
+    └── screens/               # today, tasks, projects, calendar, habits, focus, eisenhower, more, profile
 ```
 
-## Getting started
+## Сборка
 
-### Prerequisites
-- Android Studio Hedgehog (or newer)
-- JDK 17
-- Android SDK 34
-
-### Setup
-1. Clone the repository.
-2. Create a project in the [Firebase console](https://console.firebase.google.com/),
-   enable **Authentication** (Email/Password) and **Realtime Database**.
-3. Download `google-services.json` and place it at `app/google-services.json`.
-   A redacted template is provided at `app/google-services.json.example`.
-4. Open the project in Android Studio and let Gradle sync.
-5. Run the `app` configuration on a device or emulator (API 24+).
-
-### Build
 ```bash
-./gradlew assembleDebug        # debug APK
-./gradlew test                 # unit tests
-./gradlew connectedAndroidTest # instrumented tests
+gradle assembleDebug        # debug APK
+gradle testDebugUnitTest    # unit-тесты
 ```
 
-## Roadmap
+APK публикуется автоматически в [Releases](https://github.com/dondgoklo-cyber/Floktask/releases).
 
-| Stage | Period          | Status   |
-|-------|-----------------|----------|
-| 1. Analysis & planning | Aug 2026        | Done     |
-| 2. MVP development     | Sep–Nov 2026    | In progress |
-| 3. Extended features   | Dec 2026–Feb 2027 | Pending  |
-| 4. Unique features     | Mar–May 2027    | Pending  |
-| 5. Release             | Jun 2027        | Pending  |
-
-## License
+## Лицензия
 
 Proprietary — all rights reserved.
