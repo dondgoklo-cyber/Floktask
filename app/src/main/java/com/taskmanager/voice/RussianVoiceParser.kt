@@ -117,7 +117,7 @@ object RussianVoiceParser {
 
         // "на следующей неделе"
         if (lower.contains("на следующей неделе") || lower.contains("следующая неделя")) {
-            return DateResult(today.plusWeeks(1), text.replace(Regex("на следующей неделе|следующая неделя"), "", ignoreCase = true).trim())
+            return DateResult(today.plusWeeks(1), text.replace(Regex("""на следующей неделе|следующая неделя"""), "", ignoreCase = true).trim())
         }
 
         // "в выходные" — ближайшая суббота
