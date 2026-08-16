@@ -81,6 +81,7 @@ fun AddTransactionSheet(
     var amountText by remember { mutableStateOf(editingTransaction?.amount?.toString() ?: "") }
     var selectedCategoryId by remember { mutableStateOf(editingTransaction?.categoryId) }
     var selectedAccountId by remember { mutableStateOf(editingTransaction?.accountId ?: accounts.firstOrNull()?.id) }
+    val safeAccounts = accounts.ifEmpty { listOf(com.taskmanager.domain.model.Account(name = "Основной", currency = "RUB")) }
     var selectedCurrency by remember { mutableStateOf(editingTransaction?.currency ?: "RUB") }
     var note by remember { mutableStateOf(editingTransaction?.note ?: "") }
     var date by remember { mutableStateOf(editingTransaction?.date?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()) }
@@ -91,7 +92,7 @@ fun AddTransactionSheet(
     val filteredCategories = categories.filter {
         if (type == TransactionType.INCOME) it.type == CategoryType.INCOME
         else it.type == CategoryType.EXPENSE
-    }
+    }.ifEmpty { categories }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -204,10 +205,10 @@ fun AddTransactionSheet(
             }
 
             // Account (if multiple)
-            if (accounts.size > 1) {
+            if (safeAccounts.size > 1) {
                 Text(stringResource(R.string.account), style = MaterialTheme.typography.labelLarge, color = AppTheme.colors.onSurfaceVariant)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-                    accounts.forEach { acc ->
+                    safeAccounts.forEach { acc ->
                         FilterChip(
                             selected = selectedAccountId == acc.id,
                             onClick = { selectedAccountId = acc.id },
