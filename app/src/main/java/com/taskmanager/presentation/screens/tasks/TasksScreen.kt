@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
+import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.TaskCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,10 +54,14 @@ fun TasksScreen(
 
             is TasksState.Success -> {
                 if (state.tasks.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize().padding(paddingValues),
-                        contentAlignment = Alignment.Center
-                    ) { Text(stringResource(R.string.no_tasks)) }
+                    EmptyState(
+                        icon = Icons.Filled.TaskAlt,
+                        title = "No tasks yet",
+                        message = "Add your first task to get started. Try the Quick Add bar.",
+                        actionLabel = stringResource(R.string.add_task),
+                        onAction = onAddTaskClick,
+                        modifier = Modifier.padding(paddingValues)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize().padding(paddingValues),
