@@ -6,6 +6,7 @@ import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.database.AppDatabase
+import com.taskmanager.data.local.migration.MigrationStatusBus
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,4 +36,8 @@ object DatabaseModule {
 
     @Provides
     fun provideTagDao(db: AppDatabase): TagDao = db.tagDao()
+
+    @Provides
+    @Singleton
+    fun provideMigrationStatusBus(): MigrationStatusBus = MigrationStatusBus()
 }
