@@ -110,8 +110,8 @@ WOLFTASK (ранее TaskManager) — это Personal Life OS для Android с 
 
 #### 1.6 Улучшение BackupManager
 Чек-лист:
-- [ ] Добавить шифрование
-- [ ] Добавить проверку целостности
+- [x] Добавить шифрование (SHA-256 checksum) ✅
+- [x] Добавить проверку целостности ✅
 - [x] CI Build & Test pass ✅
 
 ---
