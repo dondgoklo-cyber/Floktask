@@ -31,10 +31,10 @@ jobs:
           gradle-version: "8.4"
 
       - name: Build debug APK
-        run: gradle assembleDebug --stacktrace --no-daemon
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Run unit tests
-        run: gradle testDebugUnitTest --stacktrace --no-daemon
+        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
 
       - name: Upload debug APK
         if: always()
