@@ -12,7 +12,6 @@ data class Task(
     val deadline: Instant? = null,
     val startTime: Instant? = null,
     val durationMinutes: Long? = null,
-    val isCompleted: Boolean = false,
     val pomodoroEstimate: Int? = null,
     val timeEstimateMinutes: Long? = null,
     val eisenhowerQuadrant: EisenhowerQuadrant? = null,
@@ -23,7 +22,10 @@ data class Task(
     val color: String? = null,
     val reminderDate: Instant? = null,
     val recurrenceRule: RecurrenceRule? = null
-)
+) {
+    // Вычисляемое свойство: isCompleted基руется на status
+    val isCompleted: Boolean get() = status == TaskStatus.DONE
+}
 
 enum class Priority(val value: Int) {
     HIGH(1), MEDIUM(2), LOW(3), NONE(4)
