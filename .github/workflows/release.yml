@@ -28,12 +28,11 @@ jobs:
           gradle-version: "8.4"
 
       - name: Build debug APK
-        run: gradle assembleDebug --stacktrace --no-daemon
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Rename APK
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk \
-             app/build/outputs/apk/debug/TaskManager-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk              app/build/outputs/apk/debug/TaskManager-debug.apk
 
       - name: Create or update release
         uses: softprops/action-gh-release@v2
