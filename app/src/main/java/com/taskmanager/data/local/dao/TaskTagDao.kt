@@ -22,7 +22,10 @@ interface TaskTagDao {
     suspend fun delete(taskId: Long, tagId: Long)
 
     @Query("SELECT * FROM task_tags")
-    suspend fun getAll(): List<TaskTagEntity>
+    fun getAll(): Flow<List<TaskTagEntity>>
+
+    @Query("SELECT * FROM task_tags")
+    suspend fun getAllOnce(): List<TaskTagEntity>
 
     @Query("SELECT tagId FROM task_tags WHERE taskId = :taskId")
     suspend fun getTagIdsForTask(taskId: Long): List<Long>
