@@ -1,5 +1,6 @@
 package com.taskmanager.domain.repository
 
+import com.taskmanager.domain.model.Tag
 import com.taskmanager.domain.model.Task
 import kotlinx.coroutines.flow.Flow
 
@@ -18,7 +19,7 @@ interface TaskRepository {
 
     // Tag management (many-to-many)
     suspend fun setTaskTags(taskId: Long, tagIds: List<Long>)
-    suspend fun getTaskTags(taskId: Long): List<String>
+    suspend fun getTaskTags(taskId: Long): List<Tag>
     fun getTasksByTag(tagId: Long): Flow<List<Task>>
 
     /** Задачи с запланированным временем (time blocks) за день [dayStart, dayEnd). */
