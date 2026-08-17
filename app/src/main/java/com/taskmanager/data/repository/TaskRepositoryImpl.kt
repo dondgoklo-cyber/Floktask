@@ -37,7 +37,8 @@ class TaskRepositoryImpl @Inject constructor(
         val taskEntity = taskDao.getById(id) ?: return null
         val task = taskEntity.toDomain()
         // Загружаем теги для задачи
-        val tags = getTaskTags(id)
+        val tagIds = taskTagDao.getTagIdsForTask(id)
+        val tags = tagIds.mapNotNull { tagId -> tagDao.getById(tagId)?.toDomain() }
         return task.copy(tags = tags.map { it.name })
     }
 
@@ -63,12 +64,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getAllTasks(): Flow<List<Task>> =
         combine(
             taskDao.getAll(),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -76,12 +78,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTasksByProject(projectId: Long): Flow<List<Task>> =
         combine(
             taskDao.getByProject(projectId),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -89,12 +92,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getCompletedTasks(): Flow<List<Task>> =
         combine(
             taskDao.getCompletedTasks(),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -102,12 +106,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getIncompleteTasks(): Flow<List<Task>> =
         combine(
             taskDao.getIncompleteTasks(),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -115,12 +120,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun searchTasks(query: String): Flow<List<Task>> =
         combine(
             taskDao.search("%$query%"),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -128,12 +134,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTimedTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>> =
         combine(
             taskDao.getTimedTasksForDay(dayStart, dayEnd),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -141,12 +148,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>> =
         combine(
             taskDao.getTasksForDay(dayStart, dayEnd),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -154,12 +162,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>> =
         combine(
             taskDao.getTasksByQuadrant(quadrantName),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -167,12 +176,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getInboxTasks(): Flow<List<Task>> =
         combine(
             taskDao.getInboxTasks(),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
@@ -180,12 +190,13 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getUpcomingTasks(fromEpoch: Long): Flow<List<Task>> =
         combine(
             taskDao.getUpcomingTasks(fromEpoch),
-            taskTagDao.getAllTaskTags()
-        ) { tasks, taskTags ->
+            taskTagDao.getAll(),
+            tagDao.getAll()
+        ) { tasks, taskTags, tagEntities ->
+            val tagMap = tagEntities.associateBy { it.id }
             tasks.map { taskEntity ->
-                val tags = taskTags
-                    .filter { it.taskId == taskEntity.id }
-                    .mapNotNull { tagDao.getById(it.tagId)?.toDomain() }
+                val tagIds = taskTags.filter { it.taskId == taskEntity.id }.map { it.tagId }
+                val tags = tagIds.mapNotNull { tagMap[it]?.toDomain() }
                 taskEntity.toDomain().copy(tags = tags.map { it.name })
             }
         }
