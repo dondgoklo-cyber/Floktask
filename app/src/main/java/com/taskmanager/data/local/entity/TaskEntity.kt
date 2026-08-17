@@ -32,7 +32,6 @@ data class TaskEntity(
     val deadline: Long? = null,
     val startTime: Long? = null,
     val durationMinutes: Long? = null,
-    val isCompleted: Boolean = false,
     val pomodoroEstimate: Int? = null,
     val timeEstimateMinutes: Long? = null,
     val eisenhowerQuadrant: String? = null,
@@ -41,4 +40,7 @@ data class TaskEntity(
     val color: String? = null,
     val reminderDate: Long? = null,
     val recurrenceRule: String? = null
-)
+) {
+    // Вычисляемое свойство для совместимости
+    val isCompleted: Boolean get() = status == "DONE"
+}
