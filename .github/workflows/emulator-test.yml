@@ -34,7 +34,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Build debug APK
-        run: gradle assembleDebug --stacktrace --no-daemon
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
       - name: Run emulator and test launch
         uses: reactivecircus/android-emulator-runner@v2
