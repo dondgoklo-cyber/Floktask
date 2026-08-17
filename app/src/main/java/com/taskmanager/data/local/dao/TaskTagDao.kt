@@ -21,6 +21,9 @@ interface TaskTagDao {
     @Query("DELETE FROM task_tags WHERE taskId = :taskId AND tagId = :tagId")
     suspend fun delete(taskId: Long, tagId: Long)
 
+    @Query("SELECT * FROM task_tags")
+    suspend fun getAll(): List<TaskTagEntity>
+
     @Query("SELECT tagId FROM task_tags WHERE taskId = :taskId")
     suspend fun getTagIdsForTask(taskId: Long): List<Long>
 
