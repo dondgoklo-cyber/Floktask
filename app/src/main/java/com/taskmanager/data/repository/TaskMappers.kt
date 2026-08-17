@@ -7,7 +7,6 @@ import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
 import java.time.Instant
-import org.json.JSONArray
 
 fun Task.toEntity(): TaskEntity = TaskEntity(
     id = id ?: 0,
@@ -27,8 +26,7 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     updatedAt = updatedAt.toEpochMilli(),
     color = color,
     reminderDate = reminderDate?.toEpochMilli(),
-    recurrenceRule = recurrenceRule?.name,
-    tags = if (tags.isNotEmpty()) JSONArray(tags).toString() else null
+    recurrenceRule = recurrenceRule?.name
 )
 
 private fun Int.toPriority(): Priority =
@@ -62,14 +60,5 @@ fun TaskEntity.toDomain(): Task = Task(
     color = color,
     reminderDate = reminderDate?.let { Instant.ofEpochMilli(it) },
     recurrenceRule = recurrenceRule?.toRecurrenceRule(),
-    tags = parseTags(tags)
+    tags = emptyList()
 )
-
-
-private fun parseTags(json: String?): List<String> {
-    if (json.isNullOrBlank()) return emptyList()
-    return runCatching {
-        val arr = JSONArray(json)
-        (0 until arr.length()).map { arr.getString(it) }
-    }.getOrDefault(emptyList())
-}
