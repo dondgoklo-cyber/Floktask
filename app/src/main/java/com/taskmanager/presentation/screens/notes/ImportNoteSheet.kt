@@ -244,21 +244,15 @@ fun ImportNoteSheet(
                 }
                 
                 PrimaryButton(
+                    text = "Импортировать",
                     onClick = { 
                         haptic(HapticType.SUCCESS)
                         onImport(Note(title = title, contentMarkdown = content))
                     },
                     modifier = Modifier.weight(1f),
-                    enabled = title.isNotBlank() || content.isNotBlank()
-                ) {
-                    Icon(
-                        Icons.Filled.Check,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(Modifier.size(Spacing.xs))
-                    Text("Импортировать")
-                }
+                    enabled = title.isNotBlank() || content.isNotBlank(),
+                    leadingIcon = Icons.Filled.Check
+                )
             }
             
             Spacer(Modifier.height(Spacing.md))
