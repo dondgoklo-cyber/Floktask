@@ -30,7 +30,6 @@
 
     <string name="change_mode">Вменить режим</string>
 
-    <string name="add_task">Добавить задачу</string>
 
     <!-- Пустые состояния -->
     <string name="no_tasks">Пока нет задач</string>
