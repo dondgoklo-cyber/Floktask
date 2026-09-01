@@ -1,0 +1,299 @@
+{
+  "backlog": {
+    "version": "1.0.0",
+    "generated": "2026-09-18",
+    "author": "Product Manager Agent",
+    "priority": "P2 (Medium)",
+    "description": "Среднеприоритетные задачи для улучшения продукта и добавления новых функций",
+    "total": 10,
+    "estimatedEffort": "200 story points",
+    "targetCompletion": "2026-12-31",
+    "items": [
+      {
+        "id": "PM-010",
+        "title": "PRD для iOS версии",
+        "description": "Создание Product Requirements Document для iOS версии приложения",
+        "type": "documentation",
+        "module": "ios",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 15,
+        "assignee": "Product Manager",
+        "dueDate": "2026-10-05",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "PRD документ создан",
+          "Требования к функциональности определены",
+          "Требования к дизайну определены",
+          "План разработки составлен"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "PM-011",
+        "title": "PRD для Web версии",
+        "description": "Создание Product Requirements Document для Web версии приложения",
+        "type": "documentation",
+        "module": "web",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 15,
+        "assignee": "Product Manager",
+        "dueDate": "2026-10-10",
+        "dependencies": ["PM-010"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "PRD документ создан",
+          "Требования к функциональности определены",
+          "Требования к дизайну определены",
+          "План разработки составлен"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "PM-014",
+        "title": "Интеграции (Calendar, Telegram, Notion)",
+        "description": "Анализ и проектирование интеграций с внешними сервисами",
+        "type": "feature",
+        "module": "integrations",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 25,
+        "assignee": "Product Manager",
+        "dueDate": "2026-10-15",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Анализ интеграций завершен",
+          "Требования к API определены",
+          "План интеграции составлен",
+          "Документация создана"
+        ],
+        "risk": "Medium",
+        "impact": "Medium",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "PM-015",
+        "title": "Коллаборация (общие проекты)",
+        "description": "Анализ и проектирование функции совместной работы над проектами",
+        "type": "feature",
+        "module": "collaboration",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Product Manager",
+        "dueDate": "2026-10-20",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Требования к коллаборации определены",
+          "Архитектура спроектирована",
+          "План разработки составлен",
+          "Документация создана"
+        ],
+        "risk": "Medium",
+        "impact": "Medium",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "PM-016",
+        "title": "Геймификация 2.0",
+        "description": "Улучшение системы геймификации, добавление новых элементов",
+        "type": "improvement",
+        "module": "gamification",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Product Manager",
+        "dueDate": "2026-10-25",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Новые элементы геймификации добавлены",
+          "Система наград улучшена",
+          "Аналитика геймификации добавлена",
+          "Документация обновлена"
+        ],
+        "risk": "Low",
+        "impact": "Medium",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "PM-017",
+        "title": "Локализация",
+        "description": "Планирование поддержки нескольких языков",
+        "type": "improvement",
+        "module": "localization",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 15,
+        "assignee": "Product Manager",
+        "dueDate": "2026-11-01",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "План локализации составлен",
+          "Языки для поддержки определены",
+          "Процесс локализации описан",
+          "Документация создана"
+        ],
+        "risk": "Low",
+        "impact": "Medium",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "FE-003",
+        "title": "iOS версия приложения",
+        "description": "Разработка iOS версии Floktask",
+        "type": "feature",
+        "module": "ios",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 50,
+        "assignee": "Frontend (iOS)",
+        "dueDate": "2026-11-01",
+        "dependencies": ["PM-010", "ARCH-004"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "iOS версия работает",
+          "Все базовые функции реализованы",
+          "Синхронизация с другими платформами работает",
+          "Добавлены тесты для iOS"
+        ],
+        "risk": "High",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "FE-004",
+        "title": "Web версия приложения",
+        "description": "Разработка Web версии Floktask",
+        "type": "feature",
+        "module": "web",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 50,
+        "assignee": "Frontend (Web)",
+        "dueDate": "2026-11-15",
+        "dependencies": ["PM-011", "ARCH-004"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Web версия работает",
+          "Все базовые функции реализованы",
+          "Синхронизация с другими платформами работает",
+          "Добавлены тесты для Web"
+        ],
+        "risk": "High",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "BE-007",
+        "title": "Team Collaboration Backend",
+        "description": "Реализация серверной части для функции совместной работы",
+        "type": "backend",
+        "module": "collaboration",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 30,
+        "assignee": "Backend",
+        "dueDate": "2026-12-01",
+        "dependencies": ["PM-015", "ARCH-004"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Общие проекты работают",
+          "Комментарии к задачам работают",
+          "Уведомления о изменениях работают",
+          "Добавлены тесты для коллаборации"
+        ],
+        "risk": "High",
+        "impact": "Medium",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "BE-008",
+        "title": "Интеграция с Google Calendar",
+        "description": "Реализация двусторонней синхронизации с Google Calendar",
+        "type": "integration",
+        "module": "calendar",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Backend",
+        "dueDate": "2026-12-10",
+        "dependencies": ["PM-014"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Синхронизация с Google Calendar работает",
+          "События из календаря отображаются",
+          "Задачи из Floktask отображаются в календаре",
+          "Добавлены тесты для интеграции"
+        ],
+        "risk": "Medium",
+        "impact": "Medium",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "DES-005",
+        "title": "Дизайн для iOS и Web",
+        "description": "Создание макетов и спецификаций для iOS и Web версий",
+        "type": "design",
+        "module": "ui",
+        "priority": "P2",
+        "status": "to-do",
+        "storyPoints": 30,
+        "assignee": "Designer",
+        "dueDate": "2026-10-20",
+        "dependencies": ["PM-010", "PM-011"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Макеты для iOS готовы",
+          "Макеты для Web готовы",
+          "Спецификации для Frontend",
+          "Design tokens обновлены"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      }
+    ]
+  },
+  "metadata": {
+    "priorityDefinition": {
+      "P0": "Critical - Блокирует релиз или вызывает потерю данных",
+      "P1": "High - Важная функциональность, влияет на UX",
+      "P2": "Medium - Улучшения, новые функции",
+      "P3": "Low - Некритичные улучшения"
+    },
+    "storyPointsDefinition": {
+      "1-5": "Маленькая задача (1-2 дня)",
+      "8-13": "Средняя задача (3-5 дней)",
+      "20-40": "Большая задача (1-2 недели)",
+      "40+": "Эпик (2+ недели)"
+    },
+    "statusDefinition": {
+      "to-do": "Не начата",
+      "in-progress": "В работе",
+      "blocked": "Заблокирована",
+      "review": "На ревью",
+      "completed": "Завершена"
+    }
+  }
+}

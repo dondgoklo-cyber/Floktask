@@ -1,0 +1,244 @@
+{
+  "backlog": {
+    "version": "1.0.0",
+    "generated": "2026-09-18",
+    "author": "Product Manager Agent",
+    "priority": "P0 (Critical)",
+    "description": "Критически важные задачи для выживания и базовой функциональности продукта",
+    "total": 8,
+    "estimatedEffort": "240 story points",
+    "targetCompletion": "2026-10-15",
+    "items": [
+      {
+        "id": "PM-001",
+        "title": "Исправить критические баги с переносами строк",
+        "description": "Анализ и исправление проблем с обработкой переносов строк в 8 файлах (NoteExportManager, FinanceExportManager, NoteEditScreen)",
+        "type": "bugfix",
+        "module": "core",
+        "priority": "P0",
+        "status": "completed",
+        "storyPoints": 8,
+        "assignee": "Frontend/Backend",
+        "dueDate": "2026-09-05",
+        "dependencies": [],
+        "relatedFiles": [
+          "app/src/main/java/com/taskmanager/data/repository/NoteExportManager.kt",
+          "app/src/main/java/com/taskmanager/data/repository/FinanceExportManager.kt",
+          "app/src/main/java/com/taskmanager/presentation/screens/notes/NoteEditScreen.kt"
+        ],
+        "acceptanceCriteria": [
+          "Переносы строк в CSV экспорте сохраняются корректно",
+          "Markdown экспорт/импорт обрабатывает CRLF последовательности",
+          "Все строковые литералы используют System.lineSeparator()",
+          "Добавлены тесты для обработки переносов строк"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-03",
+        "updatedAt": "2026-09-03"
+      },
+      {
+        "id": "PM-002",
+        "title": "Интеграция RussianVoiceParser с UI",
+        "description": "Завершение интеграции существующего парсера с пользовательским интерфейсом, улучшение UX",
+        "type": "feature",
+        "module": "voice",
+        "priority": "P0",
+        "status": "completed",
+        "storyPoints": 13,
+        "assignee": "Frontend",
+        "dueDate": "2026-09-10",
+        "dependencies": ["PM-001"],
+        "relatedFiles": [
+          "app/src/main/java/com/taskmanager/voice/RussianVoiceParser.kt",
+          "app/src/main/java/com/taskmanager/presentation/screens/voice/VoiceTaskSheet.kt",
+          "app/src/main/java/com/taskmanager/presentation/components/CreateMenuSheet.kt"
+        ],
+        "acceptanceCriteria": [
+          "Голосовой ввод работает стабильно на всех устройствах",
+          "Парсинг дат и времени улучшен",
+          "Добавлена визуальная обратная связь при распознавании",
+          "Обработка ошибок улучшена",
+          "Добавлены тесты для парсера"
+        ],
+        "risk": "Medium",
+        "impact": "High",
+        "createdAt": "2026-09-05",
+        "updatedAt": "2026-09-08"
+      },
+      {
+        "id": "ARCH-001",
+        "title": "Проектирование архитектуры AI ассистента",
+        "description": "Создание архитектуры для интеграции AI (Gemini/Yandex GPT) с существующей системой",
+        "type": "architecture",
+        "module": "ai",
+        "priority": "P0",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Architect",
+        "dueDate": "2026-09-15",
+        "dependencies": ["PM-003"],
+        "relatedFiles": [
+          "agents/product-manager/output/documents/PRD/ai-assistant-prd.md"
+        ],
+        "acceptanceCriteria": [
+          "Создан ADR документ с архитектурой",
+          "Определены интерфейсы между модулями",
+          "Выбраны технологии для AI интеграции",
+          "Оценена производительность и масштабируемость"
+        ],
+        "risk": "Medium",
+        "impact": "Critical",
+        "createdAt": "2026-09-07",
+        "updatedAt": "2026-09-07"
+      },
+      {
+        "id": "ARCH-002",
+        "title": "Проектирование Offline-First архитектуры",
+        "description": "Создание архитектуры для работы в оффлайн режиме с автоматической синхронизацией",
+        "type": "architecture",
+        "module": "sync",
+        "priority": "P0",
+        "status": "to-do",
+        "storyPoints": 25,
+        "assignee": "Architect",
+        "dueDate": "2026-09-18",
+        "dependencies": ["PM-004"],
+        "relatedFiles": [
+          "agents/product-manager/output/documents/PRD/offline-mode-prd.md"
+        ],
+        "acceptanceCriteria": [
+          "Создан ADR документ с архитектурой",
+          "Определена стратегия локального хранения",
+          "Спроектирована очередь изменений",
+          "Определена стратегия разрешения конфликтов"
+        ],
+        "risk": "High",
+        "impact": "Critical",
+        "createdAt": "2026-09-10",
+        "updatedAt": "2026-09-10"
+      },
+      {
+        "id": "ARCH-003",
+        "title": "Проектирование Multi-Device Sync архитектуры",
+        "description": "Создание архитектуры для синхронизации данных между несколькими устройствами",
+        "type": "architecture",
+        "module": "sync",
+        "priority": "P0",
+        "status": "to-do",
+        "storyPoints": 25,
+        "assignee": "Architect",
+        "dueDate": "2026-09-22",
+        "dependencies": ["PM-005", "ARCH-002"],
+        "relatedFiles": [
+          "agents/product-manager/output/documents/PRD/sync-architecture-prd.md"
+        ],
+        "acceptanceCriteria": [
+          "Создан ADR документ с архитектурой",
+          "Определен протокол синхронизации",
+          "Спроектирована система разрешения конфликтов",
+          "Оценена производительность"
+        ],
+        "risk": "High",
+        "impact": "Critical",
+        "createdAt": "2026-09-15",
+        "updatedAt": "2026-09-15"
+      },
+      {
+        "id": "BE-001",
+        "title": "Реализация Offline-First хранения",
+        "description": "Реализация локального хранения данных с поддержкой оффлайн работы",
+        "type": "backend",
+        "module": "database",
+        "priority": "P0",
+        "status": "to-do",
+        "storyPoints": 30,
+        "assignee": "Backend",
+        "dueDate": "2026-09-25",
+        "dependencies": ["ARCH-002"],
+        "relatedFiles": [
+          "app/src/main/java/com/taskmanager/data/repository/*"
+        ],
+        "acceptanceCriteria": [
+          "Все данные хранятся локально",
+          "Приложение работает без интернета",
+          "Изменения сохраняются в очереди",
+          "Добавлены тесты для оффлайн работы"
+        ],
+        "risk": "High",
+        "impact": "Critical",
+        "createdAt": "2026-09-15",
+        "updatedAt": "2026-09-15"
+      },
+      {
+        "id": "BE-002",
+        "title": "Реализация Sync Service",
+        "description": "Реализация сервиса синхронизации данных между устройствами",
+        "type": "backend",
+        "module": "sync",
+        "priority": "P0",
+        "status": "to-do",
+        "storyPoints": 35,
+        "assignee": "Backend",
+        "dueDate": "2026-10-05",
+        "dependencies": ["ARCH-003", "BE-001"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Сервис синхронизации работает",
+          "Данные синхронизируются между устройствами",
+          "Конфликты разрешаются автоматически",
+          "Добавлены тесты для синхронизации"
+        ],
+        "risk": "High",
+        "impact": "Critical",
+        "createdAt": "2026-09-20",
+        "updatedAt": "2026-09-20"
+      },
+      {
+        "id": "BE-003",
+        "title": "Интеграция с AI API (Gemini/Yandex GPT)",
+        "description": "Интеграция с внешними AI сервисами для реализации ассистента",
+        "type": "backend",
+        "module": "ai",
+        "priority": "P0",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Backend",
+        "dueDate": "2026-09-28",
+        "dependencies": ["ARCH-001"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Интеграция с Gemini API работает",
+          "Интеграция с Yandex GPT работает",
+          "AI ассистент отвечает на запросы",
+          "Добавлены тесты для AI функций"
+        ],
+        "risk": "Medium",
+        "impact": "High",
+        "createdAt": "2026-09-20",
+        "updatedAt": "2026-09-20"
+      }
+    ]
+  },
+  "metadata": {
+    "priorityDefinition": {
+      "P0": "Critical - Блокирует релиз или вызывает потерю данных",
+      "P1": "High - Важная функциональность, влияет на UX",
+      "P2": "Medium - Улучшения, новые функции",
+      "P3": "Low - Некритичные улучшения"
+    },
+    "storyPointsDefinition": {
+      "1-5": "Маленькая задача (1-2 дня)",
+      "8-13": "Средняя задача (3-5 дней)",
+      "20-40": "Большая задача (1-2 недели)",
+      "40+": "Эпик (2+ недели)"
+    },
+    "statusDefinition": {
+      "to-do": "Не начата",
+      "in-progress": "В работе",
+      "blocked": "Заблокирована",
+      "review": "На ревью",
+      "completed": "Завершена"
+    }
+  }
+}
