@@ -342,6 +342,8 @@ private fun TaskQuadrantItem(
             )
         }
     }
+}
+}
 
     if (showQuickAdd) {
         com.taskmanager.presentation.screens.tasks.QuickAddSheet(
