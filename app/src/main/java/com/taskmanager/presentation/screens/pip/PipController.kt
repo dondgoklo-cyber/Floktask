@@ -46,7 +46,7 @@ fun RememberEnterPipOnBackground(enabled: Boolean) {
             onDispose { }
         } else {
             onDispose {
-                val activity = ContextCompat.getActivity(context) ?: return@onDispose
+                val activity = (context as? Activity) ?: return@onDispose
                 PipController().enterPip(activity)
             }
         }

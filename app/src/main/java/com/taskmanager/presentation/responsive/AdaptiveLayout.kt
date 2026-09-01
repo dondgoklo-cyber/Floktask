@@ -76,7 +76,10 @@ fun AdaptiveNavScaffold(
 
 private val Screen.navIcon: ImageVector
     get() = when (this) {
-        Screen.Tasks -> Icons.Filled.List
+        Screen.Today -> Icons.Filled.Checklist
         Screen.Projects -> Icons.Filled.Folder
-        Screen.Calendar -> Icons.Filled.DateRange
+        Screen.Finance -> Icons.Filled.AccountBalanceWallet
+        Screen.Notes -> Icons.Filled.Description
+        Screen.Habits -> Icons.Filled.Repeat
+        else -> Icons.Filled.List
     }
