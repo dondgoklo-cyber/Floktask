@@ -71,7 +71,7 @@ fun VoiceTaskSheet(
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val hapticManager: HapticManager = inject()
-    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
+    val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
 
     var isListening by remember { mutableStateOf(false) }
     var recognizedText by remember { mutableStateOf("") }
@@ -153,7 +153,7 @@ fun VoiceTaskSheet(
                     try {
                         draft = RussianVoiceParser.parse(text)
                         editedTitle = draft?.title ?: ""
-                        haptic(HapticType.SUCCESS)
+                        haptic(HapticAction.SUCCESS)
                     } catch (e: Exception) {
                         error = "Ошибка обработки текста"
                     }
@@ -190,7 +190,7 @@ fun VoiceTaskSheet(
         draft = null
         isEditing = false
         isListening = true
-        haptic(HapticType.LIGHT)
+        haptic(HapticAction.LIGHT)
         
         try {
             speechRecognizer?.startListening(recognitionIntent)

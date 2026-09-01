@@ -83,7 +83,7 @@ fun NotesScreen(
     val showCreateFolder by viewModel.showCreateFolder.collectAsState()
     var pendingDeleteNote by remember { mutableStateOf<Note?>(null) }
     val hapticManager: HapticManager = inject()
-    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
+    val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
 
     Scaffold(
         topBar = {
@@ -115,7 +115,7 @@ fun NotesScreen(
                         Icon(Icons.Filled.FileUpload, contentDescription = "Импорт Markdown")
                     }
                     IconButton(onClick = {
-                        haptic(HapticType.LIGHT)
+                        haptic(HapticAction.LIGHT)
                         viewModel.openCreateFolderDialog()
                     }) {
                         Icon(Icons.Filled.Folder, contentDescription = "Создать папку")
@@ -131,7 +131,7 @@ fun NotesScreen(
                 icon = Icons.Filled.Add,
                 contentDescription = stringResource(R.string.add_note),
                 onClick = {
-                    haptic(HapticType.LIGHT)
+                    haptic(HapticAction.LIGHT)
                     viewModel.createNote { id -> onNoteClick(id) }
                 }
             )
@@ -147,7 +147,7 @@ fun NotesScreen(
                 modifier = Modifier.padding(padding),
                 actionText = stringResource(R.string.add_note),
                 onAction = {
-                    haptic(HapticType.LIGHT)
+                    haptic(HapticAction.LIGHT)
                     viewModel.createNote { id -> onNoteClick(id) }
                 }
             )
@@ -196,7 +196,7 @@ fun NotesScreen(
                             note = note,
                             onClick = { note.id?.let(onNoteClick) },
                             onPin = {
-                                haptic(HapticType.SELECTION)
+                                haptic(HapticAction.SELECTION)
                                 viewModel.togglePin(note)
                             },
                             onDelete = { pendingDeleteNote = note }
@@ -219,7 +219,7 @@ fun NotesScreen(
                             note = note,
                             onClick = { note.id?.let(onNoteClick) },
                             onPin = {
-                                haptic(HapticType.SELECTION)
+                                haptic(HapticAction.SELECTION)
                                 viewModel.togglePin(note)
                             },
                             onDelete = { pendingDeleteNote = note }
@@ -281,11 +281,11 @@ private fun NoteCard(
     onDelete: () -> Unit
 ) {
     val hapticManager: HapticManager = inject()
-    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
+    val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
-            haptic(HapticType.LIGHT)
+            haptic(HapticAction.LIGHT)
             onClick()
         },
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),

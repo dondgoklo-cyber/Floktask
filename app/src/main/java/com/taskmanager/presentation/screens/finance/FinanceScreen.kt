@@ -55,7 +55,7 @@ import com.taskmanager.domain.model.TransactionType
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import androidx.hilt.navigation.compose.inject
 import com.taskmanager.util.HapticManager
-import com.taskmanager.util.HapticAction
+import com.taskmanager.util.HapticManager
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.parseTagColor
 import com.taskmanager.presentation.theme.AppTheme
@@ -92,12 +92,12 @@ fun FinanceScreen(
         },
         floatingActionButton = {
             val hapticManager: HapticManager = inject()
-            val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
+            val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
             AppFloatingActionButton(
                 icon = Icons.Filled.Add,
                 contentDescription = stringResource(R.string.add_transaction),
                 onClick = {
-                    haptic(HapticType.LIGHT)
+                    haptic(HapticAction.LIGHT)
                     showAddSheet = true
                 }
             )

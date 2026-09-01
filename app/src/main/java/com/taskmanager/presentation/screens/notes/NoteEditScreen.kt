@@ -74,7 +74,7 @@ fun NoteEditScreen(
     val state by viewModel.state.collectAsState()
     var mode by remember { mutableStateOf(NoteEditMode.EDIT) }
     val hapticManager: HapticManager = inject()
-    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
+    val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
 
     Scaffold(
         topBar = {
@@ -84,7 +84,7 @@ fun NoteEditScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        haptic(HapticType.LIGHT)
+                        haptic(HapticAction.LIGHT)
                         viewModel.saveNow()
                         onBack()
                     }) {
@@ -118,7 +118,7 @@ fun NoteEditScreen(
                         Icon(Icons.Filled.IosShare, contentDescription = "Экспорт Markdown")
                     }
                     IconButton(onClick = {
-                        haptic(HapticType.SELECTION)
+                        haptic(HapticAction.SELECTION)
                         mode = if (mode == NoteEditMode.EDIT) NoteEditMode.PREVIEW else NoteEditMode.EDIT
                     }) {
                         Icon(
@@ -150,7 +150,7 @@ fun NoteEditScreen(
                     FilterChip(
                         selected = mode == NoteEditMode.EDIT,
                         onClick = {
-                            haptic(HapticType.SELECTION)
+                            haptic(HapticAction.SELECTION)
                             mode = NoteEditMode.EDIT
                         },
                         label = { Text("Текст") }
@@ -158,7 +158,7 @@ fun NoteEditScreen(
                     FilterChip(
                         selected = mode == NoteEditMode.PREVIEW,
                         onClick = {
-                            haptic(HapticType.SELECTION)
+                            haptic(HapticAction.SELECTION)
                             mode = NoteEditMode.PREVIEW
                         },
                         label = { Text("Просмотр") }
@@ -202,7 +202,7 @@ private fun NoteEditor(
     onContentChange: (String) -> Unit
 ) {
     val hapticManager: HapticManager = inject()
-    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
+    val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Title field
@@ -221,7 +221,7 @@ private fun NoteEditor(
         // Markdown toolbar
         MarkdownToolbar(
             onInsert = { prefix, suffix ->
-                haptic(HapticType.LIGHT)
+                haptic(HapticAction.LIGHT)
                 onContentChange(content + prefix + (suffix ?: ""))
             }
         )

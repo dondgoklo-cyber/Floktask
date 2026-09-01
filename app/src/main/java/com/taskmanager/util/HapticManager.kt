@@ -145,7 +145,17 @@ class HapticManager @Inject constructor(
             HapticAction.ERROR -> errorVibrate()
         }
     }
+
+    /**
+     * Perform haptic feedback - alias for vibrate() to match old API
+     */
+    fun perform(type: HapticAction) = vibrate(type)
 }
+
+/**
+ * Backward compatibility type alias
+ */
+typealias HapticType = HapticAction
 
 /**
  * Types of haptic feedback actions
@@ -155,5 +165,6 @@ enum class HapticAction {
     MEDIUM,     // Drag & drop complete, task creation
     HEAVY,      // Task deletion, important actions
     SUCCESS,    // Successful operation
-    ERROR       // Error state, failed operation
+    ERROR,      // Error state, failed operation
+    SELECTION   // Item selection, navigation
 }

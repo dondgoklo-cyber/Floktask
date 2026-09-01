@@ -71,7 +71,7 @@ fun ImportNoteSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val hapticManager: HapticManager = inject()
-    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
+    val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
     
     // Парсим начальный markdown
     val parsedNote = remember(initialMarkdown) { 
@@ -122,7 +122,7 @@ fun ImportNoteSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { 
-                    haptic(HapticType.LIGHT)
+                    haptic(HapticAction.LIGHT)
                     onDismiss() 
                 }) {
                     Icon(
@@ -141,7 +141,7 @@ fun ImportNoteSheet(
                 
                 if (!isEditing) {
                     IconButton(onClick = { 
-                        haptic(HapticType.LIGHT)
+                        haptic(HapticAction.LIGHT)
                         isEditing = true 
                     }) {
                         Icon(
@@ -237,7 +237,7 @@ fun ImportNoteSheet(
             ) {
                 Button(
                     onClick = { 
-                        haptic(HapticType.LIGHT)
+                        haptic(HapticAction.LIGHT)
                         onDismiss() 
                     },
                     modifier = Modifier.weight(1f),
@@ -249,7 +249,7 @@ fun ImportNoteSheet(
                 PrimaryButton(
                     text = "Импортировать",
                     onClick = { 
-                        haptic(HapticType.SUCCESS)
+                        haptic(HapticAction.SUCCESS)
                         onImport(Note(title = title, contentMarkdown = content))
                     },
                     modifier = Modifier.weight(1f),
