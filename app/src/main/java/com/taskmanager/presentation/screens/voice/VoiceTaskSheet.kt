@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,6 +78,17 @@ fun VoiceTaskSheet(
     var editedTitle by remember { mutableStateOf("") }
 
     val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
+
+    // 1f4035343e4232403049353d384f 434235473a38 SpeechRecognizer 3f4038 37303a404b423838 4d3a40303d30
+    DisposableEffect(Unit) {
+        onDispose {
+            try {
+                speechRecognizer.destroy()
+            } catch (e: Exception) {
+                // Ignore errors during cleanup
+            }
+        }
+    }
 
     val recognitionIntent = remember {
         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {

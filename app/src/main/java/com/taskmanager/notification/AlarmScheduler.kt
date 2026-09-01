@@ -5,11 +5,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import com.taskmanager.data.local.dao.TaskDao
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +26,13 @@ class AlarmScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val taskDao: TaskDao
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, e ->
+        Log.e("AlarmScheduler", "Coroutine error in alarm scheduler", e)
+    }
+    
+    private val scope = CoroutineScope(
+        SupervisorJob() + Dispatchers.IO + coroutineExceptionHandler
+    )
 
     fun scheduleReminder(taskId: Long, title: String, triggerAtMillis: Long) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
