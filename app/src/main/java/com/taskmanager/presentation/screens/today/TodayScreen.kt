@@ -403,9 +403,8 @@ private fun NextTaskRow(task: Task, onClick: () -> Unit) {
 private fun FocusCard(state: TodayUiState) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
-        shape = RoundedCornerShape(Radius.lg),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
+        shape = RoundedCornerShape(Radius.lg)
     ) {
         Row(
             modifier = Modifier.padding(Spacing.xl),
@@ -442,9 +441,8 @@ private fun FocusCard(state: TodayUiState) {
 private fun HabitsCard(state: TodayUiState) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
-        shape = RoundedCornerShape(Radius.lg),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
+        shape = RoundedCornerShape(Radius.lg)
     ) {
         Column(Modifier.padding(Spacing.xl)) {
             Row(
