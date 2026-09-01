@@ -350,4 +350,5 @@ private fun TaskQuadrantItem(
                 onCreated = { showQuickAdd = false }
             )
         }
+    }
     

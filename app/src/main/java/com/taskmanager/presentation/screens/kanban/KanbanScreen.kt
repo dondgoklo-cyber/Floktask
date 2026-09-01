@@ -265,4 +265,5 @@ private fun KanbanCard(
                 onCreated = { showQuickAdd = false }
             )
         }
+    }
     
