@@ -1,0 +1,345 @@
+{
+  "backlog": {
+    "version": "1.0.0",
+    "generated": "2026-09-18",
+    "author": "Product Manager Agent",
+    "priority": "P1 (High)",
+    "description": "Высокоприоритетные задачи для улучшения функциональности и пользовательского опыта",
+    "total": 12,
+    "estimatedEffort": "320 story points",
+    "targetCompletion": "2026-11-30",
+    "items": [
+      {
+        "id": "PM-006",
+        "title": "Timeline View",
+        "description": "Реализация представления задач на временной шкале с drag-and-drop",
+        "type": "feature",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 40,
+        "assignee": "Frontend",
+        "dueDate": "2026-09-25",
+        "dependencies": ["ARCH-003", "BE-005"],
+        "relatedFiles": [
+          "agents/product-manager/workspace/requirements/user-stories/US-001-timeline-view.md"
+        ],
+        "acceptanceCriteria": [
+          "Задачи отображаются на временной шкале",
+          "Поддержка drag-and-drop для перемещения",
+          "Поддержка группировки по дням/неделям/месяцам",
+          "Фильтрация и поиск работают",
+          "Отображение зависимостей между задачами",
+          "Добавлены тесты для Timeline View"
+        ],
+        "risk": "High",
+        "impact": "High",
+        "createdAt": "2026-09-03",
+        "updatedAt": "2026-09-03"
+      },
+      {
+        "id": "PM-007",
+        "title": "Gantt Charts",
+        "description": "Реализация диаграмм Гантта для управления проектами",
+        "type": "feature",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 50,
+        "assignee": "Frontend",
+        "dueDate": "2026-10-10",
+        "dependencies": ["PM-006", "BE-006"],
+        "relatedFiles": [
+          "agents/product-manager/workspace/requirements/user-stories/US-002-gantt-charts.md"
+        ],
+        "acceptanceCriteria": [
+          "Отображение задач в виде диаграммы Гантта",
+          "Поддержка зависимостей между задачами",
+          "Расчет критического пути",
+          "Drag-and-drop для изменения дат",
+          "Фильтрация и группировка работают",
+          "Добавлены тесты для Gantt Charts"
+        ],
+        "risk": "High",
+        "impact": "High",
+        "createdAt": "2026-09-03",
+        "updatedAt": "2026-09-03"
+      },
+      {
+        "id": "PM-008",
+        "title": "Focus Mode",
+        "description": "Реализация режима фокуса с таймером Pomodoro и блокировкой отвлечений",
+        "type": "feature",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 30,
+        "assignee": "Frontend",
+        "dueDate": "2026-09-30",
+        "dependencies": [],
+        "relatedFiles": [
+          "agents/product-manager/workspace/requirements/user-stories/US-003-focus-mode.md"
+        ],
+        "acceptanceCriteria": [
+          "Full-screen режим для задачи",
+          "Встроенный таймер Pomodoro",
+          "Блокировка уведомлений",
+          "Отслеживание сессий фокуса",
+          "Геймификационные элементы",
+          "Добавлены тесты для Focus Mode"
+        ],
+        "risk": "Medium",
+        "impact": "High",
+        "createdAt": "2026-09-03",
+        "updatedAt": "2026-09-03"
+      },
+      {
+        "id": "FE-001",
+        "title": "Улучшение Quick Add",
+        "description": "Улучшение функционала быстрого добавления задач",
+        "type": "improvement",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 13,
+        "assignee": "Frontend",
+        "dueDate": "2026-09-20",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Автодополнение при вводе",
+          "Контекстные подсказки",
+          "Поддержка горячих клавиш",
+          "Уменьшено количество кликов для создания задачи"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "FE-002",
+        "title": "Calendar View",
+        "description": "Реализация календарного представления задач",
+        "type": "feature",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 25,
+        "assignee": "Frontend",
+        "dueDate": "2026-10-05",
+        "dependencies": ["BE-005"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Отображение задач на календаре",
+          "Навигация по месяцам",
+          "Интеграция с Google Calendar (опционально)",
+          "Фильтрация и поиск работают"
+        ],
+        "risk": "Medium",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "BE-004",
+        "title": "Улучшение RussianVoiceParser",
+        "description": "Расширение функциональности парсера для поддержки сложных выражений",
+        "type": "improvement",
+        "module": "voice",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Backend",
+        "dueDate": "2026-09-22",
+        "dependencies": [],
+        "relatedFiles": [
+          "app/src/main/java/com/taskmanager/voice/RussianVoiceParser.kt",
+          "agents/product-manager/workspace/requirements/nlp-integration.md"
+        ],
+        "acceptanceCriteria": [
+          "Поддержка сложных дат (через 2 недели, на выходных)",
+          "Поддержка сложных временных выражений",
+          "Улучшенное распознавание сущностей",
+          "Добавлены тесты для новых функций"
+        ],
+        "risk": "Medium",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "BE-005",
+        "title": "API для Timeline и Calendar View",
+        "description": "Создание API endpoints для получения данных в формате Timeline и Calendar",
+        "type": "backend",
+        "module": "api",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 25,
+        "assignee": "Backend",
+        "dueDate": "2026-09-28",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "API для Timeline View работает",
+          "API для Calendar View работает",
+          "Поддержка фильтрации и группировки",
+          "Документация API",
+          "Добавлены тесты для API"
+        ],
+        "risk": "Medium",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "BE-006",
+        "title": "Расчет критического пути",
+        "description": "Реализация алгоритма расчета критического пути для Gantt Charts",
+        "type": "backend",
+        "module": "gantt",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Backend",
+        "dueDate": "2026-10-15",
+        "dependencies": ["PM-007"],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Алгоритм расчета критического пути работает",
+          "Визуальное выделение критического пути",
+          "Обнаружение и разрешение циклических зависимостей",
+          "Добавлены тесты для алгоритма"
+        ],
+        "risk": "Medium",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "DES-001",
+        "title": "Дизайн Timeline View UI",
+        "description": "Создание макетов и спецификаций для Timeline View",
+        "type": "design",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Designer",
+        "dueDate": "2026-09-22",
+        "dependencies": ["PM-006"],
+        "relatedFiles": [
+          "agents/product-manager/workspace/requirements/user-stories/US-001-timeline-view.md"
+        ],
+        "acceptanceCriteria": [
+          "Макеты для Timeline View готовы",
+          "Спецификации для Frontend",
+          "Design tokens обновлены",
+          "Прототип взаимодействий"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "DES-002",
+        "title": "Дизайн Gantt Charts UI",
+        "description": "Создание макетов и спецификаций для Gantt Charts",
+        "type": "design",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 25,
+        "assignee": "Designer",
+        "dueDate": "2026-10-05",
+        "dependencies": ["PM-007"],
+        "relatedFiles": [
+          "agents/product-manager/workspace/requirements/user-stories/US-002-gantt-charts.md"
+        ],
+        "acceptanceCriteria": [
+          "Макеты для Gantt Charts готовы",
+          "Спецификации для Frontend",
+          "Design tokens обновлены",
+          "Прототип взаимодействий"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "DES-003",
+        "title": "Дизайн Focus Mode UI",
+        "description": "Создание макетов и спецификаций для Focus Mode",
+        "type": "design",
+        "module": "ui",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 15,
+        "assignee": "Designer",
+        "dueDate": "2026-09-25",
+        "dependencies": ["PM-008"],
+        "relatedFiles": [
+          "agents/product-manager/workspace/requirements/user-stories/US-003-focus-mode.md"
+        ],
+        "acceptanceCriteria": [
+          "Макеты для Focus Mode готовы",
+          "Спецификации для Frontend",
+          "Анимации и микроинтеракции",
+          "Прототип взаимодействий"
+        ],
+        "risk": "Low",
+        "impact": "High",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      },
+      {
+        "id": "DES-004",
+        "title": "Обновление дизайн-системы",
+        "description": "Обновление design tokens, добавление темной темы, улучшение анимаций",
+        "type": "design",
+        "module": "design-system",
+        "priority": "P1",
+        "status": "to-do",
+        "storyPoints": 20,
+        "assignee": "Designer",
+        "dueDate": "2026-10-10",
+        "dependencies": [],
+        "relatedFiles": [],
+        "acceptanceCriteria": [
+          "Design tokens обновлены",
+          "Темная тема добавлена",
+          "Анимации улучшены",
+          "Документация обновлена"
+        ],
+        "risk": "Low",
+        "impact": "Medium",
+        "createdAt": "2026-09-18",
+        "updatedAt": "2026-09-18"
+      }
+    ]
+  },
+  "metadata": {
+    "priorityDefinition": {
+      "P0": "Critical - Блокирует релиз или вызывает потерю данных",
+      "P1": "High - Важная функциональность, влияет на UX",
+      "P2": "Medium - Улучшения, новые функции",
+      "P3": "Low - Некритичные улучшения"
+    },
+    "storyPointsDefinition": {
+      "1-5": "Маленькая задача (1-2 дня)",
+      "8-13": "Средняя задача (3-5 дней)",
+      "20-40": "Большая задача (1-2 недели)",
+      "40+": "Эпик (2+ недели)"
+    },
+    "statusDefinition": {
+      "to-do": "Не начата",
+      "in-progress": "В работе",
+      "blocked": "Заблокирована",
+      "review": "На ревью",
+      "completed": "Завершена"
+    }
+  }
+}
