@@ -1,0 +1,84 @@
+%% Data Flow Diagram
+%% Floktask - Offline-First Sync Architecture
+%% Date: 2026-09-06
+%% Author: Architect
+
+graph TD
+    %% === Mobile Client ===
+    subgraph Client["Mobile Client (Android)"]
+        LocalDB[(Local Database\nRoom)]:::database
+        SyncQueue[(Sync Queue\nPending Changes)]:::database
+        ConflictResolver[Conflict Resolver]:::service
+        ChangeTracker[Change Tracker]:::service
+        SyncManager[Sync Manager]:::service
+    end
+
+    %% === Network ===
+    Internet[("Internet\n(HTTP/HTTPS + WebSocket)")]:::network
+
+    %% === Server ===
+    subgraph Server["Server"]
+        APIGateway[API Gateway]:::gateway
+        SyncService[Sync Service]:::service
+        ConflictDetector[Conflict Detector]:::service
+        VersionManager[Version Manager]:::service
+        MainDB[(Main Database\nPostgreSQL)]:::database
+        SyncQueueS[(Sync Queue\nRedis)]:::database
+    end
+
+    %% === External Clients ===
+    subgraph OtherClients["Other Clients"]
+        Client2[Client 2]:::client
+        Client3[Client 3]:::client
+    end
+
+    %% === Data Flow ===
+    %% Local operations
+    UI[User Interface] -->|Create/Update/Delete| LocalDB
+    LocalDB -->|Changes| ChangeTracker
+    ChangeTracker -->|Create Event| SyncQueue
+    
+    %% Sync process
+    SyncManager -->|GET /sync?since=X| APIGateway
+    APIGateway -->|Request| SyncService
+    SyncService -->|Query| MainDB
+    MainDB -->|Changes| SyncService
+    SyncService -->|Response| APIGateway
+    APIGateway -->|200 OK {changes}| Internet
+    Internet -->|Changes| SyncManager
+    SyncManager -->|Apply| LocalDB
+    
+    %% Send local changes
+    SyncManager -->|POST /sync {changes}| APIGateway
+    APIGateway -->|Request| SyncService
+    SyncService -->|Validate| ConflictDetector
+    ConflictDetector -->|No Conflict| MainDB
+    ConflictDetector -->|Conflict| VersionManager
+    VersionManager -->|Resolve| MainDB
+    MainDB -->|Result| SyncService
+    SyncService -->|Response| APIGateway
+    APIGateway -->|200 OK {applied}| Internet
+    Internet -->|Confirmation| SyncManager
+    SyncManager -->|Remove from Queue| SyncQueue
+    
+    %% Conflict resolution
+    LocalDB -->|Conflict Detected| ConflictResolver
+    ConflictResolver -->|Strategy| LocalDB
+    ConflictResolver -->|Manual| UI
+    
+    %% Other clients sync
+    Client2 -->|Sync Request| Internet
+    Client3 -->|Sync Request| Internet
+    Internet -->|Changes| SyncService
+    SyncService -->|Broadcast| Client2
+    SyncService -->|Broadcast| Client3
+
+    %% === Styles ===
+    classDef client fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef gateway fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef service fill:#9f9,stroke:#333,stroke-width:2px;
+    classDef database fill:#ff9,stroke:#333,stroke-width:2px;
+    classDef network fill:#fff,stroke:#333,stroke-width:1px;
+
+    %% === Notes ===
+    linkStyle default stroke:#666,stroke-width:1px;

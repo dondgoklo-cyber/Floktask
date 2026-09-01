@@ -1,0 +1,102 @@
+%% Component Diagram
+%% Floktask - Microservices Components
+%% Date: 2026-09-05
+%% Author: Architect
+
+C4Context
+    title Floktask System Context Diagram
+
+    Person(user, "User", "Floktask User")
+    
+    System(floktask, "Floktask", "Personal Life OS for Tasks, Projects, Finance, Notes, Habits")
+    
+    System_Ext(google, "Google", "OAuth Provider")
+    System_Ext(yandex, "Yandex", "OAuth Provider + AI")
+    System_Ext(github, "GitHub", "OAuth Provider")
+    System_Ext(apple, "Apple", "OAuth Provider")
+    System_Ext(fcm, "Firebase Cloud Messaging", "Push Notifications")
+    System_Ext(apns, "Apple Push Notification Service", "Push Notifications")
+    System_Ext(gemini, "Google Gemini", "AI Provider")
+    System_Ext(yandexgpt, "Yandex GPT", "AI Provider")
+    System_Ext(storage, "Cloud Storage", "File Storage")
+
+    Rel(user, floktask, "Uses", "HTTP/WebSocket")
+    Rel(floktask, google, "Authenticate", "OAuth 2.0")
+    Rel(floktask, yandex, "Authenticate + AI", "OAuth 2.0 + API")
+    Rel(floktask, github, "Authenticate", "OAuth 2.0")
+    Rel(floktask, apple, "Authenticate", "OAuth 2.0")
+    Rel(floktask, fcm, "Send Notifications", "HTTP")
+    Rel(floktask, apns, "Send Notifications", "HTTP/2")
+    Rel(floktask, gemini, "AI Processing", "HTTP")
+    Rel(floktask, yandexgpt, "AI Processing", "HTTP")
+    Rel(floktask, storage, "Store Files", "HTTP")
+
+C4Context
+    title Floktask API Gateway Context
+
+    System(apiGateway, "API Gateway", "Spring Cloud Gateway")
+    
+    System(userService, "User Service", "User Management")
+    System(taskService, "Task Service", "Task Management")
+    System(projectService, "Project Service", "Project Management")
+    System(syncService, "Sync Service", "Data Synchronization")
+    System(aiService, "AI Service", "AI Integration")
+    System(notificationService, "Notification Service", "Notifications")
+    System(financeService, "Finance Service", "Finance Management")
+    System(habitService, "Habit Service", "Habit Tracking")
+    System(noteService, "Note Service", "Notes Management")
+
+    Rel(apiGateway, userService, "Routes requests", "HTTP")
+    Rel(apiGateway, taskService, "Routes requests", "HTTP")
+    Rel(apiGateway, projectService, "Routes requests", "HTTP")
+    Rel(apiGateway, syncService, "Routes requests", "HTTP/WebSocket")
+    Rel(apiGateway, aiService, "Routes requests", "HTTP")
+    Rel(apiGateway, notificationService, "Routes requests", "HTTP/WebSocket")
+    Rel(apiGateway, financeService, "Routes requests", "HTTP")
+    Rel(apiGateway, habitService, "Routes requests", "HTTP")
+    Rel(apiGateway, noteService, "Routes requests", "HTTP")
+
+C4Container
+    title User Service Container Diagram
+
+    ContainerDb(userDb, "User Database", "PostgreSQL", "User data, sessions, OAuth tokens")
+    Container(userApi, "User API", "Spring Boot", "REST API for user operations")
+    Container(userLogic, "User Logic", "Kotlin", "Business logic for user management")
+    Container(authLogic, "Authentication Logic", "Kotlin", "JWT generation and validation")
+    Container(redis, "Redis", "Key-Value Store", "Session cache, rate limiting")
+
+    Rel(userApi, userLogic, "Uses", "HTTP")
+    Rel(userLogic, userDb, "Reads/Writes", "JDBC")
+    Rel(userLogic, redis, "Caches", "Redis")
+    Rel(authLogic, userDb, "Reads/Writes", "JDBC")
+    Rel(userApi, authLogic, "Uses", "In-memory")
+
+C4Container
+    title Task Service Container Diagram
+
+    ContainerDb(taskDb, "Task Database", "PostgreSQL", "Tasks, subtasks, dependencies")
+    Container(taskApi, "Task API", "Spring Boot", "REST API for task operations")
+    Container(taskLogic, "Task Logic", "Kotlin", "Business logic for tasks")
+    Container(searchLogic, "Search Logic", "Kotlin", "Full-text search")
+    Container(redisCache, "Redis Cache", "Key-Value Store", "Task cache")
+
+    Rel(taskApi, taskLogic, "Uses", "HTTP")
+    Rel(taskLogic, taskDb, "Reads/Writes", "JDBC")
+    Rel(taskLogic, redisCache, "Caches", "Redis")
+    Rel(taskLogic, searchLogic, "Uses", "In-memory")
+    Rel(searchLogic, taskDb, "Queries", "JDBC")
+
+C4Container
+    title Sync Service Container Diagram
+
+    ContainerDb(syncDb, "Sync Database", "PostgreSQL", "Sync metadata, conflicts")
+    Container(syncApi, "Sync API", "Spring Boot", "REST + WebSocket API")
+    Container(syncLogic, "Sync Logic", "Kotlin", "Conflict resolution")
+    Container(queue, "Sync Queue", "Redis", "Pending changes")
+    Container(versionManager, "Version Manager", "Kotlin", "Version tracking")
+
+    Rel(syncApi, syncLogic, "Uses", "HTTP/WebSocket")
+    Rel(syncLogic, syncDb, "Reads/Writes", "JDBC")
+    Rel(syncLogic, queue, "Reads/Writes", "Redis")
+    Rel(syncLogic, versionManager, "Uses", "In-memory")
+    Rel(versionManager, syncDb, "Reads/Writes", "JDBC")

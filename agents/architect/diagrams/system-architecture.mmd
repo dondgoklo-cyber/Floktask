@@ -1,0 +1,123 @@
+%% System Architecture Diagram
+%% Floktask - Personal Life OS
+%% Date: 2026-09-05
+%% Author: Architect
+
+graph TD
+    %% === Clients ===
+    subgraph Clients["Client Applications"]
+        Android["Android App\n(Kotlin + Compose)"]:::client
+        iOS["iOS App\n(Swift + SwiftUI)"]:::client
+        Web["Web App\n(React + TypeScript)"]:::client
+        Desktop["Desktop App\n(Electron)"]:::client
+    end
+
+    %% === API Layer ===
+    subgraph API["API Gateway Layer"]
+        LoadBalancer["Load Balancer\n(Nginx/AWS ALB)"]:::gateway
+        APIGateway["API Gateway\n(Spring Cloud Gateway)"]:::gateway
+        AuthFilter["Authentication Filter\n(JWT Validation)"]:::gateway
+        RateLimiter["Rate Limiter\n(Redis)"]:::gateway
+    end
+
+    %% === Microservices ===
+    subgraph Services["Microservices"]
+        UserService["User Service\n(Spring Boot + PostgreSQL)"]:::service
+        TaskService["Task Service\n(Spring Boot + PostgreSQL)"]:::service
+        ProjectService["Project Service\n(Spring Boot + PostgreSQL)"]:::service
+        SyncService["Sync Service\n(Spring Boot + PostgreSQL + Redis)"]:::service
+        AIService["AI Service\n(Spring Boot + External AI)"]:::service
+        NotificationService["Notification Service\n(Spring Boot + PostgreSQL)"]:::service
+        FinanceService["Finance Service\n(Spring Boot + PostgreSQL)"]:::service
+        HabitService["Habit Service\n(Spring Boot + PostgreSQL)"]:::service
+        NoteService["Note Service\n(Spring Boot + PostgreSQL)"]:::service
+    end
+
+    %% === Data Layer ===
+    subgraph Data["Data Layer"]
+        UserDB[(User Database\nPostgreSQL)]:::database
+        TaskDB[(Task Database\nPostgreSQL)]:::database
+        ProjectDB[(Project Database\nPostgreSQL)]:::database
+        SyncQueue[(Sync Queue\nRedis)]:::database
+        Cache[(Cache\nRedis)]:::database
+        FinanceDB[(Finance Database\nPostgreSQL)]:::database
+        HabitDB[(Habit Database\nPostgreSQL)]:::database
+        NoteDB[(Note Database\nPostgreSQL)]:::database
+    end
+
+    %% === External Services ===
+    subgraph External["External Services"]
+        AIProvider["AI Providers\n(Gemini, Yandex GPT, GPT-4)"]:::external
+        PushService["Push Services\n(FCM, APNS, Web Push)"]:::external
+        EmailService["Email Service\n(SMTP)"]:::external
+        OAuthProviders["OAuth Providers\n(Google, Yandex, GitHub, Apple)"]:::external
+        Storage["File Storage\n(S3, Cloud Storage)"]:::external
+    end
+
+    %% === Infrastructure ===
+    subgraph Infrastructure["Infrastructure"]
+        Kubernetes["Kubernetes\n(EKS/GKE)"]:::infra
+        Monitoring["Monitoring\n(Prometheus + Grafana)"]:::infra
+        Logging["Logging\n(ELK Stack)"]:::infra
+        Tracing["Tracing\n(Jaeger)"]:::infra
+        CI_CD["CI/CD\n(GitHub Actions)"]:::infra
+    end
+
+    %% === Connections ===
+    Android --> LoadBalancer
+    iOS --> LoadBalancer
+    Web --> LoadBalancer
+    Desktop --> LoadBalancer
+    
+    LoadBalancer --> APIGateway
+    APIGateway --> AuthFilter
+    APIGateway --> RateLimiter
+    
+    AuthFilter --> UserService
+    RateLimiter --> Redis
+    
+    APIGateway --> UserService
+    APIGateway --> TaskService
+    APIGateway --> ProjectService
+    APIGateway --> SyncService
+    APIGateway --> AIService
+    APIGateway --> NotificationService
+    APIGateway --> FinanceService
+    APIGateway --> HabitService
+    APIGateway --> NoteService
+
+    UserService --> UserDB
+    TaskService --> TaskDB
+    TaskService --> Cache
+    ProjectService --> ProjectDB
+    SyncService --> SyncQueue
+    SyncService --> TaskDB
+    SyncService --> ProjectDB
+    AIService --> AIProvider
+    NotificationService --> PushService
+    NotificationService --> EmailService
+    FinanceService --> FinanceDB
+    HabitService --> HabitDB
+    NoteService --> NoteDB
+
+    UserService --> OAuthProviders
+    AIService --> Storage
+    NoteService --> Storage
+    TaskService --> Storage
+
+    AllServices --> Kubernetes
+    AllServices --> Monitoring
+    AllServices --> Logging
+    AllServices --> Tracing
+    AllServices --> CI_CD
+
+    %% === Styles ===
+    classDef client fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef gateway fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef service fill:#9f9,stroke:#333,stroke-width:2px;
+    classDef database fill:#ff9,stroke:#333,stroke-width:2px;
+    classDef external fill:#99f,stroke:#333,stroke-width:2px;
+    classDef infra fill:#f96,stroke:#333,stroke-width:2px;
+
+    %% === Notes ===
+    linkStyle default stroke:#666,stroke-width:1px;

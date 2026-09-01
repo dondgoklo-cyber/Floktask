@@ -1,0 +1,550 @@
+name: Floktask CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+      - feature/*
+      - hotfix/*
+  pull_request:
+    branches:
+      - main
+      - release/*
+  schedule:
+    # Nightly build at 2 AM UTC
+    - cron: '0 2 * * *'
+
+# Environment variables available to all jobs and steps
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  AWS_REGION: eu-central-1
+  K8S_NAMESPACE: floktask-${{ github.event_name == 'pull_request' && 'pr' || (github.ref_name == 'main' && 'staging' || 'production') }}
+  HELM_CHARTS_DIR: ./k8s/charts
+  VALUES_FILE: values-${{ github.event_name == 'pull_request' && 'pr' || (github.ref_name == 'main' && 'staging' || 'production') }}.yaml
+
+jobs:
+  # ============================================================================
+  # LINTING AND CODE QUALITY
+  # ============================================================================
+  lint:
+    name: Lint and Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+      
+      - name: Run ktlint
+        run: |
+          ./gradlew ktlintCheck --no-daemon --max-workers=2
+      
+      - name: Run detekt
+        run: |
+          ./gradlew detekt --no-daemon --max-workers=2
+
+  # ============================================================================
+  # UNIT TESTS
+  # ============================================================================
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+      
+      - name: Run unit tests
+        run: |
+          ./gradlew testDebugUnitTest --no-daemon --max-workers=2 --continue
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: app/build/reports/tests/
+          retention-days: 30
+
+  # ============================================================================
+  # ANDROID INSTRUMENTATION TESTS
+  # ============================================================================
+  android-test:
+    name: Android Instrumentation Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+      
+      - name: Run instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6_pro
+          script: ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.taskmanager.TestRunner --no-daemon --max-workers=2
+
+  # ============================================================================
+  # BUILD ANDROID APK
+  # ============================================================================
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [lint, test]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+      
+      - name: Build debug APK
+        run: |
+          ./gradlew assembleDebug --no-daemon --max-workers=2
+      
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7
+
+  # ============================================================================
+  # BUILD AND PUSH DOCKER IMAGE
+  # ============================================================================
+  build-docker:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [test]
+    if: github.ref_name != 'main' && !startsWith(github.ref_name, 'release/')
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-,format=short
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================================================
+  # BUILD AND PUSH DOCKER IMAGE FOR PRODUCTION
+  # ============================================================================
+  build-docker-production:
+    name: Build and Push Docker Image (Production)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [test]
+    if: github.ref_name == 'main' || startsWith(github.ref_name, 'release/')
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Log in to AWS ECR
+        if: github.ref_name == 'main' || startsWith(github.ref_name, 'release/')
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-account-id: true
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            ${{ secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,prefix={{branch}}-,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push to GitHub Container Registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Build and push to AWS ECR
+        if: github.ref_name == 'main' || startsWith(github.ref_name, 'release/')
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================================================
+  # DEPLOY TO KUBERNETES (STAGING)
+  # ============================================================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build-docker-production]
+    if: github.ref_name == 'main'
+    
+    environment:
+      name: staging
+      url: https://staging-api.floktask.com
+    
+    permissions:
+      contents: read
+      packages: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name floktask-staging --region ${{ env.AWS_REGION }}
+      
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+      
+      - name: Deploy to staging
+        run: |
+          helm dependency update ${{ env.HELM_CHARTS_DIR }}/api-gateway
+          helm upgrade --install api-gateway ${{ env.HELM_CHARTS_DIR }}/api-gateway \
+            --namespace ${{ env.K8S_NAMESPACE }} \
+            --values ${{ env.HELM_CHARTS_DIR }}/api-gateway/${{ env.VALUES_FILE }} \
+            --set image.tag=${{ github.sha }} \
+            --wait \
+            --timeout 10m \
+            --atomic
+
+  # ============================================================================
+  # DEPLOY TO KUBERNETES (PRODUCTION)
+  # ============================================================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build-docker-production]
+    if: startsWith(github.ref_name, 'release/')
+    
+    environment:
+      name: production
+      url: https://api.floktask.com
+    
+    permissions:
+      contents: read
+      packages: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name floktask-production --region ${{ env.AWS_REGION }}
+      
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+      
+      - name: Deploy to production
+        run: |
+          # Deploy all microservices
+          for service in api-gateway user-service task-service project-service sync-service ai-service notification-service finance-service habit-service note-service; do
+            helm dependency update ${{ env.HELM_CHARTS_DIR }}/${service}
+            helm upgrade --install ${service} ${{ env.HELM_CHARTS_DIR }}/${service} \
+              --namespace ${{ env.K8S_NAMESPACE }} \
+              --values ${{ env.HELM_CHARTS_DIR }}/${service}/${{ env.VALUES_FILE }} \
+              --set image.tag=${{ github.sha }} \
+              --wait \
+              --timeout 10m \
+              --atomic
+          done
+
+  # ============================================================================
+  # SECURITY SCANNING
+  # ============================================================================
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build-docker]
+    if: github.ref_name == 'main' || startsWith(github.ref_name, 'release/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  # ============================================================================
+  # INFRASTRUCTURE AS CODE (TERRAFORM)
+  # ============================================================================
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [test]
+    if: github.ref_name == 'main' && contains(github.commit.message, '[terraform]')
+    
+    environment: terraform
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+      
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+      
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: terraform
+      
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: terraform
+
+  # ============================================================================
+  # DATABASE MIGRATIONS
+  # ============================================================================
+  migrate-db:
+    name: Database Migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [deploy-staging]
+    if: github.ref_name == 'main' && contains(github.commit.message, '[migration]')
+    
+    environment: database
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+      
+      - name: Run database migrations
+        run: |
+          ./gradlew :data:flywayMigrate -i --no-daemon
+        env:
+          DB_URL: ${{ secrets.STAGING_DB_URL }}
+          DB_USER: ${{ secrets.STAGING_DB_USER }}
+          DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+
+  # ============================================================================
+  # PERFORMANCE TESTING
+  # ============================================================================
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [deploy-staging]
+    if: github.ref_name == 'main' && contains(github.commit.message, '[perf]')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Run performance tests
+        run: |
+          ./gradlew :performance:gatlingRun --no-daemon
+      
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: performance/target/gatling/
+          retention-days: 30
+
+  # ============================================================================
+  # NOTIFICATIONS
+  # ============================================================================
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: [lint, test, build-apk, deploy-staging, deploy-production]
+    if: always()
+    
+    steps:
+      - name: Send Slack notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_COLOR: ${{ job.status == 'success' && 'good' || 'danger' }}
+          SLACK_TITLE: ${{ github.workflow }} ${{ job.status == 'success' && 'Succeeded' || 'Failed' }}
+          SLACK_MESSAGE: |
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Status: ${{ job.status }}
+            Link: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
