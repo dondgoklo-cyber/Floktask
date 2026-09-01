@@ -1,16 +1,18 @@
-name: Build APK Final
+name: Build & Release APK
 
 on:
   workflow_dispatch:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
 
 jobs:
   build:
+    name: Build Debug APK
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,25 +27,34 @@ jobs:
         uses: gradle/gradle-build-action@v3
         with:
           gradle-version: 8.4
-          arguments: assembleDebug
+          arguments: assembleDebug --stacktrace --no-daemon
           cache-disabled: true
+        env:
+          GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g"
 
       - name: Rename APK
         run: |
           mkdir -p release
           cp app/build/outputs/apk/debug/app-debug.apk release/TaskManager-v1.1.0-debug.apk
 
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TaskManager-v1.1.0-debug
+          path: release/TaskManager-v1.1.0-debug.apk
+          retention-days: 30
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: success()
+        if: success() && startsWith(github.ref, 'refs/tags/')
         with:
-          tag_name: v1.1.0-debug
-          name: TaskManager v1.1.0-debug
+          tag_name: ${{ github.ref_name }}
+          name: TaskManager ${{ github.ref_name }}
           body: |
-            ## Floktask v1.1.0 - Product Manager Deliverables
+            ## Floktask ${{ github.ref_name }} - Smart Task Manager
             
-            **Changes:**
-            - Version bump: 1.0.0 → 1.1.0
+            **What's new:**
+            - Version bump: 1.0.0 -> 1.1.0
             - Finance: Added TRANSFER transaction support
             - Export: Added toAccountId, destinationAmount, destinationCurrency
             - All PM documents added (PRDs, user stories, competitor analysis)
@@ -55,11 +66,3 @@ jobs:
           prerelease: true
           files: release/TaskManager-v1.1.0-debug.apk
           fail_on_unmatched_files: false
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: TaskManager-v1.1.0-debug
-          path: release/TaskManager-v1.1.0-debug.apk
-          retention-days: 30
