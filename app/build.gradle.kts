@@ -99,6 +99,8 @@ dependencies {
 
 
     // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
     // Timber
     implementation(libs.timber)
