@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
+import com.taskmanager.presentation.screens.notes.ImportNoteSheet
 import com.taskmanager.domain.model.Note
 import com.taskmanager.haptic.HapticType
 import com.taskmanager.haptic.rememberHaptic
@@ -95,21 +96,38 @@ fun NotesScreen(
                 actions = {
                     val context = LocalContext.current
                     val exportManager = remember { NoteExportManager() }
+                    var showImportSheet by remember { mutableStateOf(false) }
+                    var markdownContent by remember { mutableStateOf("") }
+                    
                     val importLauncher = rememberLauncherForActivityResult(
                         ActivityResultContracts.OpenDocument()
                     ) { uri ->
                         uri?.let {
                             context.contentResolver.openInputStream(it)?.use { stream ->
-                                val md = stream.bufferedReader().readText()
-                                val note = exportManager.importFromMarkdown(md)
-                                viewModel.createNoteWithContent(note.title, note.contentMarkdown) { id -> onNoteClick(id) }
+                                markdownContent = stream.bufferedReader().readText()
+                                showImportSheet = true
                             }
                         }
                     }
+                    
                     IconButton(onClick = {
+                        haptic(HapticType.LIGHT)
                         importLauncher.launch(arrayOf("text/markdown", "text/plain", "*/*"))
                     }) {
                         Icon(Icons.Filled.FileUpload, contentDescription = "Импорт Markdown")
+                    }
+                    
+                    if (showImportSheet) {
+                        ImportNoteSheet(
+                            initialMarkdown = markdownContent,
+                            onDismiss = { showImportSheet = false },
+                            onImport = { note ->
+                                viewModel.createNoteWithContent(note.title, note.contentMarkdown) { id ->
+                                    onNoteClick(id)
+                                    showImportSheet = false
+                                }
+                            }
+                        )
                     }
                     IconButton(onClick = {
                         haptic(HapticType.LIGHT)
