@@ -23,8 +23,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.taskmanager.presentation.screens.finance.MoneyFormatter.formatMoney
-import com.taskmanager.presentation.screens.finance.MoneyFormatter.formatSignedMoney
+import com.taskmanager.presentation.screens.finance.formatMoney
+import com.taskmanager.presentation.screens.finance.formatSignedMoney
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.screens.finance.FinanceViewModel.CategoryExpense
 import com.taskmanager.presentation.theme.Elevation

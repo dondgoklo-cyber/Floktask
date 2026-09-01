@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.findFragment
 
 /**
  * Enters Picture-in-Picture mode for the Pomodoro timer (issue 35: timer

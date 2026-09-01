@@ -104,7 +104,7 @@ fun ImportNoteSheet(
                     .background(AppTheme.colors.surfaceVariant)
             )
         },
-        containerColor = AppTheme.colors.surfaceContainer
+        containerColor = AppTheme.colors.surface
     ) {
         Column(
             modifier = Modifier
