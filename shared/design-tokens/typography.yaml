@@ -1,0 +1,508 @@
+# Floktask Design System - Typography Tokens
+# Version: 1.0.0
+# Author: UI/UX Designer Agent
+# Date: 2026-09-05
+# Description: Typography scale and font families
+
+# ============================================
+# FONT FAMILIES
+# ============================================
+
+font_families:
+  primary: "Roboto"  # Default for Android
+  secondary: "Inter"  # For premium visual system
+  monospace: "Roboto Mono"
+  brand: "Montserrat"  # For headers and branding
+
+# Fallback font stack
+font_stack:
+  primary: "Roboto, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, sans-serif"
+  monospace: "Roboto Mono, Consolas, 'Courier New', monospace"
+
+# ============================================
+# FONT WEIGHTS
+# ============================================
+
+font_weights:
+  thin: 100
+  extra_light: 200
+  light: 300
+  regular: 400
+  medium: 500
+  semi_bold: 600
+  bold: 700
+  extra_bold: 800
+  black: 900
+
+# ============================================
+# FONT SIZES (in sp for Android, rem for Web)
+# ============================================
+
+font_sizes:
+  # Display
+  display_large: 57
+  display_medium: 45
+  display_small: 36
+  
+  # Headline
+  headline_large: 32
+  headline_medium: 28
+  headline_small: 24
+  
+  # Title
+  title_large: 22
+  title_medium: 18
+  title_small: 16
+  
+  # Label
+  label_large: 15
+  label_medium: 14
+  label_small: 12
+  
+  # Body
+  body_large: 16
+  body_medium: 14
+  body_small: 12
+
+# ============================================
+# LINE HEIGHTS
+# ============================================
+
+line_heights:
+  display_large: 64
+  display_medium: 52
+  display_small: 44
+  
+  headline_large: 40
+  headline_medium: 36
+  headline_small: 32
+  
+  title_large: 28
+  title_medium: 24
+  title_small: 20
+  
+  label_large: 20
+  label_medium: 18
+  label_small: 16
+  
+  body_large: 24
+  body_medium: 20
+  body_small: 16
+
+# ============================================
+# LETTER SPACING (in em)
+# ============================================
+
+letter_spacing:
+  display_large: -0.02
+  display_medium: -0.02
+  display_small: -0.01
+  
+  headline_large: -0.01
+  headline_medium: -0.01
+  headline_small: 0
+  
+  title_large: 0
+  title_medium: 0.01
+  title_small: 0.01
+  
+  label_large: 0.01
+  label_medium: 0.02
+  label_small: 0.03
+  
+  body_large: 0.01
+  body_medium: 0.02
+  body_small: 0.03
+
+# ============================================
+# TYPOGRAPHY STYLES
+# ============================================
+
+# Display styles
+display:
+  large:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 57
+    line_height: 64
+    letter_spacing: -0.02
+    text_transform: "none"
+    color: "on_surface"
+    
+  medium:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 45
+    line_height: 52
+    letter_spacing: -0.02
+    text_transform: "none"
+    color: "on_surface"
+    
+  small:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 36
+    line_height: 44
+    letter_spacing: -0.01
+    text_transform: "none"
+    color: "on_surface"
+
+# Headline styles
+headline:
+  large:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 32
+    line_height: 40
+    letter_spacing: -0.01
+    text_transform: "none"
+    color: "on_surface"
+    
+  medium:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 28
+    line_height: 36
+    letter_spacing: -0.01
+    text_transform: "none"
+    color: "on_surface"
+    
+  small:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 24
+    line_height: 32
+    letter_spacing: 0
+    text_transform: "none"
+    color: "on_surface"
+
+# Title styles
+title:
+  large:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 22
+    line_height: 28
+    letter_spacing: 0
+    text_transform: "none"
+    color: "on_surface"
+    
+  medium:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 18
+    line_height: 24
+    letter_spacing: 0.01
+    text_transform: "none"
+    color: "on_surface"
+    
+  small:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 16
+    line_height: 20
+    letter_spacing: 0.01
+    text_transform: "none"
+    color: "on_surface"
+
+# Label styles
+label:
+  large:
+    font_family: "primary"
+    font_weight: "medium"
+    font_size: 15
+    line_height: 20
+    letter_spacing: 0.01
+    text_transform: "uppercase"
+    color: "on_surface_variant"
+    
+  medium:
+    font_family: "primary"
+    font_weight: "medium"
+    font_size: 14
+    line_height: 18
+    letter_spacing: 0.02
+    text_transform: "uppercase"
+    color: "on_surface_variant"
+    
+  small:
+    font_family: "primary"
+    font_weight: "medium"
+    font_size: 12
+    line_height: 16
+    letter_spacing: 0.03
+    text_transform: "uppercase"
+    color: "on_surface_variant"
+
+# Body styles
+body:
+  large:
+    font_family: "primary"
+    font_weight: "regular"
+    font_size: 16
+    line_height: 24
+    letter_spacing: 0.01
+    text_transform: "none"
+    color: "on_surface"
+    
+  medium:
+    font_family: "primary"
+    font_weight: "regular"
+    font_size: 14
+    line_height: 20
+    letter_spacing: 0.02
+    text_transform: "none"
+    color: "on_surface"
+    
+  small:
+    font_family: "primary"
+    font_weight: "regular"
+    font_size: 12
+    line_height: 16
+    letter_spacing: 0.03
+    text_transform: "none"
+    color: "on_surface"
+
+# ============================================
+# SPECIAL TYPOGRAPHY STYLES
+# ============================================
+
+# For buttons
+button:
+  large:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 16
+    line_height: 20
+    letter_spacing: 0.01
+    text_transform: "uppercase"
+    color: "on_primary"
+    
+  medium:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 14
+    line_height: 18
+    letter_spacing: 0.02
+    text_transform: "uppercase"
+    color: "on_primary"
+    
+  small:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 12
+    line_height: 16
+    letter_spacing: 0.03
+    text_transform: "uppercase"
+    color: "on_primary"
+
+# For captions
+caption:
+  font_family: "primary"
+  font_weight: "regular"
+  font_size: 12
+  line_height: 16
+  letter_spacing: 0.03
+  text_transform: "none"
+  color: "on_surface_variant"
+
+# For overline
+overline:
+  font_family: "primary"
+  font_weight: "medium"
+  font_size: 10
+  line_height: 12
+  letter_spacing: 0.05
+  text_transform: "uppercase"
+  color: "on_surface_variant"
+
+# ============================================
+# CODE/Monospace
+# ============================================
+
+code:
+  font_family: "monospace"
+  font_weight: "regular"
+  font_size: 14
+  line_height: 20
+  letter_spacing: 0
+  text_transform: "none"
+  color: "on_surface"
+
+# ============================================
+# PREMIUM VISUAL SYSTEM TYPOGRAPHY
+# ============================================
+
+premium:
+  brand:
+    font_family: "brand"
+    font_weight: "bold"
+    font_size: 24
+    line_height: 32
+    letter_spacing: 0
+    text_transform: "none"
+    color: "primary_500"
+
+# ============================================
+# FINANCE SPECIFIC TYPOGRAPHY
+# ============================================
+
+finance:
+  amount_large:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 24
+    line_height: 32
+    letter_spacing: 0
+    color: "on_surface"
+    
+  amount_medium:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 18
+    line_height: 24
+    letter_spacing: 0
+    color: "on_surface"
+    
+  amount_small:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 14
+    line_height: 20
+    letter_spacing: 0
+    color: "on_surface"
+
+# Currency symbol
+currency:
+  font_family: "primary"
+  font_weight: "semi_bold"
+  font_size: 12
+  line_height: 16
+  letter_spacing: 0
+  color: "on_surface_variant"
+
+# ============================================
+# TASK SPECIFIC TYPOGRAPHY
+# ============================================
+
+task:
+  title:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 16
+    line_height: 20
+    letter_spacing: 0
+    color: "on_surface"
+    
+  description:
+    font_family: "primary"
+    font_weight: "regular"
+    font_size: 14
+    line_height: 20
+    letter_spacing: 0.01
+    color: "on_surface_variant"
+    
+  due_date:
+    font_family: "primary"
+    font_weight: "medium"
+    font_size: 12
+    line_height: 16
+    letter_spacing: 0.02
+    color: "error_500"
+
+# ============================================
+# TIMELINE SPECIFIC TYPOGRAPHY
+# ============================================
+
+timeline:
+  time:
+    font_family: "primary"
+    font_weight: "medium"
+    font_size: 11
+    line_height: 14
+    letter_spacing: 0
+    color: "on_surface_variant"
+    
+  event_title:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 14
+    line_height: 18
+    letter_spacing: 0
+    color: "on_surface"
+
+# ============================================
+# GANTT CHART TYPOGRAPHY
+# ============================================
+
+gantt:
+  task_name:
+    font_family: "primary"
+    font_weight: "regular"
+    font_size: 12
+    line_height: 16
+    letter_spacing: 0
+    color: "on_surface"
+    
+  duration:
+    font_family: "primary"
+    font_weight: "medium"
+    font_size: 10
+    line_height: 12
+    letter_spacing: 0
+    color: "on_surface_variant"
+
+# ============================================
+# FOCUS MODE TYPOGRAPHY
+# ============================================
+
+focus_mode:
+  timer:
+    font_family: "primary"
+    font_weight: "bold"
+    font_size: 64
+    line_height: 72
+    letter_spacing: -0.02
+    color: "focus_mode.timer_active"
+    
+  task_title:
+    font_family: "primary"
+    font_weight: "semi_bold"
+    font_size: 20
+    line_height: 28
+    letter_spacing: 0
+    color: "focus_mode.text"
+
+# ============================================
+# AI ASSISTANT TYPOGRAPHY
+# ============================================
+
+ai_assistant:
+  chat_message:
+    font_family: "primary"
+    font_weight: "regular"
+    font_size: 14
+    line_height: 20
+    letter_spacing: 0.01
+    color: "on_surface"
+    
+  suggestion:
+    font_family: "primary"
+    font_weight: "medium"
+    font_size: 14
+    line_height: 20
+    letter_spacing: 0.01
+    color: "ai_assistant.suggestion"
+
+# ============================================
+# RESPONSIVE TYPOGRAPHY SCALE
+# ============================================
+
+# Mobile (default)
+# Tablet: +2sp for all sizes
+# Desktop: +4sp for all sizes
+
+responsive:
+  mobile: 1.0
+  tablet: 1.125  # +12.5%
+  desktop: 1.25  # +25%

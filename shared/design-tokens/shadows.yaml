@@ -1,0 +1,334 @@
+# Floktask Design System - Shadow Tokens
+# Version: 1.0.0
+# Author: UI/UX Designer Agent
+# Date: 2026-09-05
+# Description: Elevation and shadow system for depth
+
+# ============================================
+# ELEVATION LEVELS (in dp)
+# ============================================
+# Material Design 3 elevation system
+# Level 0: Surface (no shadow)
+# Level 1: Raised surface
+# Level 2: Card, Dialog
+# Level 3: Modal, Dropdown
+# Level 4: Floating Action Button
+# Level 5: Snackbar
+# Level 6+: Custom high elevation
+
+elevation:
+  level_0: 0
+  level_1: 1
+  level_2: 3
+  level_3: 6
+  level_4: 8
+  level_5: 12
+  level_6: 16
+  level_7: 24
+
+# ============================================
+# SHADOW TOKENS
+# ============================================
+# Format: [x, y, blur, spread, color]
+# Android: Use elevation (dp) + shadow color
+# Web: Use box-shadow CSS property
+
+shadows:
+  # No shadow
+  none:
+    elevation: 0
+    color: "transparent"
+    
+  # Level 1 - Subtle shadow (raised surfaces)
+  level_1:
+    elevation: 1
+    color: "rgba(0, 0, 0, 0.20)"
+    
+    # Web equivalent
+    web: "0 1px 2px 0 rgba(0, 0, 0, 0.20)"
+    
+  # Level 2 - Card shadow
+  level_2:
+    elevation: 3
+    color: "rgba(0, 0, 0, 0.14)"
+    
+    web: "0 3px 4px 0 rgba(0, 0, 0, 0.14)"
+    
+  # Level 3 - Modal/Dropdown shadow
+  level_3:
+    elevation: 6
+    color: "rgba(0, 0, 0, 0.12)"
+    
+    web: "0 6px 10px 0 rgba(0, 0, 0, 0.12)"
+    
+  # Level 4 - FAB shadow
+  level_4:
+    elevation: 8
+    color: "rgba(0, 0, 0, 0.15)"
+    
+    web: "0 8px 16px 0 rgba(0, 0, 0, 0.15)"
+    
+  # Level 5 - Snackbar/Toast shadow
+  level_5:
+    elevation: 12
+    color: "rgba(0, 0, 0, 0.16)"
+    
+    web: "0 12px 24px 0 rgba(0, 0, 0, 0.16)"
+
+# ============================================
+# COMPONENT-SPECIFIC SHADOWS
+# ============================================
+
+component_shadows:
+  # Cards
+  card:
+    default: "level_2"
+    hover: "level_3"
+    pressed: "level_1"
+    
+  card_premium:
+    default: "level_3"
+    hover: "level_4"
+    pressed: "level_2"
+    
+  # Buttons
+  button:
+    default: "level_1"
+    hover: "level_2"
+    pressed: "none"
+    
+  button_elevated:
+    default: "level_2"
+    hover: "level_3"
+    pressed: "level_1"
+    
+  button_fab:
+    default: "level_4"
+    hover: "level_5"
+    pressed: "level_3"
+    
+  # Floating Action Button
+  fab:
+    default: "level_4"
+    hover: "level_5"
+    pressed: "level_3"
+    
+  # Dialogs/Modals
+  dialog:
+    default: "level_5"
+    
+  modal:
+    default: "level_5"
+    
+  bottom_sheet:
+    default: "level_4"
+    
+  # Navigation
+  navigation_bar:
+    default: "level_1"
+    
+  app_bar:
+    default: "level_2"
+    
+  # Form Elements
+  text_field:
+    default: "none"
+    focused: "level_1"
+    error: "level_1"
+    
+  dropdown:
+    default: "none"
+    open: "level_3"
+    
+  # Chips
+  chip:
+    default: "level_1"
+    hover: "level_2"
+    pressed: "none"
+    
+  # Badges
+  badge:
+    default: "none"
+    
+  # Tooltips
+  tooltip:
+    default: "level_3"
+
+# ============================================
+# CUSTOM SHADOWS
+# ============================================
+
+custom_shadows:
+  # Soft shadow for premium cards
+  premium_soft:
+    elevation: 4
+    color: "rgba(255, 120, 0, 0.15)"  # Orange tint
+    web: "0 4px 16px 0 rgba(255, 120, 0, 0.15)"
+    
+  # Glow effect for active states
+  glow_orange:
+    elevation: 0
+    color: "rgba(255, 152, 0, 0.30)"
+    web: "0 0 20px 0 rgba(255, 152, 0, 0.30)"
+    
+  glow_green:
+    elevation: 0
+    color: "rgba(76, 175, 80, 0.30)"
+    web: "0 0 20px 0 rgba(76, 175, 80, 0.30)"
+    
+  glow_red:
+    elevation: 0
+    color: "rgba(244, 67, 54, 0.30)"
+    web: "0 0 20px 0 rgba(244, 67, 54, 0.30)"
+    
+  # Inner shadow for pressed states
+  inner:
+    elevation: 0
+    color: "rgba(0, 0, 0, 0.10)"
+    web: "inset 0 1px 2px 0 rgba(0, 0, 0, 0.10)"
+    
+  # Focus ring shadow
+  focus_ring:
+    elevation: 0
+    color: "rgba(255, 152, 0, 0.40)"
+    web: "0 0 0 3px rgba(255, 152, 0, 0.40)"
+
+# ============================================
+# DARK THEME SHADOWS
+# ============================================
+# Darker shadows for dark mode
+
+dark_shadows:
+  level_1:
+    elevation: 1
+    color: "rgba(0, 0, 0, 0.30)"
+    web: "0 1px 2px 0 rgba(0, 0, 0, 0.30)"
+    
+  level_2:
+    elevation: 3
+    color: "rgba(0, 0, 0, 0.24)"
+    web: "0 3px 4px 0 rgba(0, 0, 0, 0.24)"
+    
+  level_3:
+    elevation: 6
+    color: "rgba(0, 0, 0, 0.20)"
+    web: "0 6px 10px 0 rgba(0, 0, 0, 0.20)"
+    
+  level_4:
+    elevation: 8
+    color: "rgba(0, 0, 0, 0.25)"
+    web: "0 8px 16px 0 rgba(0, 0, 0, 0.25)"
+    
+  level_5:
+    elevation: 12
+    color: "rgba(0, 0, 0, 0.28)"
+    web: "0 12px 24px 0 rgba(0, 0, 0, 0.28)"
+
+# ============================================
+# TASK-SPECIFIC SHADOWS
+# ============================================
+
+task_shadows:
+  card:
+    default: "level_2"
+    hover: "level_3"
+    selected: "level_4"
+    
+  drag:
+    default: "level_4"
+    hover: "level_5"
+
+# ============================================
+# TIMELINE VIEW SHADOWS
+# ============================================
+
+timeline_shadows:
+  header:
+    default: "level_1"
+    
+  event:
+    default: "level_2"
+    hover: "level_3"
+    
+  task:
+    default: "level_1"
+    hover: "level_2"
+    
+  current_time:
+    default: "none"
+    indicator: "0 0 0 2px ${colors.primary_500}"
+
+# ============================================
+# GANTT CHART SHADOWS
+# ============================================
+
+gantt_shadows:
+  bar:
+    default: "level_1"
+    hover: "level_2"
+    selected: "level_3"
+    
+  milestone:
+    default: "level_2"
+    hover: "level_3"
+    
+  critical_path:
+    default: "level_2"
+    glow: "glow_red"
+
+# ============================================
+# FOCUS MODE SHADOWS
+# ============================================
+
+focus_mode_shadows:
+  timer:
+    default: "level_4"
+    active: "glow_orange"
+    paused: "level_2"
+    
+  task_card:
+    default: "level_3"
+    hover: "level_4"
+
+# ============================================
+# AI ASSISTANT SHADOWS
+# ============================================
+
+ai_assistant_shadows:
+  chat_bubble:
+    user: "level_2"
+    ai: "level_1"
+    
+  suggestion_card:
+    default: "level_2"
+    hover: "level_3"
+
+# ============================================
+# FINANCE SHADOWS
+# ============================================
+
+finance_shadows:
+  card:
+    default: "level_2"
+    hover: "level_3"
+    
+  balance_card:
+    default: "level_3"
+    
+  chart:
+    default: "level_1"
+
+# ============================================
+# PREMIUM VISUAL SYSTEM SHADOWS
+# ============================================
+
+premium_shadows:
+  card:
+    default: "premium_soft"
+    hover: "level_4"
+    
+  empty_state:
+    default: "level_3"
+    
+  icon:
+    default: "level_2"
