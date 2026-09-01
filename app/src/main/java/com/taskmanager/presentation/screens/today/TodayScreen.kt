@@ -137,8 +137,8 @@ fun TodayScreen(
             categories = financeState.categories,
             accounts = financeState.accounts,
             onDismiss = { addTransactionType = null },
-            onCreate = { amount, type, currency, categoryId, accountId, date, note, toAccountId, destinationAmount, destinationCurrency ->
-                financeViewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note, toAccountId, destinationAmount, destinationCurrency)
+            onCreate = { amount, type, currency, categoryId, accountId, date, note ->
+                financeViewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note)
                 addTransactionType = null
             },
             initialType = txType

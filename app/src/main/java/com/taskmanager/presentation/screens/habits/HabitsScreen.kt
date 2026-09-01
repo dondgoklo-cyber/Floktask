@@ -51,9 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.presentation.theme.AppTheme
-import com.taskmanager.presentation.components.parseColor
 import com.taskmanager.presentation.theme.Radius
-import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.components.AppTextField
@@ -70,32 +68,7 @@ fun HabitsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                                .background(AppTheme.colors.primary.copy(alpha = 0.12f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Filled.Spa,
-                                contentDescription = null,
-                                tint = AppTheme.colors.primary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                        Text(
-                            stringResource(R.string.habits),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                },
+                title = { Text(stringResource(R.string.habits)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.surface
                 )
@@ -146,33 +119,17 @@ private fun EmptyHabitsState(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .background(AppTheme.colors.primary.copy(alpha = 0.12f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Filled.Spa,
-                    contentDescription = null,
-                    tint = AppTheme.colors.primary,
-                    modifier = Modifier.size(32.dp)
-                )
-            }
+            Icon(
+                Icons.Filled.Spa,
+                contentDescription = null,
+                tint = AppTheme.colors.outline
+            )
             Text(
                 stringResource(R.string.no_habits),
                 style = MaterialTheme.typography.titleMedium,
                 color = AppTheme.colors.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = Spacing.md)
-            )
-            Text(
-                "Регулярные действия помогают достигать целей",
-                style = MaterialTheme.typography.bodySmall,
-                color = AppTheme.colors.onSurfaceVariant.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = Spacing.xs)
             )
         }
     }

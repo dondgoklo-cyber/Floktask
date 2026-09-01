@@ -139,8 +139,7 @@ fun FinanceScreen(
                     imported.forEach { tx ->
                         viewModel.createTransaction(
                             tx.amount, tx.type, tx.currency, tx.categoryId,
-                            tx.accountId, tx.date, tx.note,
-                            tx.toAccountId, tx.destinationAmount, tx.destinationCurrency
+                            tx.accountId, tx.date, tx.note
                         )
                     }
                     Toast.makeText(context, "Импортировано: ${imported.size} операций", Toast.LENGTH_SHORT).show()
@@ -314,7 +313,7 @@ fun FinanceScreen(
                 showAddSheet = false
                 editingTx = null
             },
-            onCreate = { amount, type, currency, categoryId, accountId, date, note, toAccountId, destinationAmount, destinationCurrency ->
+            onCreate = { amount, type, currency, categoryId, accountId, date, note ->
                 if (editingTx != null) {
                     viewModel.updateTransaction(editingTx!!.copy(
                         amount = amount,
@@ -322,14 +321,11 @@ fun FinanceScreen(
                         currency = currency,
                         categoryId = categoryId,
                         accountId = accountId,
-                        toAccountId = toAccountId,
-                        destinationAmount = destinationAmount,
-                        destinationCurrency = destinationCurrency,
                         date = date,
                         note = note
                     ))
                 } else {
-                    viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note, toAccountId, destinationAmount, destinationCurrency)
+                    viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note)
                 }
                 showAddSheet = false
                 editingTx = null
