@@ -1,0 +1,503 @@
+# Floktask Design System - Spacing Tokens
+# Version: 1.0.0
+# Author: UI/UX Designer Agent
+# Date: 2026-09-05
+# Description: Spacing system using 4dp base grid for Android, 4px for Web
+
+# ============================================
+# BASE SPACING UNIT
+# ============================================
+# 1 unit = 4dp (Android) / 4px (Web)
+# All values are multiples of the base unit
+
+base_unit: 4
+
+# ============================================
+# SPACING SCALE (in dp/px)
+# ============================================
+
+spacing:
+  # No spacing
+  none: 0
+  
+  # Extra small
+  xs: 4       # 1 * base_unit
+  xxs: 8      # 2 * base_unit
+  
+  # Small
+  sm: 12      # 3 * base_unit
+  sm_2: 16    # 4 * base_unit
+  
+  # Medium (default)
+  md: 20      # 5 * base_unit
+  md_2: 24    # 6 * base_unit
+  
+  # Large
+  lg: 28      # 7 * base_unit
+  lg_2: 32    # 8 * base_unit
+  
+  # Extra large
+  xl: 36      # 9 * base_unit
+  xl_2: 40    # 10 * base_unit
+  
+  # 2xl
+  xxl: 44     # 11 * base_unit
+  xxl_2: 48   # 12 * base_unit
+  
+  # 3xl
+  xxxl: 56    # 14 * base_unit
+  xxxl_2: 64  # 16 * base_unit
+  
+  # 4xl
+  xxxxl: 80   # 20 * base_unit
+  xxxxl_2: 96 # 24 * base_unit
+
+# ============================================
+# MARGINS
+# ============================================
+
+margins:
+  # Horizontal margins
+  horizontal:
+    none: 0
+    xs: 4
+    sm: 8
+    md: 16
+    lg: 24
+    xl: 32
+    xxl: 48
+    
+  # Vertical margins
+  vertical:
+    none: 0
+    xs: 4
+    sm: 8
+    md: 16
+    lg: 24
+    xl: 32
+    xxl: 48
+    
+  # All sides
+  all:
+    none: 0
+    xs: 4
+    sm: 8
+    md: 16
+    lg: 24
+    xl: 32
+
+# ============================================
+# PADDING
+# ============================================
+
+padding:
+  # Horizontal padding
+  horizontal:
+    none: 0
+    xs: 4
+    sm: 8
+    md: 16
+    lg: 24
+    xl: 32
+    xxl: 48
+    
+  # Vertical padding
+  vertical:
+    none: 0
+    xs: 4
+    sm: 8
+    md: 16
+    lg: 24
+    xl: 32
+    xxl: 48
+    
+  # All sides
+  all:
+    none: 0
+    xs: 4
+    sm: 8
+    md: 16
+    lg: 24
+    xl: 32
+
+# ============================================
+# GAPS (for Flexbox/Grid)
+# ============================================
+
+gaps:
+  none: 0
+  xs: 4
+  sm: 8
+  md: 12
+  lg: 16
+  xl: 24
+  xxl: 32
+
+# ============================================
+# COMPONENT-SPECIFIC SPACING
+# ============================================
+
+# Buttons
+button:
+  padding:
+    horizontal: 24  # lg
+    vertical: 12    # sm
+    
+  icon_spacing: 8   # xs
+  
+  min_width: 64     # xxl
+  min_height: 40    # xl_2
+  
+  # Button variants
+  large:
+    padding:
+      horizontal: 32  # xl
+      vertical: 16   # md_2
+    min_height: 48   # xxl_2
+    
+  small:
+    padding:
+      horizontal: 16  # md
+      vertical: 8    # sm
+    min_height: 32   # lg_2
+
+# Cards
+card:
+  padding: 16       # md
+  margin: 8         # sm
+  
+  elevation: 2      # dp
+  
+  corner_radius: 12 # lg
+  
+  # Card content
+  content_padding: 16  # md
+  
+  # Compact cards
+  compact:
+    padding: 12     # sm
+    margin: 4       # xs
+
+# Form Elements
+form:
+  input:
+    padding:
+      horizontal: 16  # md
+      vertical: 12    # sm_2
+    
+    height: 48       # xxl_2
+    
+    label_spacing: 8 # xs
+    
+    helper_text_spacing: 4 # xs
+    
+    error_spacing: 4  # xs
+    
+  text_field:
+    padding: 16      # md
+    height: 56       # xxxl
+    
+  dropdown:
+    padding: 16     # md
+    height: 48      # xxl_2
+    
+    item_height: 40  # xl_2
+
+# Lists
+list:
+  item:
+    padding: 16     # md
+    height: 48      # xxl_2
+    
+    icon_spacing: 16 # md
+    
+    trailing_icon_spacing: 16 # md
+    
+  divider_height: 1
+  
+  section_header:
+    padding: 16     # md
+    height: 40      # xl_2
+
+# Dialogs/Modals
+modal:
+  padding: 24      # lg_2
+  margin: 16       # md
+  
+  max_width: 560   # 140 * base_unit
+  
+  title_padding: 24 # lg_2
+  
+  content_padding: 20 # md
+  
+  action_spacing: 16 # md
+  
+  button_padding: 16 # md
+
+# Bottom Navigation
+bottom_nav:
+  height: 56       # xxxl
+  
+  icon_size: 24    # lg_2
+  
+  label_height: 16 # md_2
+  
+  item_padding: 8  # sm
+  
+  active_indicator_height: 2
+
+# Top App Bar
+app_bar:
+  height: 56       # xxxl
+  
+  title_padding: 16 # md
+  
+  action_icon_spacing: 12 # sm_2
+  
+  navigation_icon_padding: 16 # md
+
+# Tabs
+tabs:
+  height: 48       # xxl_2
+  
+  padding: 12      # sm_2
+  
+  icon_spacing: 8  # xs
+  
+  indicator_height: 2
+
+# Chips
+chip:
+  padding:
+    horizontal: 12  # sm_2
+    vertical: 6     # custom (1.5 * base_unit)
+  
+  height: 32       # lg_2
+  
+  icon_spacing: 8  # xs
+  
+  spacing: 8       # xs
+
+# Badges
+badge:
+  min_width: 16    # md
+  height: 16      # md
+  
+  padding: 4       # xs
+  
+  text_padding: 8  # sm
+
+# ============================================
+# LAYOUT-SPECIFIC SPACING
+# ============================================
+
+# Page margins
+page:
+  margin:
+    horizontal: 16  # md
+    vertical: 24    # lg_2
+    
+  max_width: 1200  # 300 * base_unit
+
+# Section spacing
+section:
+  spacing: 24      # lg_2
+  
+  title_spacing: 16 # md
+  
+  content_spacing: 20 # md
+
+# Grid spacing
+grid:
+  column_gap: 16   # md
+  row_gap: 16      # md
+  
+  # Compact grid
+  compact:
+    column_gap: 8  # sm
+    row_gap: 8     # sm
+
+# ============================================
+# TASK-SPECIFIC SPACING
+# ============================================
+
+task:
+  card:
+    padding: 16     # md
+    margin: 8      # sm
+    
+    title_spacing: 8 # xs
+    
+    description_spacing: 12 # sm_2
+    
+    due_date_spacing: 8 # xs
+    
+    tag_spacing: 6  # custom
+    
+  list:
+    item_spacing: 8 # sm
+    
+    checkbox_spacing: 12 # sm_2
+
+# ============================================
+# TIMELINE VIEW SPACING
+# ============================================
+
+timeline:
+  header:
+    height: 48      # xxl_2
+    padding: 16     # md
+    
+  time_axis:
+    width: 60      # 15 * base_unit
+    padding: 8      # sm
+    
+    label_spacing: 4 # xs
+    
+  event:
+    padding: 8      # sm
+    margin: 4       # xs
+    
+    min_height: 32  # lg_2
+    
+  task:
+    padding: 12     # sm_2
+    margin: 4       # xs
+    
+    min_width: 120  # 30 * base_unit
+    
+  milestone:
+    width: 24      # lg_2
+    height: 24     # lg_2
+    
+    padding: 4      # xs
+
+# ============================================
+# GANTT CHART SPACING
+# ============================================
+
+gantt:
+  header:
+    height: 40      # xl_2
+    padding: 8      # sm
+    
+  time_scale:
+    height: 32     # lg_2
+    padding: 4      # xs
+    
+    label_spacing: 8 # sm
+    
+  row:
+    height: 48     # xxl_2
+    padding: 8      # sm
+    
+  bar:
+    padding: 4      # xs
+    margin: 2       # custom (0.5 * base_unit)
+    
+    min_width: 40   # xl_2
+    
+    label_padding: 4 # xs
+    
+  milestone:
+    width: 16      # md
+    height: 16     # md
+    
+    padding: 2      # custom
+
+# ============================================
+# FOCUS MODE SPACING
+# ============================================
+
+focus_mode:
+  timer:
+    padding: 48    # xxl_2
+    margin: 24     # lg_2
+    
+    digit_spacing: 4 # xs
+    
+  task:
+    padding: 24    # lg_2
+    margin: 16     # md
+    
+  controls:
+    padding: 16    # md
+    spacing: 24    # lg_2
+    
+    button_size: 48 # xxl_2
+
+# ============================================
+# AI ASSISTANT SPACING
+# ============================================
+
+ai_assistant:
+  chat:
+    padding: 16    # md
+    spacing: 12    # sm_2
+    
+  message:
+    padding: 12    # sm_2
+    margin: 8      # sm
+    
+    max_width: 400 # 100 * base_unit
+    
+  bubble:
+    padding: 12    # sm_2
+    
+    tail_width: 8  # sm
+    
+  input:
+    padding: 16    # md
+    height: 48     # xxl_2
+    
+    send_button_size: 40 # xl_2
+
+# ============================================
+# FINANCE SPACING
+# ============================================
+
+finance:
+  card:
+    padding: 20    # md_2
+    margin: 12     # sm_2
+    
+  balance:
+    padding: 24   # lg_2
+    
+    amount_spacing: 8 # xs
+    
+    label_spacing: 4 # xs
+    
+  transaction:
+    padding: 16   # md
+    height: 56    # xxxl
+    
+    icon_spacing: 12 # sm_2
+    
+    amount_spacing: 8 # xs
+    
+    date_spacing: 16 # md
+
+# ============================================
+# RESPONSIVE SPACING
+# ============================================
+
+responsive:
+  # Mobile (default) - base values
+  mobile: 1.0
+  
+  # Tablet - scale up by 25%
+  tablet:
+    scale: 1.25
+    max_width: 800
+    
+  # Desktop - scale up by 50%
+  desktop:
+    scale: 1.5
+    max_width: 1200
+    
+  # Breakpoints
+  breakpoints:
+    mobile: 600
+    tablet: 768
+    desktop: 1024

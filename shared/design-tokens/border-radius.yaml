@@ -1,0 +1,390 @@
+# Floktask Design System - Border Radius Tokens
+# Version: 1.0.0
+# Author: UI/UX Designer Agent
+# Date: 2026-09-05
+# Description: Corner radius system for all components
+
+# ============================================
+# BASE BORDER RADIUS SCALE
+# ============================================
+# All values in dp (Android) / px (Web)
+
+border_radius:
+  # No rounding
+  none: 0
+  
+  # Extra small
+  xs: 2
+  xxs: 4
+  
+  # Small
+  sm: 6
+  sm_2: 8
+  
+  # Medium (default)
+  md: 12
+  md_2: 16
+  
+  # Large
+  lg: 20
+  lg_2: 24
+  
+  # Extra large
+  xl: 28
+  xl_2: 32
+  
+  # 2xl
+  xxl: 36
+  xxl_2: 40
+  
+  # 3xl (Pill shape)
+  xxxl: 48
+  xxxl_2: 56
+  
+  # Full circle
+  full: 9999
+
+# ============================================
+# COMPONENT-SPECIFIC BORDER RADIUS
+# ============================================
+
+component_radius:
+  # Buttons
+  button:
+    default: 12      # md
+    rounded: 24     # lg_2
+    pill: 48        # xxxl
+    square: 0       # none
+    
+  # Button variants
+  button_large:
+    default: 12     # md
+    
+  button_small:
+    default: 8      # sm_2
+    
+  # Floating Action Button
+  fab:
+    default: 16     # md_2
+    circular: 28    # xl
+    
+  # Cards
+  card:
+    default: 12     # md
+    rounded: 16     # md_2
+    square: 0       # none
+    
+  card_premium:
+    default: 16     # md_2
+    
+  # Dialogs/Modals
+  dialog:
+    default: 24     # lg_2
+    
+  modal:
+    default: 24     # lg_2
+    
+  bottom_sheet:
+    default: 16     # md_2
+    top: 24         # lg_2 (top corners only)
+    
+  # Form Elements
+  text_field:
+    default: 12     # md
+    rounded: 24     # lg_2
+    
+  dropdown:
+    default: 12     # md
+    
+  checkbox:
+    default: 4      # xxs
+    
+  radio_button:
+    default: 4      # xxs
+    
+  switch:
+    default: 12     # md
+    thumb: 16       # md_2
+    
+  # Chips
+  chip:
+    default: 16     # md_2
+    pill: 48        # xxxl
+    
+  # Badges
+  badge:
+    default: 4      # xxs
+    pill: 12        # md
+    circle: 9999    # full
+    
+  # Tooltips
+  tooltip:
+    default: 8      # sm_2
+    
+  # Navigation
+  navigation_bar:
+    default: 0      # none (square)
+    rounded: 12     # md
+    
+  app_bar:
+    default: 0      # none
+    rounded: 12     # md
+    
+  # Bottom Navigation
+  bottom_nav:
+    default: 0      # none
+    pill: 24        # lg_2
+    
+  # Tabs
+  tabs:
+    default: 12     # md
+    pill: 24        # lg_2
+    
+  # Lists
+  list:
+    default: 0      # none
+    rounded: 12     # md
+    
+  list_item:
+    default: 12     # md
+    
+  # Dividers
+  divider:
+    thickness: 1
+    radius: 0       # none
+
+# ============================================
+# SIDE-SPECIFIC BORDER RADIUS
+# ============================================
+
+# For components with different radius on each side
+side_radius:
+  # Top only
+  top:
+    none: 0
+    sm: 6
+    md: 12
+    lg: 20
+    xl: 28
+    
+  # Bottom only
+  bottom:
+    none: 0
+    sm: 6
+    md: 12
+    lg: 20
+    xl: 28
+    
+  # Left only
+  left:
+    none: 0
+    sm: 6
+    md: 12
+    lg: 20
+    
+  # Right only
+  right:
+    none: 0
+    sm: 6
+    md: 12
+    lg: 20
+
+# ============================================
+# TASK-SPECIFIC BORDER RADIUS
+# ============================================
+
+task_radius:
+  card:
+    default: 12     # md
+    selected: 16   # md_2
+    
+  tag:
+    default: 4      # xxs
+    pill: 12        # md
+    
+  priority_indicator:
+    default: 2      # xs
+    circle: 9999    # full
+
+# ============================================
+# TIMELINE VIEW BORDER RADIUS
+# ============================================
+
+timeline_radius:
+  header:
+    default: 0      # none
+    
+  time_axis:
+    default: 0      # none
+    
+  event:
+    default: 8      # sm_2
+    rounded: 12     # md
+    
+  task:
+    default: 8      # sm_2
+    
+  milestone:
+    default: 4      # xxs
+    circle: 9999    # full
+
+# ============================================
+# GANTT CHART BORDER RADIUS
+# ============================================
+
+gantt_radius:
+  bar:
+    default: 4      # xxs
+    rounded: 8      # sm_2
+    
+  milestone:
+    default: 4      # xxs
+    circle: 9999    # full
+    
+  header:
+    default: 0      # none
+    
+  time_scale:
+    default: 0      # none
+
+# ============================================
+# FOCUS MODE BORDER RADIUS
+# ============================================
+
+focus_mode_radius:
+  timer:
+    default: 24     # lg_2
+    circle: 9999    # full
+    
+  task_card:
+    default: 16     # md_2
+    
+  control_button:
+    default: 12     # md
+    circle: 9999    # full
+
+# ============================================
+# AI ASSISTANT BORDER RADIUS
+# ============================================
+
+ai_assistant_radius:
+  chat_bubble:
+    user: 16        # md_2
+    ai: 16          # md_2
+    
+  suggestion_card:
+    default: 12     # md
+    
+  input:
+    default: 24     # lg_2
+    
+  send_button:
+    default: 12     # md
+    circle: 9999    # full
+
+# ============================================
+# FINANCE BORDER RADIUS
+# ============================================
+
+finance_radius:
+  card:
+    default: 16     # md_2
+    
+  balance_card:
+    default: 20     # lg
+    
+  transaction:
+    default: 12     # md
+    
+  chart:
+    default: 12     # md
+
+# ============================================
+# PREMIUM VISUAL SYSTEM BORDER RADIUS
+# ============================================
+
+premium_radius:
+  card:
+    default: 16     # md_2
+    
+  empty_state:
+    default: 24     # lg_2
+    
+  icon:
+    default: 12     # md
+    circle: 9999    # full
+    
+  # Premium pill shape for navigation
+  navigation_pill:
+    default: 24     # lg_2
+
+# ============================================
+# KANBAN BORDER RADIUS
+# ============================================
+
+kanban_radius:
+  card:
+    default: 12     # md
+    
+  column:
+    default: 8      # sm_2
+    
+  column_header:
+    default: 8      # sm_2
+    top: 12         # md (top only)
+
+# ============================================
+# EISENHOWER MATRIX BORDER RADIUS
+# ============================================
+
+eisenhower_radius:
+  quadrant:
+    default: 0      # none (square quadrants)
+    rounded: 12     # md
+    
+  card:
+    default: 12     # md
+
+# ============================================
+# POMODORO BORDER RADIUS
+# ============================================
+
+pomodoro_radius:
+  timer:
+    default: 24     # lg_2
+    circle: 9999    # full
+    
+  control_button:
+    default: 12     # md
+    circle: 9999    # full
+
+# ============================================
+# GAMIFICATION BORDER RADIUS
+# ============================================
+
+gamification_radius:
+  badge:
+    default: 4      # xxs
+    circle: 9999    # full
+    shield: 8       # sm_2
+    
+  progress_bar:
+    default: 2      # xs
+    pill: 24        # lg_2
+    
+  achievement_card:
+    default: 16     # md_2
+
+# ============================================
+# NOTIFICATION BORDER RADIUS
+# ============================================
+
+notification_radius:
+  toast:
+    default: 8      # sm_2
+    
+  snackbar:
+    default: 12     # md
+    
+  alert:
+    default: 16     # md_2

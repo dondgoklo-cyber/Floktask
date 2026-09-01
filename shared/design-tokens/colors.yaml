@@ -1,0 +1,334 @@
+# Floktask Design System - Color Tokens
+# Version: 1.0.0
+# Author: UI/UX Designer Agent
+# Date: 2026-09-05
+# Description: Color tokens for light and dark themes
+
+# ============================================
+# SEMANTIC COLOR TOKENS
+# ============================================
+
+# Primary colors (Brand colors - Orange gradient as per TZ.md)
+primary:
+  50: "#FFF3E0"
+  100: "#FFE0B2"
+  200: "#FFCC80"
+  300: "#FFB74D"
+  400: "#FFAB40"
+  500: "#FF9800"  # Main brand color (light theme)
+  600: "#FF8C00"  # Main brand color (dark theme)
+  700: "#FB8C00"
+  800: "#F57C00"
+  900: "#EF6C00"
+  1000: "#E65100"
+
+# Primary container colors
+primary_container:
+  light: "#FF9800"
+  dark: "#FF8C00"
+
+# On-primary colors (text/icons on primary background)
+on_primary:
+  light: "#FFFFFF"
+  dark: "#000000"
+
+on_primary_container:
+  light: "#FFFFFF"
+  dark: "#1A1A1A"
+
+# Secondary colors
+secondary:
+  50: "#E8F5E8"
+  100: "#C8E6C9"
+  200: "#A5D6A7"
+  300: "#81C784"
+  400: "#66BB6A"
+  500: "#4CAF50"
+  600: "#43A047"
+  700: "#388E3C"
+  800: "#2E7D32"
+  900: "#1B5E20"
+
+secondary_container:
+  light: "#4CAF50"
+  dark: "#43A047"
+
+on_secondary:
+  light: "#FFFFFF"
+  dark: "#000000"
+
+on_secondary_container:
+  light: "#FFFFFF"
+  dark: "#1A1A1A"
+
+# Tertiary colors (for accents)
+tertiary:
+  50: "#E3F2FD"
+  100: "#BBDEFB"
+  200: "#90CAF9"
+  300: "#64B5F6"
+  400: "#42A5F5"
+  500: "#2196F3"
+  600: "#1E88E5"
+  700: "#1976D2"
+  800: "#1565C0"
+  900: "#0D47A1"
+
+# Error colors
+error:
+  50: "#FFEBEE"
+  100: "#FFCDD2"
+  200: "#EF9A9A"
+  300: "#E57373"
+  400: "#EF5350"
+  500: "#F44336"
+  600: "#E53935"
+  700: "#D32F2F"
+  800: "#C62828"
+  900: "#B71C1C"
+
+error_container:
+  light: "#F44336"
+  dark: "#E53935"
+
+on_error:
+  light: "#FFFFFF"
+  dark: "#000000"
+
+on_error_container:
+  light: "#FFFFFF"
+  dark: "#1A1A1A"
+
+# Warning colors
+warning:
+  50: "#FFF8E1"
+  100: "#FFECB3"
+  200: "#FFE082"
+  300: "#FFD54F"
+  400: "#FFCA28"
+  500: "#FFC107"
+  600: "#FFB300"
+  700: "#FFA000"
+  800: "#FF8F00"
+  900: "#FF6F00"
+
+# Info colors
+info:
+  50: "#E7F5FF"
+  100: "#D0EBFF"
+  200: "#A5D8FF"
+  300: "#74C0FC"
+  400: "#4DABF7"
+  500: "#339AF0"
+  600: "#228BE6"
+  700: "#1C7ED6"
+  800: "#1971C2"
+  900: "#1864AB"
+
+# Success colors
+success:
+  50: "#E8F5E8"
+  100: "#C8E6C9"
+  200: "#A5D6A7"
+  300: "#81C784"
+  400: "#66BB6A"
+  500: "#4CAF50"
+  600: "#43A047"
+
+# ============================================
+# NEUTRAL COLOR TOKENS
+# ============================================
+
+# Surface colors (backgrounds)
+surface:
+  light: "#FFFFFF"
+  dark: "#121212"
+
+surface_variant:
+  light: "#F5F5F5"
+  dark: "#1E1E1E"
+
+surface_container:
+  light: "#F0F0F0"
+  dark: "#2A2A2A"
+
+surface_container_high:
+  light: "#E8E8E8"
+  dark: "#383838"
+
+surface_container_highest:
+  light: "#E0E0E0"
+  dark: "#424242"
+
+# On-surface colors (text on surfaces)
+on_surface:
+  light: "#1A1A1A"
+  dark: "#FFFFFF"
+
+on_surface_variant:
+  light: "#424242"
+  dark: "#CACACA"
+
+# Background colors
+background:
+  light: "#FAFAFA"
+  dark: "#1A1A1A"
+
+on_background:
+  light: "#1A1A1A"
+  dark: "#FFFFFF"
+
+# ============================================
+# PREMIUM VISUAL SYSTEM (from NEXT_SESSION_TASK.md)
+# ============================================
+
+# Premium gradient colors (for empty states, cards, etc.)
+premium:
+  gradient_1:
+    start: "#FF7A00"
+    end: "#FF8C00"
+  gradient_2:
+    start: "#FF9800"
+    end: "#FFB74D"
+  gradient_3:
+    start: "#4CAF50"
+    end: "#81C784"
+  subtle_background: "#FFF3E0"
+  subtle_background_dark: "#2A1800"
+
+# ============================================
+# FINANCE SPECIFIC COLORS
+# ============================================
+
+finance:
+  income: "#4CAF50"
+  expense: "#F44336"
+  transfer: "#2196F3"
+  balance: "#FF9800"
+  
+  # Multi-currency colors
+  currency:
+    rub: "#FF5722"
+    usd: "#2196F3"
+    eur: "#FFC107"
+    gbp: "#9C27B0"
+
+# ============================================
+# TASK STATUS COLORS
+# ============================================
+
+task:
+  todo: "#9E9E9E"
+  in_progress: "#2196F3"
+  done: "#4CAF50"
+  blocked: "#F44336"
+  urgent: "#FF5722"
+  
+  priority:
+    low: "#9E9E9E"
+    medium: "#FFC107"
+    high: "#FF9800"
+    critical: "#F44336"
+
+# ============================================
+# KANBAN COLUMN COLORS
+# ============================================
+
+kanban:
+  backlog: "#9E9E9E"
+  todo: "#2196F3"
+  in_progress: "#FFC107"
+  review: "#FF9800"
+  done: "#4CAF50"
+
+# ============================================
+# EISENHOWER MATRIX COLORS
+# ============================================
+
+eisenhower:
+  urgent_important: "#F44336"      # Do Now
+  not_urgent_important: "#4CAF50" # Schedule
+  urgent_not_important: "#FF9800" # Delegate
+  not_urgent_not_important: "#9E9E9E" # Eliminate
+
+# ============================================
+# POMODORO COLORS
+# ============================================
+
+pomodoro:
+  work: "#4CAF50"
+  short_break: "#2196F3"
+  long_break: "#9C27B0"
+  paused: "#FF9800"
+  completed: "#8BC34A"
+
+# ============================================
+# GAMIFICATION COLORS
+# ============================================
+
+gamification:
+  bronze: "#CD7F32"
+  silver: "#C0C0C0"
+  gold: "#FFD700"
+  platinum: "#E5E4E2"
+  diamond: "#B9F2FF"
+
+# ============================================
+# TIMELINE VIEW COLORS
+# ============================================
+
+timeline:
+  today: "#FF9800"
+  future: "#4CAF50"
+  past: "#9E9E9E"
+  current_time: "#F44336"
+  event: "#2196F3"
+  task: "#FFC107"
+  milestone: "#9C27B0"
+
+# ============================================
+# GANTT CHART COLORS
+# ============================================
+
+gantt:
+  bar: "#4CAF50"
+  bar_hover: "#43A047"
+  bar_selected: "#388E3C"
+  critical_path: "#F44336"
+  milestone: "#9C27B0"
+  dependency: "#2196F3"
+  baseline: "#9E9E9E"
+
+# ============================================
+# FOCUS MODE COLORS
+# ============================================
+
+focus_mode:
+  background: "#1A1A1A"
+  text: "#FFFFFF"
+  timer_active: "#FF9800"
+  timer_paused: "#FFC107"
+  timer_completed: "#4CAF50"
+  distraction_blocked: "#F44336"
+
+# ============================================
+# AI ASSISTANT COLORS
+# ============================================
+
+ai_assistant:
+  background: "#FAFAFA"
+  chat_bubble_user: "#2196F3"
+  chat_bubble_ai: "#E0E0E0"
+  typing_indicator: "#FF9800"
+  suggestion: "#BBDEFB"
+
+# ============================================
+# OFFLINE MODE COLORS
+# ============================================
+
+offline:
+  indicator: "#9E9E9E"
+  warning: "#FF9800"
+  error: "#F44336"
+  sync_pending: "#2196F3"
+  sync_success: "#4CAF50"
