@@ -568,9 +568,119 @@ private fun BudgetCard(state: FinanceUiState) {
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
-            Text("Бюджеты", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(AppTheme.colors.primary.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.AccountBalanceWallet,
+                        contentDescription = null,
+                        tint = AppTheme.colors.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+                Text(
+                    "Бюджеты", 
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            
             state.budgets.forEach { (cat, budget) ->
                 val spent = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: 0.0
+                val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(0.0, 1.0) else 0.0
+                val isOverBudget = spent > budget.amount
+                val animatedProgress by animateFloatAsState(
+                    targetValue = progress.toFloat(),
+                    animationSpec = tween(durationMillis = 800)
+                )
+                
+                val progressColor = when {
+                    isOverBudget -> AppTheme.colors.danger
+                    progress >= 0.8f -> AppTheme.colors.warning
+                    else -> AppTheme.colors.primary
+                }
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Spacing.xs)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(10.dp)
+                                    .clip(CircleShape)
+                                    .background(parseTagColor(cat.color) ?: AppTheme.colors.primary)
+                            )
+                            Text(
+                                cat.name, 
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        Text(
+                            "${formatMoney(spent, budget.currency)} / ${formatMoney(budget.amount, budget.currency)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (isOverBudget) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant,
+                            fontWeight = if (isOverBudget) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                    
+                    Spacer(Modifier.height(Spacing.xs))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                    ) {
+                        androidx.compose.material3.LinearProgressIndicator(
+                            progress = { animatedProgress },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(Radius.full)),
+                            color = progressColor,
+                            trackColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.6f)
+                        )
+                        
+                        Text(
+                            "${(progress * 100).toInt()}%",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (isOverBudget) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    
+                    if (isOverBudget) {
+                        Spacer(Modifier.height(Spacing.xs))
+                        Text(
+                            "Превышено бюджет",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppTheme.colors.danger,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
+        }
+    }
+}?.total ?: 0.0
                 val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(0.0, 1.0) else 0.0
                 val isOverBudget = spent > budget.amount
                 Row(
