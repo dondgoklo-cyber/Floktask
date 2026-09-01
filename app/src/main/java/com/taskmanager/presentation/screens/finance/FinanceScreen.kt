@@ -1,6 +1,4 @@
 package com.taskmanager.presentation.screens.finance
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -141,8 +139,7 @@ fun FinanceScreen(
                     imported.forEach { tx ->
                         viewModel.createTransaction(
                             tx.amount, tx.type, tx.currency, tx.categoryId,
-                            tx.accountId, tx.date, tx.note,
-                            tx.toAccountId, tx.destinationAmount, tx.destinationCurrency
+                            tx.accountId, tx.date, tx.note
                         )
                     }
                     Toast.makeText(context, "Импортировано: ${imported.size} операций", Toast.LENGTH_SHORT).show()
@@ -316,7 +313,7 @@ fun FinanceScreen(
                 showAddSheet = false
                 editingTx = null
             },
-            onCreate = { amount, type, currency, categoryId, accountId, date, note, toAccountId, destAmount, destCurrency ->
+            onCreate = { amount, type, currency, categoryId, accountId, date, note ->
                 if (editingTx != null) {
                     viewModel.updateTransaction(editingTx!!.copy(
                         amount = amount,
@@ -325,13 +322,10 @@ fun FinanceScreen(
                         categoryId = categoryId,
                         accountId = accountId,
                         date = date,
-                        note = note,
-                        toAccountId = toAccountId,
-                        destinationAmount = destAmount,
-                        destinationCurrency = destCurrency
+                        note = note
                     ))
                 } else {
-                    viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note, toAccountId, destAmount, destCurrency)
+                    viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note)
                 }
                 showAddSheet = false
                 editingTx = null
@@ -532,99 +526,27 @@ private fun GoalCard(state: FinanceUiState) {
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(AppTheme.colors.success.copy(alpha = 0.12f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Filled.ArrowUpward,
-                        contentDescription = null,
-                        tint = AppTheme.colors.success,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-                Text(
-                    "Цели", 
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            
+            Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.goals.forEach { goal ->
                 val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount).coerceIn(0.0, 1.0) else 0.0
-                val isComplete = goal.savedAmount >= goal.targetAmount
-                val animatedProgress by animateFloatAsState(
-                    targetValue = progress.toFloat(),
-                    animationSpec = tween(durationMillis = 800)
-                )
-                
-                val progressColor = if (isComplete) AppTheme.colors.success else AppTheme.colors.primary
-                
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Spacing.xs)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            goal.title, 
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            "${formatMoney(goal.savedAmount, goal.currency)} / ${formatMoney(goal.targetAmount, goal.currency)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = AppTheme.colors.onSurfaceVariant
-                        )
-                    }
-                    
-                    Spacer(Modifier.height(Spacing.xs))
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-                    ) {
-                        androidx.compose.material3.LinearProgressIndicator(
-                            progress = { animatedProgress },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(6.dp)
-                                .clip(RoundedCornerShape(Radius.full)),
-                            color = progressColor,
-                            trackColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.6f)
-                        )
-                        
-                        Text(
-                            "${(progress * 100).toInt()}%",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = AppTheme.colors.onSurfaceVariant,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    
-                    if (isComplete) {
-                        Spacer(Modifier.height(Spacing.xs))
-                        Text(
-                            "Цель достигнута!",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = AppTheme.colors.success,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    Text(goal.title, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Text(
+                        "${formatMoney(goal.savedAmount, goal.currency)} / ${formatMoney(goal.targetAmount, goal.currency)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AppTheme.colors.onSurfaceVariant
+                    )
                 }
+                androidx.compose.material3.LinearProgressIndicator(
+                    progress = { progress.toFloat() },
+                    modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(Radius.full)),
+                    color = AppTheme.colors.success,
+                    trackColor = AppTheme.colors.surfaceVariant
+                )
             }
         }
     }
@@ -642,119 +564,9 @@ private fun BudgetCard(state: FinanceUiState) {
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(AppTheme.colors.primary.copy(alpha = 0.12f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Filled.AccountBalanceWallet,
-                        contentDescription = null,
-                        tint = AppTheme.colors.primary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-                Text(
-                    "Бюджеты", 
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            
+            Text("Бюджеты", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.budgets.forEach { (cat, budget) ->
                 val spent = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: 0.0
-                val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(0.0, 1.0) else 0.0
-                val isOverBudget = spent > budget.amount
-                val animatedProgress by animateFloatAsState(
-                    targetValue = progress.toFloat(),
-                    animationSpec = tween(durationMillis = 800)
-                )
-                
-                val progressColor = when {
-                    isOverBudget -> AppTheme.colors.danger
-                    progress >= 0.8f -> AppTheme.colors.warning
-                    else -> AppTheme.colors.primary
-                }
-                
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Spacing.xs)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(10.dp)
-                                    .clip(CircleShape)
-                                    .background(parseTagColor(cat.color) ?: AppTheme.colors.primary)
-                            )
-                            Text(
-                                cat.name, 
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                        Text(
-                            "${formatMoney(spent, budget.currency)} / ${formatMoney(budget.amount, budget.currency)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (isOverBudget) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant,
-                            fontWeight = if (isOverBudget) FontWeight.Bold else FontWeight.Normal
-                        )
-                    }
-                    
-                    Spacer(Modifier.height(Spacing.xs))
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
-                    ) {
-                        androidx.compose.material3.LinearProgressIndicator(
-                            progress = { animatedProgress },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(6.dp)
-                                .clip(RoundedCornerShape(Radius.full)),
-                            color = progressColor,
-                            trackColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.6f)
-                        )
-                        
-                        Text(
-                            "${(progress * 100).toInt()}%",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = if (isOverBudget) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    
-                    if (isOverBudget) {
-                        Spacer(Modifier.height(Spacing.xs))
-                        Text(
-                            "Превышено бюджет",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = AppTheme.colors.danger,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-        }
-    }
-}?.total ?: 0.0
                 val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(0.0, 1.0) else 0.0
                 val isOverBudget = spent > budget.amount
                 Row(
