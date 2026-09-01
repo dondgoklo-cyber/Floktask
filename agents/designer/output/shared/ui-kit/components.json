@@ -1,0 +1,599 @@
+{
+  "version": "1.0.0",
+  "name": "Floktask UI Kit",
+  "description": "UI Kit components for Frontend integration based on Design System v1",
+  "author": "UI/UX Designer Agent",
+  "date": "2026-09-05",
+  "tokens": {
+    "colors": "@shared/design-tokens/colors.yaml",
+    "typography": "@shared/design-tokens/typography.yaml",
+    "spacing": "@shared/design-tokens/spacing.yaml",
+    "shadows": "@shared/design-tokens/shadows.yaml",
+    "borderRadius": "@shared/design-tokens/border-radius.yaml"
+  },
+  "components": {
+    "buttons": {
+      "description": "All button variants for Floktask",
+      "variants": [
+        {
+          "name": "Primary",
+          "type": "filled",
+          "backgroundColor": "{{colors.primary.500}}",
+          "textColor": "{{colors.on_primary}}",
+          "borderRadius": "{{border_radius.md}}",
+          "padding": "{{spacing.lg}} {{spacing.sm}}",
+          "minHeight": "{{spacing.xl_2}}",
+          "elevation": "{{shadows.level_1}}",
+          "typography": "{{typography.button.large}}",
+          "states": {
+            "default": {
+              "backgroundColor": "{{colors.primary.500}}",
+              "elevation": "{{shadows.level_1}}"
+            },
+            "hover": {
+              "backgroundColor": "{{colors.primary.600}}",
+              "elevation": "{{shadows.level_2}}"
+            },
+            "pressed": {
+              "backgroundColor": "{{colors.primary.700}}",
+              "elevation": "{{shadows.level_0}}"
+            },
+            "disabled": {
+              "backgroundColor": "{{colors.primary.500}} @ 0.4",
+              "textColor": "{{colors.on_primary}} @ 0.4",
+              "elevation": "{{shadows.level_0}}"
+            }
+          }
+        },
+        {
+          "name": "Primary (Dark Theme)",
+          "type": "filled",
+          "backgroundColor": "{{colors.primary.600}}",
+          "textColor": "{{colors.on_primary}}",
+          "borderRadius": "{{border_radius.md}}",
+          "padding": "{{spacing.lg}} {{spacing.sm}}",
+          "minHeight": "{{spacing.xl_2}}",
+          "elevation": "{{shadows.level_1}}",
+          "typography": "{{typography.button.large}}"
+        },
+        {
+          "name": "Secondary",
+          "type": "filled",
+          "backgroundColor": "{{colors.secondary.500}}",
+          "textColor": "{{colors.on_secondary}}",
+          "borderRadius": "{{border_radius.md}}",
+          "padding": "{{spacing.lg}} {{spacing.sm}}",
+          "minHeight": "{{spacing.xl_2}}",
+          "elevation": "{{shadows.level_1}}",
+          "typography": "{{typography.button.large}}"
+        },
+        {
+          "name": "Outlined",
+          "type": "outlined",
+          "backgroundColor": "transparent",
+          "textColor": "{{colors.primary.500}}",
+          "borderColor": "{{colors.primary.500}}",
+          "borderWidth": "1dp",
+          "borderRadius": "{{border_radius.md}}",
+          "padding": "{{spacing.lg}} {{spacing.sm}}",
+          "minHeight": "{{spacing.xl_2}}",
+          "typography": "{{typography.button.large}}",
+          "states": {
+            "default": {
+              "borderColor": "{{colors.outline}}"
+            },
+            "hover": {
+              "backgroundColor": "{{colors.primary.50}} @ 0.12",
+              "borderColor": "{{colors.primary.500}}"
+            },
+            "pressed": {
+              "backgroundColor": "{{colors.primary.50}} @ 0.24",
+              "borderColor": "{{colors.primary.500}}"
+            }
+          }
+        },
+        {
+          "name": "Text Button",
+          "type": "text",
+          "backgroundColor": "transparent",
+          "textColor": "{{colors.primary.500}}",
+          "borderRadius": "{{border_radius.none}}",
+          "padding": "{{spacing.sm}} {{spacing.xs}}",
+          "typography": "{{typography.button.medium}}",
+          "states": {
+            "hover": {
+              "backgroundColor": "{{colors.primary.50}} @ 0.12"
+            },
+            "pressed": {
+              "backgroundColor": "{{colors.primary.50}} @ 0.24"
+            }
+          }
+        },
+        {
+          "name": "Icon Button",
+          "type": "icon",
+          "size": "{{spacing.xl_2}}",
+          "iconSize": "{{spacing.lg_2}}",
+          "borderRadius": "{{border_radius.md}}",
+          "states": {
+            "default": {
+              "backgroundColor": "transparent",
+              "iconColor": "{{colors.on_surface_variant}}"
+            },
+            "filled": {
+              "backgroundColor": "{{colors.surface_container_high}}",
+              "iconColor": "{{colors.on_surface}}"
+            },
+            "tonal": {
+              "backgroundColor": "{{colors.secondary_container}}",
+              "iconColor": "{{colors.on_secondary_container}}"
+            },
+            "outlined": {
+              "backgroundColor": "transparent",
+              "borderColor": "{{colors.outline}}",
+              "borderWidth": "1dp",
+              "iconColor": "{{colors.on_surface_variant}}"
+            }
+          }
+        },
+        {
+          "name": "Floating Action Button",
+          "type": "fab",
+          "size": "56dp",
+          "iconSize": "{{spacing.lg_2}}",
+          "backgroundColor": "{{colors.primary.500}}",
+          "iconColor": "{{colors.on_primary}}",
+          "borderRadius": "{{border_radius.md_2}}",
+          "elevation": "{{shadows.level_4}}",
+          "states": {
+            "default": {
+              "elevation": "{{shadows.level_4}}"
+            },
+            "hover": {
+              "backgroundColor": "{{colors.primary.600}}",
+              "elevation": "{{shadows.level_5}}"
+            },
+            "pressed": {
+              "backgroundColor": "{{colors.primary.700}}",
+              "elevation": "{{shadows.level_3}}",
+              "scale": "0.92"
+            }
+          }
+        },
+        {
+          "name": "App Floating Action Button",
+          "type": "fab",
+          "size": "56dp",
+          "iconSize": "{{spacing.lg_2}}",
+          "backgroundColor": "linear-gradient({{colors.primary.500}}, {{colors.primary.600}})",
+          "iconColor": "#FFFFFF",
+          "borderRadius": "{{border_radius.xl}}",
+          "elevation": "{{shadows.level_4}}",
+          "animation": "150ms tween",
+          "pressScale": "0.92",
+          "states": {
+            "pressed": {
+              "scale": "0.92"
+            }
+          }
+        }
+      ],
+      "sizes": {
+        "large": {
+          "height": "{{spacing.xxl_2}}",
+          "padding": "{{spacing.xl}} {{spacing.md_2}}",
+          "typography": "{{typography.button.large}}"
+        },
+        "medium": {
+          "height": "{{spacing.xl_2}}",
+          "padding": "{{spacing.lg}} {{spacing.sm}}",
+          "typography": "{{typography.button.medium}}"
+        },
+        "small": {
+          "height": "{{spacing.lg_2}}",
+          "padding": "{{spacing.md}} {{spacing.sm}}",
+          "typography": "{{typography.button.small}}"
+        }
+      }
+    },
+    "cards": {
+      "description": "Card components for Floktask",
+      "variants": [
+        {
+          "name": "Standard Card",
+          "backgroundColor": "{{colors.surface}}",
+          "borderRadius": "{{border_radius.md}}",
+          "padding": "{{spacing.md}}",
+          "elevation": "{{shadows.level_2}}",
+          "states": {
+            "default": {
+              "elevation": "{{shadows.level_2}}"
+            },
+            "hover": {
+              "elevation": "{{shadows.level_3}}"
+            },
+            "pressed": {
+              "elevation": "{{shadows.level_1}}"
+            },
+            "selected": {
+              "borderColor": "{{colors.primary.500}}",
+              "borderWidth": "2dp",
+              "elevation": "{{shadows.level_3}}"
+            }
+          }
+        },
+        {
+          "name": "Elevated Card",
+          "backgroundColor": "{{colors.surface}}",
+          "borderRadius": "{{border_radius.md}}",
+          "padding": "{{spacing.md}}",
+          "elevation": "{{shadows.level_3}}"
+        },
+        {
+          "name": "Outlined Card",
+          "backgroundColor": "{{colors.surface}}",
+          "borderColor": "{{colors.outline}}",
+          "borderWidth": "1dp",
+          "borderRadius": "{{border_radius.md}}",
+          "padding": "{{spacing.md}}",
+          "elevation": "{{shadows.level_0}}"
+        },
+        {
+          "name": "Premium Card",
+          "backgroundColor": "{{premium.subtle_background}}",
+          "borderRadius": "{{border_radius.md_2}}",
+          "padding": "{{spacing.md_2}}",
+          "elevation": "{{shadows.level_2}}",
+          "shadow": "{{shadows.premium_soft}}"
+        },
+        {
+          "name": "Compact Card",
+          "backgroundColor": "{{colors.surface}}",
+          "borderRadius": "{{border_radius.sm_2}}",
+          "padding": "{{spacing.sm}}",
+          "elevation": "{{shadows.level_1}}"
+        }
+      ],
+      "sizes": {
+        "large": {
+          "minWidth": "360dp",
+          "padding": "{{spacing.lg_2}}",
+          "elevation": "{{shadows.level_3}}"
+        },
+        "medium": {
+          "minWidth": "280dp",
+          "padding": "{{spacing.md}}",
+          "elevation": "{{shadows.level_2}}"
+        },
+        "small": {
+          "minWidth": "200dp",
+          "padding": "{{spacing.sm}}",
+          "elevation": "{{shadows.level_1}}"
+        }
+      }
+    },
+    "inputs": {
+      "description": "Input field components",
+      "variants": [
+        {
+          "name": "Outlined Text Field",
+          "backgroundColor": "{{colors.surface}}",
+          "borderColor": "{{colors.outline}}",
+          "borderWidth": "1dp",
+          "borderRadius": "{{border_radius.md}}",
+          "height": "{{spacing.xxxl}}",
+          "padding": "{{spacing.md}}",
+          "typography": "{{typography.body.medium}}",
+          "states": {
+            "default": {
+              "borderColor": "{{colors.outline}}"
+            },
+            "focused": {
+              "borderColor": "{{colors.primary.500}}",
+              "borderWidth": "2dp"
+            },
+            "error": {
+              "borderColor": "{{colors.error.500}}",
+              "borderWidth": "2dp"
+            },
+            "disabled": {
+              "backgroundColor": "{{colors.surface}} @ 0.4",
+              "borderColor": "{{colors.outline}} @ 0.4"
+            }
+          }
+        },
+        {
+          "name": "Filled Text Field",
+          "backgroundColor": "{{colors.surface_container_highest}}",
+          "borderRadius": "{{border_radius.md}}",
+          "height": "{{spacing.xxxl}}",
+          "padding": "{{spacing.md}}",
+          "typography": "{{typography.body.medium}}",
+          "states": {
+            "default": {
+              "backgroundColor": "{{colors.surface_container_highest}}"
+            },
+            "focused": {
+              "backgroundColor": "{{colors.surface_container_high}}",
+              "borderBottomColor": "{{colors.primary.500}}",
+              "borderBottomWidth": "2dp"
+            },
+            "error": {
+              "backgroundColor": "{{colors.error.50}} @ 0.12"
+            }
+          }
+        },
+        {
+          "name": "Search Field",
+          "backgroundColor": "{{colors.surface}}",
+          "borderColor": "{{colors.outline}}",
+          "borderWidth": "1dp",
+          "borderRadius": "{{border_radius.lg_2}}",
+          "height": "{{spacing.xxl_2}}",
+          "padding": "{{spacing.md}}",
+          "leadingIcon": "search",
+          "placeholder": "Search...",
+          "typography": "{{typography.body.medium}}"
+        }
+      ]
+    },
+    "modals": {
+      "description": "Modal and dialog components",
+      "variants": [
+        {
+          "name": "Alert Dialog",
+          "maxWidth": "560dp",
+          "borderRadius": "{{border_radius.lg_2}}",
+          "padding": "{{spacing.lg_2}}",
+          "elevation": "{{shadows.level_5}}",
+          "backgroundColor": "{{colors.surface}}",
+          "scrimColor": "rgba(0, 0, 0, 0.4)"
+        },
+        {
+          "name": "Confirmation Dialog",
+          "maxWidth": "480dp",
+          "borderRadius": "{{border_radius.lg_2}}",
+          "padding": "{{spacing.lg_2}}",
+          "elevation": "{{shadows.level_5}}",
+          "backgroundColor": "{{colors.surface}}"
+        },
+        {
+          "name": "Input Dialog",
+          "maxWidth": "560dp",
+          "borderRadius": "{{border_radius.lg_2}}",
+          "padding": "{{spacing.lg_2}}",
+          "elevation": "{{shadows.level_5}}",
+          "backgroundColor": "{{colors.surface}}"
+        },
+        {
+          "name": "Full Screen Dialog",
+          "height": "100%",
+          "borderRadius": "{{border_radius.lg_2}}" (top only),
+          "elevation": "{{shadows.level_4}}",
+          "backgroundColor": "{{colors.surface}}"
+        },
+        {
+          "name": "Bottom Sheet",
+          "maxHeight": "80%",
+          "borderRadius": "{{border_radius.lg_2}}" (top only),
+          "elevation": "{{shadows.level_4}}",
+          "backgroundColor": "{{colors.surface}}",
+          "scrimColor": "rgba(0, 0, 0, 0.4)",
+          "handle": {
+            "height": "4dp",
+            "width": "32dp",
+            "radius": "{{border_radius.xs}}",
+            "color": "{{colors.on_surface_variant}}"
+          }
+        },
+        {
+          "name": "Snackbar",
+          "height": "{{spacing.xxl_2}}",
+          "maxWidth": "600dp",
+          "borderRadius": "{{border_radius.md}}",
+          "elevation": "{{shadows.level_5}}",
+          "backgroundColor": "{{colors.inverse_surface}}",
+          "textColor": "{{colors.inverse_on_surface}}",
+          "duration": "4500ms"
+        },
+        {
+          "name": "Toast",
+          "height": "auto",
+          "maxWidth": "400dp",
+          "borderRadius": "{{border_radius.sm_2}}",
+          "backgroundColor": "{{colors.on_surface}} @ 0.9",
+          "textColor": "{{colors.surface}}",
+          "duration": "2000ms"
+        },
+        {
+          "name": "Context Menu",
+          "minWidth": "160dp",
+          "maxWidth": "280dp",
+          "itemHeight": "{{spacing.xl_2}}",
+          "borderRadius": "{{border_radius.md}}",
+          "elevation": "{{shadows.level_3}}",
+          "backgroundColor": "{{colors.surface}}",
+          "dividerColor": "{{colors.outline_variant}}",
+          "dividerHeight": "1dp",
+          "itemPadding": "{{spacing.md}} {{spacing.sm}}"
+        }
+      ]
+    },
+    "timeline": {
+      "description": "Timeline View specific components",
+      "components": [
+        {
+          "name": "Time Axis",
+          "width": "56dp",
+          "backgroundColor": "{{colors.surface_variant}}",
+          "labelColor": "{{colors.on_surface_variant}}",
+          "labelTypography": "{{typography.timeline.time}}",
+          "labelPadding": "{{spacing.xs}}",
+          "hourHeight": {
+            "daily": "60dp",
+            "threeDay": "30dp",
+            "weekly": "15dp"
+          }
+        },
+        {
+          "name": "Task Block",
+          "minWidth": "100dp",
+          "minHeight": "40dp",
+          "padding": "{{spacing.sm}} {{spacing.xs}}",
+          "margin": "{{spacing.xs}}",
+          "borderRadius": "{{border_radius.sm_2}}",
+          "elevation": "{{shadows.level_1}}",
+          "hoverElevation": "{{shadows.level_2}}",
+          "selectedElevation": "{{shadows.level_3}}",
+          "colors": {
+            "byCategory": {
+              "work": "{{colors.finance.income}}",
+              "personal": "{{colors.primary.500}}",
+              "study": "{{colors.info.500}}",
+              "shopping": "{{colors.tertiary.500}}",
+              "health": "{{colors.error.500}}",
+              "finance": "{{colors.warning.500}}",
+              "other": "{{colors.on_surface_variant}}"
+            },
+            "byPriority": {
+              "low": "{{colors.task.priority.low}}",
+              "medium": "{{colors.task.priority.medium}}",
+              "high": "{{colors.task.priority.high}}",
+              "critical": "{{colors.task.priority.critical}}"
+            }
+          },
+          "states": {
+            "default": {
+              "elevation": "{{shadows.level_1}}"
+            },
+            "hover": {
+              "elevation": "{{shadows.level_2}}"
+            },
+            "selected": {
+              "borderColor": "{{colors.primary.500}}",
+              "borderWidth": "2dp",
+              "elevation": "{{shadows.level_3}}"
+            },
+            "dragging": {
+              "opacity": "0.8",
+              "elevation": "{{shadows.level_4}}"
+            },
+            "completed": {
+              "opacity": "0.4"
+            },
+            "overdue": {
+              "backgroundColor": "{{colors.error.50}} @ 0.12",
+              "borderColor": "{{colors.error.500}}",
+              "borderWidth": "1dp"
+            }
+          }
+        },
+        {
+          "name": "All-Day Task Block",
+          "height": "32dp",
+          "width": "100% - Time Axis Width",
+          "padding": "{{spacing.sm}}",
+          "borderRadius": "{{border_radius.xxs}}",
+          "backgroundColor": {
+            "light": "{{colors.finance.income}} @ 0.12",
+            "dark": "{{colors.finance.income}} @ 0.24"
+          },
+          "typography": "{{typography.body.medium}}"
+        },
+        {
+          "name": "Time Block",
+          "minHeight": "64dp",
+          "padding": "{{spacing.md}}",
+          "borderRadius": "{{border_radius.md}}",
+          "elevation": "{{shadows.level_2}}",
+          "backgroundColor": "Category Color @ 0.2",
+          "borderColor": "Category Color",
+          "borderWidth": "1dp"
+        },
+        {
+          "name": "Current Time Indicator",
+          "lineHeight": "2dp",
+          "lineColor": "{{colors.error_500}}",
+          "label": "СЕЙЧАС",
+          "labelTypography": "10sp Medium",
+          "labelColor": "{{colors.error_500}}",
+          "animation": "Smooth transition 1000ms linear"
+        },
+        {
+          "name": "Overlap Indicator",
+          "minWidth": "100dp",
+          "height": "32dp",
+          "padding": "{{spacing.sm}}",
+          "borderRadius": "{{border_radius.sm_2}}",
+          "backgroundColor": "{{colors.surface_container_high}}",
+          "typography": "{{typography.label.medium}}"
+        },
+        {
+          "name": "Add Task Quick Action",
+          "width": "160dp",
+          "height": "{{spacing.xxl_2}}",
+          "padding": "{{spacing.sm_2}}",
+          "borderRadius": "{{border_radius.sm_2}}",
+          "backgroundColor": "{{colors.primary.500}}",
+          "typography": "{{typography.button.medium}}"
+        }
+      ]
+    }
+  },
+  "styles": {
+    "colors": {
+      "primary": {
+        "500": "#FF9800",
+        "600": "#FF8C00",
+        "700": "#FB8C00"
+      },
+      "surface": "#FFFFFF",
+      "surface_variant": "#F5F5F5",
+      "on_surface": "#1A1A1A",
+      "on_surface_variant": "#424242",
+      "error": {
+        "500": "#F44336"
+      }
+    },
+    "typography": {
+      "font_families": {
+        "primary": "Roboto",
+        "secondary": "Inter",
+        "monospace": "Roboto Mono"
+      },
+      "button": {
+        "large": {
+          "font_size": "16sp",
+          "font_weight": "600",
+          "letter_spacing": "0.01em"
+        }
+      }
+    },
+    "spacing": {
+      "md": "16dp",
+      "lg": "24dp",
+      "xl_2": "40dp"
+    }
+  },
+  "breakpoints": {
+    "mobile": "0dp",
+    "mobile_large": "600dp",
+    "tablet": "768dp",
+    "tablet_large": "1024dp",
+    "desktop": "1440dp"
+  },
+  "responsive": {
+    "mobile": {
+      "scale": "1.0",
+      "max_width": "100%"
+    },
+    "tablet": {
+      "scale": "1.125",
+      "max_width": "768dp"
+    },
+    "desktop": {
+      "scale": "1.25",
+      "max_width": "1200dp"
+    }
+  }
+}
