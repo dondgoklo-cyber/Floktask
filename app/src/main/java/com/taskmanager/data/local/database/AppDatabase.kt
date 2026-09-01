@@ -12,6 +12,7 @@ import com.taskmanager.data.local.dao.NoteFolderDao
 import com.taskmanager.data.local.dao.HabitLogDao
 import com.taskmanager.data.local.dao.PomodoroSessionDao
 import com.taskmanager.data.local.dao.ProjectDao
+import com.taskmanager.data.local.dao.SubprojectDao
 import com.taskmanager.data.local.dao.SubtaskDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
@@ -28,6 +29,7 @@ import com.taskmanager.data.local.entity.NoteFolderEntity
 import com.taskmanager.data.local.entity.HabitLogEntity
 import com.taskmanager.data.local.entity.PomodoroSessionEntity
 import com.taskmanager.data.local.entity.ProjectEntity
+import com.taskmanager.data.local.entity.SubprojectEntity
 import com.taskmanager.data.local.entity.SubtaskEntity
 import com.taskmanager.data.local.entity.TagEntity
 import com.taskmanager.data.local.entity.TaskEntity
@@ -39,6 +41,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
     entities = [
         TaskEntity::class,
         ProjectEntity::class,
+        SubprojectEntity::class,
         TagEntity::class,
         UserStatsEntity::class,
         SubtaskEntity::class,
@@ -54,12 +57,13 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         GoalEntity::class,
         TaskTagEntity::class
     ],
-    version = 13,
+    version = 14,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
     abstract fun projectDao(): ProjectDao
+    abstract fun subprojectDao(): SubprojectDao
     abstract fun tagDao(): TagDao
     abstract fun userStatsDao(): UserStatsDao
     abstract fun subtaskDao(): SubtaskDao

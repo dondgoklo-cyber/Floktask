@@ -82,6 +82,14 @@ fun TaskManagerTheme(
     }
 }
 
+// Extension function for easy theme switching
+fun MaterialTheme.withAppTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    TaskManagerTheme(darkTheme = darkTheme, content = content)
+}
+
 /** Удобный доступ к расширенной палитре из любого composable. */
 object AppTheme {
     val colors: AppColors

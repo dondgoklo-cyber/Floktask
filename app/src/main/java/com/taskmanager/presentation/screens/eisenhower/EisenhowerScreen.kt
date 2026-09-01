@@ -74,7 +74,7 @@ fun EisenhowerScreen(
         },
         floatingActionButton = {
             com.taskmanager.presentation.components.AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.EisenhowerFabIcon,
                 contentDescription = stringResource(R.string.add_task),
                 onClick = { showQuickAdd = true }
             )

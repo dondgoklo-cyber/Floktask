@@ -12,6 +12,8 @@ interface TaskRepository {
 
     fun getAllTasks(): Flow<List<Task>>
     fun getTasksByProject(projectId: Long): Flow<List<Task>>
+    fun getTasksBySubproject(subprojectId: Long): Flow<List<Task>>
+    fun getAllTasksByProjectIncludingSubprojects(projectId: Long): Flow<List<Task>>
     fun getCompletedTasks(): Flow<List<Task>>
     fun getIncompleteTasks(): Flow<List<Task>>
     fun searchTasks(query: String): Flow<List<Task>>

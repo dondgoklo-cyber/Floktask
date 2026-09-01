@@ -6,7 +6,7 @@ import com.taskmanager.domain.model.Habit
 import com.taskmanager.domain.usecase.habit.CreateHabitUseCase
 import com.taskmanager.domain.usecase.habit.GetActiveHabitsUseCase
 import com.taskmanager.domain.usecase.habit.GetHabitStatsUseCase
-import com.taskmanager.domain.usecase.habit.LogHabitCompletionUseCase
+import com.taskmanager.domain.usecase.habit.ToggleHabitCompletionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,7 +35,7 @@ data class HabitsUiState(
 class HabitsViewModel @Inject constructor(
     private val getActiveHabitsUseCase: GetActiveHabitsUseCase,
     private val createHabitUseCase: CreateHabitUseCase,
-    private val logHabitCompletionUseCase: LogHabitCompletionUseCase,
+    private val toggleHabitCompletionUseCase: ToggleHabitCompletionUseCase,
     private val getHabitStatsUseCase: GetHabitStatsUseCase
 ) : ViewModel() {
 
@@ -75,7 +75,7 @@ class HabitsViewModel @Inject constructor(
 
     fun toggleCompletion(habitId: Long) {
         viewModelScope.launch {
-            logHabitCompletionUseCase.toggleCompletion(habitId)
+            toggleHabitCompletionUseCase(habitId)
         }
     }
 }

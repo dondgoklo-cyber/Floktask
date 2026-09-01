@@ -7,14 +7,23 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "tasks",
-    foreignKeys = [ForeignKey(
-        entity = ProjectEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["projectId"],
-        onDelete = ForeignKey.CASCADE
-    )],
+    foreignKeys = [
+        ForeignKey(
+            entity = ProjectEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["projectId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = SubprojectEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["subprojectId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [
         Index("projectId"),
+        Index("subprojectId"),
         Index("priority"),
         Index("deadline"),
         Index("startTime"),
@@ -27,6 +36,7 @@ data class TaskEntity(
     val title: String,
     val description: String? = null,
     val projectId: Long? = null,
+    val subprojectId: Long? = null,
     val priority: Int = 4,
     val status: String = "TODO",
     val deadline: Long? = null,

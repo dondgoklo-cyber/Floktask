@@ -25,9 +25,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TaskManagerTheme {
+            val userPrefs = remember { UserPrefs(this@MainActivity) }
+            val darkTheme = remember { mutableStateOf(userPrefs.darkTheme) }
+            
+            TaskManagerTheme(darkTheme = darkTheme.value) {
                 val prefs = remember { getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
-                val userPrefs = remember { UserPrefs(this@MainActivity) }
                 var onboardingDone by remember {
                     mutableStateOf(prefs.getBoolean(KEY_ONBOARDING_DONE, false))
                 }

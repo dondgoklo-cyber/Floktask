@@ -7,6 +7,7 @@ data class Task(
     val title: String,
     val description: String? = null,
     val projectId: Long? = null,
+    val subprojectId: Long? = null,
     val priority: Priority = Priority.NONE,
     val status: TaskStatus = TaskStatus.TODO,
     val deadline: Instant? = null,

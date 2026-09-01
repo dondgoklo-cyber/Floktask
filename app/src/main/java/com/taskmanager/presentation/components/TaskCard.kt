@@ -45,6 +45,7 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.util.HapticManager
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -57,7 +58,9 @@ fun TaskCard(
     task: Task,
     onClick: () -> Unit,
     onCheckedChange: (Boolean) -> Unit,
-    tagColors: Map<String, String> = emptyMap()
+    tagColors: Map<String, String> = emptyMap(),
+    onToggleComplete: () -> Unit = { onCheckedChange(!task.isCompleted) },
+    hapticManager: HapticManager? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -89,7 +92,10 @@ fun TaskCard(
             ) {
                 // Checkbox: явный completed state
                 IconButton(
-                    onClick = { onCheckedChange(!task.isCompleted) },
+                    onClick = {
+                        onToggleComplete()
+                        hapticManager?.lightVibrate()
+                    },
                     modifier = Modifier.size(36.dp),
                     colors = IconButtonDefaults.iconButtonColors(
                         contentColor = if (task.isCompleted) AppTheme.colors.success

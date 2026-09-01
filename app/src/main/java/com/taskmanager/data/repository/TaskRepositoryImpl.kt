@@ -41,6 +41,12 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTasksByProject(projectId: Long): Flow<List<Task>> =
         taskDao.getByProject(projectId).map { list -> list.map { it.toDomain() } }
 
+    override fun getTasksBySubproject(subprojectId: Long): Flow<List<Task>> =
+        taskDao.getBySubproject(subprojectId).map { list -> list.map { it.toDomain() } }
+
+    override fun getAllTasksByProjectIncludingSubprojects(projectId: Long): Flow<List<Task>> =
+        taskDao.getAllByProjectIncludingSubprojects(projectId).map { list -> list.map { it.toDomain() } }
+
     override fun getCompletedTasks(): Flow<List<Task>> =
         taskDao.getCompletedTasks().map { list -> list.map { it.toDomain() } }
 

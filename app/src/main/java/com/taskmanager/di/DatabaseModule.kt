@@ -12,6 +12,7 @@ import com.taskmanager.data.local.dao.NoteFolderDao
 import com.taskmanager.data.local.dao.HabitLogDao
 import com.taskmanager.data.local.dao.PomodoroSessionDao
 import com.taskmanager.data.local.dao.ProjectDao
+import com.taskmanager.data.local.dao.SubprojectDao
 import com.taskmanager.data.local.dao.SubtaskDao
 import com.taskmanager.data.local.dao.TagDao
 import com.taskmanager.data.local.dao.TaskDao
@@ -45,6 +46,9 @@ object DatabaseModule {
 
     @Provides
     fun provideProjectDao(db: AppDatabase): ProjectDao = db.projectDao()
+
+    @Provides
+    fun provideSubprojectDao(db: AppDatabase): SubprojectDao = db.subprojectDao()
 
     @Provides
     fun provideTagDao(db: AppDatabase): TagDao = db.tagDao()

@@ -10,6 +10,7 @@ import com.taskmanager.data.repository.HabitLogRepositoryImpl
 import com.taskmanager.data.repository.HabitRepositoryImpl
 import com.taskmanager.data.repository.PomodoroSessionRepositoryImpl
 import com.taskmanager.data.repository.ProjectRepositoryImpl
+import com.taskmanager.data.repository.SubprojectRepositoryImpl
 import com.taskmanager.data.repository.SubtaskRepositoryImpl
 import com.taskmanager.data.repository.TagRepositoryImpl
 import com.taskmanager.data.repository.TaskRepositoryImpl
@@ -25,6 +26,7 @@ import com.taskmanager.domain.repository.CategoryRepository
 import com.taskmanager.domain.repository.HabitRepository
 import com.taskmanager.domain.repository.PomodoroSessionRepository
 import com.taskmanager.domain.repository.ProjectRepository
+import com.taskmanager.domain.repository.SubprojectRepository
 import com.taskmanager.domain.repository.SubtaskRepository
 import com.taskmanager.domain.repository.TagRepository
 import com.taskmanager.domain.repository.TaskRepository
@@ -47,6 +49,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindProjectRepository(impl: ProjectRepositoryImpl): ProjectRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSubprojectRepository(impl: SubprojectRepositoryImpl): SubprojectRepository
 
     @Binds
     @Singleton

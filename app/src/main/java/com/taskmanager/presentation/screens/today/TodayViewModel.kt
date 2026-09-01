@@ -15,6 +15,8 @@ import com.taskmanager.domain.usecase.finance.GetFinanceSummaryUseCase
 import com.taskmanager.domain.usecase.finance.GetRecentTransactionsUseCase
 import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.task.ToggleTaskCompletionUseCase
+import com.taskmanager.domain.usecase.habit.ToggleHabitCompletionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -59,7 +61,9 @@ class TodayViewModel @Inject constructor(
     private val pomodoroSessionRepository: PomodoroSessionRepository,
     private val getFinanceSummaryUseCase: GetFinanceSummaryUseCase,
     private val getRecentTransactionsUseCase: GetRecentTransactionsUseCase,
-    private val getAllNotesUseCase: GetAllNotesUseCase
+    private val getAllNotesUseCase: GetAllNotesUseCase,
+    private val toggleTaskCompletionUseCase: ToggleTaskCompletionUseCase,
+    private val toggleHabitCompletionUseCase: ToggleHabitCompletionUseCase
 ) : ViewModel() {
 
     private val zone = ZoneId.systemDefault()
@@ -101,7 +105,7 @@ class TodayViewModel @Inject constructor(
             val totalToday = tasks.size
             val overdue = tasks.count { !it.isCompleted && it.deadline != null && it.deadline.toEpochMilli() < now }
 
-            // Ближайшие невыполненные задачи со временем
+            // Слижаем задачи без времени на сегодня
             val nextTasks = tasks
                 .filter { !it.isCompleted && it.startTime != null && it.startTime.toEpochMilli() >= now }
                 .sortedBy { it.startTime }
@@ -145,6 +149,24 @@ class TodayViewModel @Inject constructor(
                     flow.collect { _state.value = it }
                 }
             }
+    }
+
+    /**
+     * Toggle task completion status
+     */
+    fun toggleTaskCompletion(taskId: Long) {
+        viewModelScope.launch {
+            toggleTaskCompletionUseCase(taskId)
+        }
+    }
+
+    /**
+     * Toggle habit completion status for today
+     */
+    fun toggleHabitCompletion(habitId: Long) {
+        viewModelScope.launch {
+            toggleHabitCompletionUseCase(habitId)
+        }
     }
 }
 

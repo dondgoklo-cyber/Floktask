@@ -122,13 +122,10 @@ fun TodayScreen(
     if (showCreateMenu) {
         CreateMenuSheet(
             onDismiss = { showCreateMenu = false },
-            onTask = { showQuickAdd = true },
-            onHabit = onAddHabit,
-            onIncome = { addTransactionType = TransactionType.INCOME },
-            onExpense = { addTransactionType = TransactionType.EXPENSE },
-            onProject = onAddProject,
-            onNote = onAddNote,
-            onVoice = { showVoice = true }
+            onCreateTask = { showQuickAdd = true },
+            onCreateNote = onAddNote,
+            onCreateVoiceTask = { showVoice = true },
+            onCreateEvent = onAddProject
         )
     }
 

@@ -77,7 +77,7 @@ fun KanbanScreen(
         },
         floatingActionButton = {
             com.taskmanager.presentation.components.AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.KanbanFabIcon,
                 contentDescription = stringResource(R.string.add_task),
                 onClick = { showQuickAdd = true }
             )
@@ -106,10 +106,7 @@ fun KanbanScreen(
                         onDragStart = { taskId -> draggedTaskId = taskId },
                         onDraggedTo = { status -> hoveredColumn = status },
                         onDrop = { taskId ->
-                            viewModel.moveTask(
-                                tasks.firstOrNull { it.id == taskId } ?: return@KanbanColumn,
-                                status
-                            )
+                            viewModel.moveTask(taskId, status)
                             draggedTaskId = null
                             hoveredColumn = null
                         },

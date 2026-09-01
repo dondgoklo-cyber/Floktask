@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -48,7 +49,6 @@ import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.haptic.HapticType
 import androidx.hilt.navigation.compose.inject
 import com.taskmanager.haptic.HapticManager
-import com.taskmanager.haptic.HapticType
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.PrimaryButton
 import com.taskmanager.presentation.components.SecondaryButton
@@ -79,16 +79,30 @@ fun VoiceTaskSheet(
     var error by remember { mutableStateOf<String?>(null) }
     var isEditing by remember { mutableStateOf(false) }
     var editedTitle by remember { mutableStateOf("") }
+    var isInitializing by remember { mutableStateOf(true) }
+    var speechRecognizer by remember { mutableStateOf<SpeechRecognizer?>(null) }
 
-    val speechRecognizer = remember { SpeechRecognizer.createSpeechRecognizer(context) }
+    // Инициализация SpeechRecognizer с проверкой доступности
+    LaunchedEffect(Unit) {
+        try {
+            if (SpeechRecognizer.isRecognitionAvailable(context)) {
+                speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+            } else {
+                error = "Распознавание речи недоступно на этом устройстве"
+            }
+        } catch (e: Exception) {
+            error = "Ошибка инициализации распознавания речи"
+        }
+        isInitializing = false
+    }
 
-    // 1f4035343e4232403049353d384f 434235473a38 SpeechRecognizer 3f4038 37303a404b423838 4d3a40303d30
+    // Очистка ресурсов
     DisposableEffect(Unit) {
         onDispose {
             try {
-                speechRecognizer.destroy()
+                speechRecognizer?.destroy()
             } catch (e: Exception) {
-                // Ignore errors during cleanup
+                // Игнорируем ошибки при очистке
             }
         }
     }
@@ -98,29 +112,36 @@ fun VoiceTaskSheet(
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ru-RU")
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
-            error = "Распознавание речи недоступно на этом устройстве"
-        }
-    }
-
+    // Listener с полной обработкой ошибок
     val listener = remember {
         object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {}
+            override fun onBeginningOfSpeech() {
+                isListening = true
+                error = null
+            }
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() { isListening = false }
+            override fun onEndOfSpeech() {
+                isListening = false
+            }
             override fun onError(errorCode: Int) {
                 isListening = false
                 error = when (errorCode) {
-                    SpeechRecognizer.ERROR_NO_MATCH -> "Не удалось распознать речь"
-                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Время ожидания истекло"
-                    SpeechRecognizer.ERROR_AUDIO -> "Ошибка записи аудио"
-                    else -> "Ошибка распознавания"
+                    SpeechRecognizer.ERROR_AUDIO -> "Ошибка аудио: микрофон занят или отключен"
+                    SpeechRecognizer.ERROR_CLIENT -> "Ошибка клиента: проверьте подключение к интернету"
+                    SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Нет разрешения на использование микрофона"
+                    SpeechRecognizer.ERROR_NETWORK -> "Ошибка сети: проверьте подключение"
+                    SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Таймаут сети"
+                    SpeechRecognizer.ERROR_NO_MATCH -> "Не удалось распознать речь. Попробуйте еще раз"
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Распознаватель занят. Подождите"
+                    SpeechRecognizer.ERROR_SERVER -> "Ошибка сервера"
+                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Время ожидания речи истекло"
+                    else -> "Ошибка распознавания: код $errorCode"
                 }
             }
             override fun onResults(results: Bundle?) {
@@ -129,9 +150,13 @@ fun VoiceTaskSheet(
                 val text = matches?.firstOrNull() ?: ""
                 if (text.isNotBlank()) {
                     recognizedText = text
-                    draft = RussianVoiceParser.parse(text)
-                    editedTitle = draft?.title ?: ""
-                    haptic(HapticType.SUCCESS)
+                    try {
+                        draft = RussianVoiceParser.parse(text)
+                        editedTitle = draft?.title ?: ""
+                        haptic(HapticType.SUCCESS)
+                    } catch (e: Exception) {
+                        error = "Ошибка обработки текста"
+                    }
                 }
             }
             override fun onPartialResults(partialResults: Bundle?) {
@@ -142,25 +167,51 @@ fun VoiceTaskSheet(
         }
     }
 
+    // Установка listener
     LaunchedEffect(speechRecognizer) {
-        speechRecognizer.setRecognitionListener(listener)
+        speechRecognizer?.setRecognitionListener(listener)
     }
 
     fun startListening() {
-        if (SpeechRecognizer.isRecognitionAvailable(context)) {
-            error = null
-            recognizedText = ""
-            draft = null
-            isEditing = false
-            isListening = true
-            haptic(HapticType.LIGHT)
-            speechRecognizer.startListening(recognitionIntent)
+        if (isListening) return
+        
+        if (speechRecognizer == null) {
+            error = "Распознавание речи недоступно"
+            return
+        }
+        
+        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
+            error = "Распознавание речи недоступно на этом устройстве"
+            return
+        }
+
+        error = null
+        recognizedText = ""
+        draft = null
+        isEditing = false
+        isListening = true
+        haptic(HapticType.LIGHT)
+        
+        try {
+            speechRecognizer?.startListening(recognitionIntent)
+        } catch (e: Exception) {
+            isListening = false
+            error = "Ошибка запуска распознавания: ${e.message}"
+        }
+    }
+
+    fun stopListening() {
+        try {
+            speechRecognizer?.stopListening()
+            isListening = false
+        } catch (e: Exception) {
+            // Игнорируем
         }
     }
 
     ModalBottomSheet(
         onDismissRequest = {
-            speechRecognizer.destroy()
+            speechRecognizer?.destroy()
             onDismiss()
         },
         sheetState = sheetState,
@@ -198,14 +249,14 @@ fun VoiceTaskSheet(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            Icons.Filled.Mic,
-                            contentDescription = stringResource(R.string.voice_listen),
+                            if (isListening) Icons.Filled.MicOff else Icons.Filled.Mic,
+                            contentDescription = if (isListening) "Остановить запись" else "Начать запись",
                             tint = if (isListening) AppTheme.colors.danger else AppTheme.colors.primary,
                             modifier = Modifier.size(36.dp)
                         )
                     }
                     Text(
-                        if (isListening) "🎙 ${stringResource(R.string.voice_listening)}"
+                        if (isListening) "🎤 ${stringResource(R.string.voice_listening)}"
                         else stringResource(R.string.voice_tap_to_speak),
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppTheme.colors.onSurfaceVariant
@@ -213,98 +264,133 @@ fun VoiceTaskSheet(
                 }
             }
 
-            // Tap to start
-            if (!isListening && draft == null) {
+            // Кнопки действий
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+            ) {
                 SecondaryButton(
-                    text = stringResource(R.string.voice_start),
-                    onClick = { startListening() },
-                    modifier = Modifier.fillMaxWidth()
+                    text = if (isListening) "Остановить" else "Начать",
+                    onClick = {
+                        if (isListening) stopListening() else startListening()
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                
+                if (draft != null) {
+                    SecondaryButton(
+                        text = "Отмена",
+                        onClick = {
+                            stopListening()
+                            recognizedText = ""
+                            draft = null
+                            error = null
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            // Ошибка
+            error?.let { msg ->
+                Text(
+                    msg,
+                    color = AppTheme.colors.danger,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(vertical = Spacing.xs)
                 )
             }
 
-            // Error
-            error?.let { msg ->
-                Text(msg, color = AppTheme.colors.danger, style = MaterialTheme.typography.bodySmall)
-                SecondaryButton(
-                    text = stringResource(R.string.voice_try_again),
-                    onClick = { startListening() },
-                    modifier = Modifier.fillMaxWidth()
+            // Результаты распознавания
+            if (recognizedText.isNotBlank() && draft == null && error == null) {
+                Text(
+                    "Распознано: $recognizedText",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = Spacing.sm)
                 )
             }
 
             // Draft preview
             draft?.let { d ->
-                if (isEditing) {
-                    AppTextField(
-                        value = editedTitle,
-                        onValueChange = { editedTitle = it },
-                        label = { Text(stringResource(R.string.title)) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    Text(
-                        text = d.title.ifBlank { recognizedText },
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                // Date
-                d.date?.let { date ->
-                    DraftInfoRow("Дата", date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                }
-                // Time
-                d.time?.let { time ->
-                    val timeLabel = if (d.isAmbiguousTime) "Время (примерно)" else "Время"
-                    DraftInfoRow(timeLabel, time.format(DateTimeFormatter.ofPattern("HH:mm")))
-                }
-                // Priority
-                if (d.priority != Priority.NONE) {
-                    val priorityLabel = when (d.priority) {
-                        Priority.HIGH -> "Высокий"
-                        Priority.MEDIUM -> "Средний"
-                        Priority.LOW -> "Низкий"
-                        Priority.NONE -> ""
-                    }
-                    DraftInfoRow("Приоритет", priorityLabel)
-                }
-                // Tags
-                if (d.tags.isNotEmpty()) {
-                    DraftInfoRow("Теги", d.tags.joinToString(", "))
-                }
-                // Recurrence
-                d.recurrenceRule?.let { rule ->
-                    val ruleLabel = when (rule) {
-                        RecurrenceRule.DAILY -> "Ежедневно"
-                        RecurrenceRule.WEEKLY -> "Еженедельно"
-                        RecurrenceRule.MONTHLY -> "Ежемесячно"
-                        RecurrenceRule.YEARLY -> "Ежегодно"
-                        RecurrenceRule.CUSTOM -> "Другое"
-                    }
-                    DraftInfoRow("Повтор", ruleLabel)
-                }
-
-                // Actions
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                    verticalArrangement = Arrangement.spacedBy(Spacing.sm)
                 ) {
-                    TextButton(onClick = { isEditing = !isEditing }) {
-                        Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.size(Spacing.xs))
-                        Text(stringResource(R.string.voice_edit))
+                    if (isEditing) {
+                        AppTextField(
+                            value = editedTitle,
+                            onValueChange = { editedTitle = it },
+                            label = { Text(stringResource(R.string.title)) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    } else {
+                        Text(
+                            text = d.title.ifBlank { recognizedText },
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
-                    PrimaryButton(
-                        text = stringResource(R.string.create),
-                        onClick = {
-                            val finalTitle = if (isEditing) editedTitle.trim() else d.title.ifBlank { recognizedText }.trim()
-                            if (finalTitle.isNotBlank()) {
-                                onCreate(finalTitle, d.date, d.time, d.priority, d.recurrenceRule)
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
+
+                    // Date
+                    d.date?.let { date ->
+                        DraftInfoRow("Дата", date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+                    }
+                    // Time
+                    d.time?.let { time ->
+                        val timeLabel = if (d.isAmbiguousTime) "Время (примерно)" else "Время"
+                        DraftInfoRow(timeLabel, time.format(DateTimeFormatter.ofPattern("HH:mm")))
+                    }
+                    // Priority
+                    if (d.priority != Priority.NONE) {
+                        val priorityLabel = when (d.priority) {
+                            Priority.HIGH -> "Высокий"
+                            Priority.MEDIUM -> "Средний"
+                            Priority.LOW -> "Низкий"
+                            Priority.NONE -> ""
+                        }
+                        DraftInfoRow("Приоритет", priorityLabel)
+                    }
+                    // Tags
+                    if (d.tags.isNotEmpty()) {
+                        DraftInfoRow("Теги", d.tags.joinToString(", "))
+                    }
+                    // Recurrence
+                    d.recurrenceRule?.let { rule ->
+                        val ruleLabel = when (rule) {
+                            RecurrenceRule.DAILY -> "Ежедневно"
+                            RecurrenceRule.WEEKLY -> "Еженедельно"
+                            RecurrenceRule.MONTHLY -> "Ежемесячно"
+                            RecurrenceRule.YEARLY -> "Ежегодно"
+                            RecurrenceRule.CUSTOM -> "Другой"
+                        }
+                        DraftInfoRow("Повтор", ruleLabel)
+                    }
+
+                    // Actions
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                    ) {
+                        TextButton(onClick = { isEditing = !isEditing }) {
+                            Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.size(Spacing.xs))
+                            Text(stringResource(R.string.voice_edit))
+                        }
+                        PrimaryButton(
+                            text = stringResource(R.string.create),
+                            onClick = {
+                                val finalTitle = if (isEditing) editedTitle.trim() else d.title.ifBlank { recognizedText }.trim()
+                                if (finalTitle.isNotBlank()) {
+                                    onCreate(finalTitle, d.date, d.time, d.priority, d.recurrenceRule)
+                                    stopListening()
+                                } else {
+                                    error = "Введите название задачи"
+                                }
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
 

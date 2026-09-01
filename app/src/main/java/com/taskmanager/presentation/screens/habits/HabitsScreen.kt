@@ -54,6 +54,7 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.components.AppFloatingActionButton
+import com.taskmanager.presentation.theme.AppIcons
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.Spacing
 
@@ -76,7 +77,7 @@ fun HabitsScreen(
         },
         floatingActionButton = {
             com.taskmanager.presentation.components.AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.HabitsFabIcon,
                 contentDescription = stringResource(R.string.new_habit),
                 onClick = viewModel::openCreateDialog
             )

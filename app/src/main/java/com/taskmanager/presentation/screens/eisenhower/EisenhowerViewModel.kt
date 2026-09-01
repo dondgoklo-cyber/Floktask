@@ -40,4 +40,11 @@ class EisenhowerViewModel @Inject constructor(
             updateEisenhowerQuadrantUseCase(taskId, null)
         }
     }
+
+    fun refresh() {
+        viewModelScope.launch {
+            // Trigger a refresh by re-collecting the flow
+            getEisenhowerTasksUseCase()
+        }
+    }
 }

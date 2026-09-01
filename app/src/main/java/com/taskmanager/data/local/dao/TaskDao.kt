@@ -26,8 +26,14 @@ interface TaskDao {
     @Query("SELECT * FROM tasks")
     fun getAll(): Flow<List<TaskEntity>>
 
-    @Query("SELECT * FROM tasks WHERE projectId = :projectId")
+    @Query("SELECT * FROM tasks WHERE projectId = :projectId AND subprojectId IS NULL")
     fun getByProject(projectId: Long): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE subprojectId = :subprojectId")
+    fun getBySubproject(subprojectId: Long): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE projectId = :projectId OR subprojectId IN (SELECT id FROM subprojects WHERE parentProjectId = :projectId)")
+    fun getAllByProjectIncludingSubprojects(projectId: Long): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE isCompleted = 0")
     fun getIncompleteTasks(): Flow<List<TaskEntity>>

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
-import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.kanban.MoveTaskToStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +20,8 @@ data class KanbanUiState(
 
 @HiltViewModel
 class KanbanViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val moveTaskToStatusUseCase: MoveTaskToStatusUseCase,
+    private val taskRepository: com.taskmanager.domain.repository.TaskRepository
 ) : ViewModel() {
 
     val state: StateFlow<KanbanUiState> = taskRepository.getAllTasks()
@@ -32,10 +33,9 @@ class KanbanViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.Lazily, KanbanUiState(isLoading = true))
 
-    fun moveTask(task: Task, newStatus: TaskStatus) {
-        if (task.status == newStatus) return
+    fun moveTask(taskId: Long, newStatus: TaskStatus) {
         viewModelScope.launch {
-            taskRepository.updateTask(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
+            moveTaskToStatusUseCase(taskId, newStatus)
         }
     }
 }
