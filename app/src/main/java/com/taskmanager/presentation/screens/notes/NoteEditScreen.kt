@@ -55,7 +55,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.haptic.HapticType
-import com.taskmanager.haptic.rememberHaptic
+import androidx.hilt.navigation.compose.inject
+import com.taskmanager.haptic.HapticManager
+import com.taskmanager.haptic.HapticType
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
@@ -71,7 +73,8 @@ fun NoteEditScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var mode by remember { mutableStateOf(NoteEditMode.EDIT) }
-    val haptic = rememberHaptic()
+    val hapticManager: HapticManager = inject()
+    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
 
     Scaffold(
         topBar = {
@@ -198,7 +201,8 @@ private fun NoteEditor(
     onTitleChange: (String) -> Unit,
     onContentChange: (String) -> Unit
 ) {
-    val haptic = rememberHaptic()
+    val hapticManager: HapticManager = inject()
+    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Title field

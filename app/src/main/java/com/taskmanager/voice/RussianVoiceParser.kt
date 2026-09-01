@@ -355,50 +355,6 @@ object RussianVoiceParser {
         return RecurrenceResult(null, text)
     }
 
-    /**
-     * Парсит финансовую команду.
-     * "расход 1500 на продукты" -> FinanceDraft(EXPENSE, 1500, "продукты")
-     * "доход 120000 зарплата" -> FinanceDraft(INCOME, 120000, "зарплата")
-     */
-    fun parseFinance(text: String): FinanceDraft {
-        val lower = text.lowercase().trim()
-        var type = com.taskmanager.domain.model.TransactionType.EXPENSE
-        var amount = 0.0
-        var category: String? = null
-        var currency = "RUB"
-        var cleaned = lower
-
-        if (cleaned.contains("доход") || cleaned.contains("получил")) {
-            type = com.taskmanager.domain.model.TransactionType.INCOME
-            cleaned = cleaned.replace("доход", "").replace("получил", "").trim()
-        } else {
-            cleaned = cleaned.replace("расход", "").replace("потратил", "").replace("потратить", "").trim()
-        }
-
-        val amountRegex = Regex("""(\d+(?:[.,]\d+)?)\s*(тысяч[а-я]?|тыс|миллион[а-я]?|млн|рублей|руб|р|долларов|доллар|баксов|евро)?""")
-        amountRegex.find(cleaned)?.let { match ->
-            var num = match.groupValues[1].replace(",", ".").toDoubleOrNull() ?: 0.0
-            val unit = match.groupValues[2]
-            when {
-                unit.startsWith("тысяч") || unit == "тыс" -> num *= 1000
-                unit.startsWith("миллион") || unit == "млн" -> num *= 1000000
-                unit.startsWith("доллар") || unit == "баксов" -> currency = "USD"
-                unit.startsWith("евро") -> currency = "EUR"
-            }
-            amount = num
-            cleaned = cleaned.replace(match.value, "").trim()
-        }
-
-        val onIdx = cleaned.indexOf(" на ")
-        if (onIdx >= 0) {
-            category = cleaned.substring(onIdx + 4).trim().ifBlank { null }
-        } else if (cleaned.isNotBlank()) {
-            category = cleaned.trim().ifBlank { null }
-        }
-
-        return FinanceDraft(type = type, amount = amount, category = category, currency = currency, rawText = text)
-    }
-
     // === HELPERS ===
 
     private fun removeWord(text: String, vararg words: String): String {

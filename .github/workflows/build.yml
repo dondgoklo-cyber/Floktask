@@ -35,13 +35,13 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p release
-          cp app/build/outputs/apk/debug/app-debug.apk release/TaskManager-v1.1.0-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk release/TaskManager-v1.1.1-debug.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TaskManager-v1.1.0-debug
-          path: release/TaskManager-v1.1.0-debug.apk
+          name: TaskManager-v1.1.1-debug
+          path: release/TaskManager-v1.1.1-debug.apk
           retention-days: 30
 
       - name: Create Release
@@ -54,15 +54,16 @@ jobs:
             ## Floktask ${{ github.ref_name }} - Smart Task Manager
             
             **What's new:**
-            - Version bump: 1.0.0 -> 1.1.0
-            - Finance: Added TRANSFER transaction support
-            - Export: Added toAccountId, destinationAmount, destinationCurrency
-            - All PM documents added (PRDs, user stories, competitor analysis)
+            - Version bump: 1.1.0 -> 1.1.1
+            - Removed dead code (parseFinance, WorkConstraints)
+            - Security fixes in UserPrefs and AlarmScheduler
+            - Replaced LocalHapticManager with DI injection
+            - Bug fixes in RussianVoiceParser
             
             **How to install:**
-            1. Download TaskManager-v1.1.0-debug.apk
+            1. Download TaskManager-v1.1.1-debug.apk
             2. Open on Android device (7.0+)
             3. Allow installation from unknown sources
           prerelease: true
-          files: release/TaskManager-v1.1.0-debug.apk
+          files: release/TaskManager-v1.1.1-debug.apk
           fail_on_unmatched_files: false

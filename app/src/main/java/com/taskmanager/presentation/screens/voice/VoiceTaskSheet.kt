@@ -46,7 +46,9 @@ import com.taskmanager.R
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
 import com.taskmanager.haptic.HapticType
-import com.taskmanager.haptic.rememberHaptic
+import androidx.hilt.navigation.compose.inject
+import com.taskmanager.haptic.HapticManager
+import com.taskmanager.haptic.HapticType
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.PrimaryButton
 import com.taskmanager.presentation.components.SecondaryButton
@@ -68,7 +70,8 @@ fun VoiceTaskSheet(
 ) {
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val haptic = rememberHaptic()
+    val hapticManager: HapticManager = inject()
+    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
 
     var isListening by remember { mutableStateOf(false) }
     var recognizedText by remember { mutableStateOf("") }

@@ -56,7 +56,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Note
 import com.taskmanager.haptic.HapticType
-import com.taskmanager.haptic.rememberHaptic
+import androidx.hilt.navigation.compose.inject
+import com.taskmanager.haptic.HapticManager
+import com.taskmanager.haptic.HapticType
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.EmptyState
@@ -80,7 +82,8 @@ fun NotesScreen(
     val state by viewModel.state.collectAsState()
     val showCreateFolder by viewModel.showCreateFolder.collectAsState()
     var pendingDeleteNote by remember { mutableStateOf<Note?>(null) }
-    val haptic = rememberHaptic()
+    val hapticManager: HapticManager = inject()
+    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
 
     Scaffold(
         topBar = {
@@ -277,7 +280,8 @@ private fun NoteCard(
     onPin: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val haptic = rememberHaptic()
+    val hapticManager: HapticManager = inject()
+    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = {

@@ -49,7 +49,9 @@ import androidx.compose.ui.unit.dp
 import com.taskmanager.R
 import com.taskmanager.domain.model.Note
 import com.taskmanager.haptic.HapticType
-import com.taskmanager.haptic.rememberHaptic
+import androidx.hilt.navigation.compose.inject
+import com.taskmanager.haptic.HapticManager
+import com.taskmanager.haptic.HapticType
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.PrimaryButton
 import com.taskmanager.presentation.theme.AppTheme
@@ -68,7 +70,8 @@ fun ImportNoteSheet(
     onImport: (Note) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val haptic = rememberHaptic()
+    val hapticManager: HapticManager = inject()
+    val haptic = remember(hapticManager) { { type: HapticType -> hapticManager.perform(type) } }
     
     // Парсим начальный markdown
     val parsedNote = remember(initialMarkdown) { 
