@@ -46,9 +46,9 @@ import androidx.compose.ui.unit.dp
 import com.taskmanager.R
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
-import com.taskmanager.haptic.HapticType
+import com.taskmanager.util.HapticAction
 import androidx.hilt.navigation.compose.inject
-import com.taskmanager.haptic.HapticManager
+import com.taskmanager.util.HapticManager
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.PrimaryButton
 import com.taskmanager.presentation.components.SecondaryButton

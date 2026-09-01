@@ -48,10 +48,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.taskmanager.R
 import com.taskmanager.domain.model.Note
-import com.taskmanager.haptic.HapticType
+import com.taskmanager.util.HapticAction
 import androidx.hilt.navigation.compose.inject
-import com.taskmanager.haptic.HapticManager
-import com.taskmanager.haptic.HapticType
+import com.taskmanager.util.HapticManager
+import com.taskmanager.util.HapticAction
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.PrimaryButton
 import com.taskmanager.presentation.theme.AppTheme

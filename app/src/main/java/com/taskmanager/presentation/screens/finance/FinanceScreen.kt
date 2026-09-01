@@ -54,8 +54,8 @@ import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import androidx.hilt.navigation.compose.inject
-import com.taskmanager.haptic.HapticManager
-import com.taskmanager.haptic.HapticType
+import com.taskmanager.util.HapticManager
+import com.taskmanager.util.HapticAction
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.parseTagColor
 import com.taskmanager.presentation.theme.AppTheme

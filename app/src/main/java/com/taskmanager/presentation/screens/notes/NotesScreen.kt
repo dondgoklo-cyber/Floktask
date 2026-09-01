@@ -55,10 +55,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Note
-import com.taskmanager.haptic.HapticType
+import com.taskmanager.util.HapticAction
 import androidx.hilt.navigation.compose.inject
-import com.taskmanager.haptic.HapticManager
-import com.taskmanager.haptic.HapticType
+import com.taskmanager.util.HapticManager
+import com.taskmanager.util.HapticAction
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.EmptyState
