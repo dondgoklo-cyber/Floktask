@@ -72,7 +72,7 @@ fun AddTransactionSheet(
     categories: List<Category>,
     accounts: List<Account>,
     onDismiss: () -> Unit,
-    onCreate: (Double, TransactionType, String, Long?, Long?, Instant, String?) -> Unit,
+    onCreate: (Double, TransactionType, String, Long?, Long?, Instant, String?, Long?, Double?, String?) -> Unit,
     initialType: TransactionType = TransactionType.EXPENSE,
     editingTransaction: com.taskmanager.domain.model.Transaction? = null
 ) {
@@ -86,12 +86,19 @@ fun AddTransactionSheet(
     var note by remember { mutableStateOf(editingTransaction?.note ?: "") }
     var date by remember { mutableStateOf(editingTransaction?.date?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()) }
     var showDatePicker by remember { mutableStateOf(false) }
+    
+    // Transfer-specific fields
+    var toAccountId by remember { mutableStateOf(editingTransaction?.toAccountId) }
+    var destinationAmountText by remember { mutableStateOf(editingTransaction?.destinationAmount?.toString() ?: "") }
+    var destinationCurrency by remember { mutableStateOf(editingTransaction?.destinationCurrency ?: "RUB") }
+    
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
     val filteredCategories = categories.filter {
         if (type == TransactionType.INCOME) it.type == CategoryType.INCOME
-        else it.type == CategoryType.EXPENSE
+        else if (type == TransactionType.EXPENSE) it.type == CategoryType.EXPENSE
+        else true
     }.ifEmpty { categories }
 
     ModalBottomSheet(
@@ -227,6 +234,43 @@ fun AddTransactionSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Transfer-specific fields (only for TRANSFER type)
+            if (type == TransactionType.TRANSFER) {
+                Text("\u041a\u0443\u0434\u0430", style = MaterialTheme.typography.labelLarge, color = AppTheme.colors.onSurfaceVariant)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    safeAccounts.filter { it.id != selectedAccountId }.forEach { acc ->
+                        FilterChip(
+                            selected = toAccountId == acc.id,
+                            onClick = { toAccountId = acc.id },
+                            label = { Text(acc.name) }
+                        )
+                    }
+                }
+                
+                Text("\u0421\u0443\u043c\u043c\u0430 \u043f\u0435\u0440\u0435\u0432\u043e\u0434\u0430", style = MaterialTheme.typography.labelLarge, color = AppTheme.colors.onSurfaceVariant)
+                OutlinedTextField(
+                    value = destinationAmountText,
+                    onValueChange = { value ->
+                        val cleaned = value.replace(',', '.').filter { it.isDigit() || it == '.' }
+                        destinationAmountText = cleaned
+                    },
+                    label = { Text("\u0421\u0443\u043c\u043c\u0430") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    SUPPORTED_CURRENCIES.forEach { curr ->
+                        FilterChip(
+                            selected = destinationCurrency == curr,
+                            onClick = { destinationCurrency = curr },
+                            label = { Text(curr) }
+                        )
+                    }
+                }
+            }
+
             // Save
             PrimaryButton(
                 text = stringResource(R.string.save),
@@ -234,7 +278,19 @@ fun AddTransactionSheet(
                     val amount = amountText.toDoubleOrNull() ?: 0.0
                     if (amount > 0) {
                         val instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                        onCreate(amount, type, selectedCurrency, selectedCategoryId, selectedAccountId, instant, note)
+                        val destAmount = destinationAmountText.toDoubleOrNull()
+                        onCreate(
+                            amount, 
+                            type, 
+                            selectedCurrency, 
+                            selectedCategoryId, 
+                            selectedAccountId, 
+                            instant, 
+                            note,
+                            toAccountId,
+                            destAmount,
+                            destinationCurrency
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

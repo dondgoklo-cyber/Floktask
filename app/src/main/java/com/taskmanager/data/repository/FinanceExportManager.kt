@@ -133,7 +133,10 @@ class FinanceExportManager {
                 categoryId = if (txJson.isNull("categoryId")) null else txJson.optLong("categoryId", 0),
                 accountId = if (txJson.isNull("accountId")) null else txJson.optLong("accountId", 0),
                 date = java.time.Instant.ofEpochMilli(dateMillis),
-                note = if (txJson.isNull("note")) null else txJson.optString("note", null)
+                note = if (txJson.isNull("note")) null else txJson.optString("note", null),
+                toAccountId = if (txJson.isNull("toAccountId")) null else txJson.optLong("toAccountId", 0),
+                destinationAmount = if (txJson.isNull("destinationAmount")) null else txJson.optDouble("destinationAmount", 0.0),
+                destinationCurrency = if (txJson.isNull("destinationCurrency")) null else txJson.optString("destinationCurrency", null)
             ))
         }
         return result

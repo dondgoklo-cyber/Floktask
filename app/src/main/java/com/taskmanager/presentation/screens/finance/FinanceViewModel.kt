@@ -223,7 +223,10 @@ class FinanceViewModel @Inject constructor(
         categoryId: Long?,
         accountId: Long?,
         date: Instant,
-        note: String?
+        note: String?,
+        toAccountId: Long? = null,
+        destinationAmount: Double? = null,
+        destinationCurrency: String? = null
     ) {
         viewModelScope.launch {
             createTransactionUseCase(
@@ -234,7 +237,10 @@ class FinanceViewModel @Inject constructor(
                     categoryId = categoryId,
                     accountId = accountId,
                     date = date,
-                    note = note?.trim()?.ifBlank { null }
+                    note = note?.trim()?.ifBlank { null },
+                    toAccountId = toAccountId,
+                    destinationAmount = destinationAmount,
+                    destinationCurrency = destinationCurrency
                 )
             )
         }
