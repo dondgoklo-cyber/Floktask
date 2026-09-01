@@ -18,6 +18,7 @@
 
     <!-- Действия -->
     <string name="create">Создать</string>
+
     <string name="add_task">Добавить задачу</string>
     <string name="edit_task">Редактировать задачу</string>
     <string name="save">Сохранить</string>
@@ -26,8 +27,10 @@
     <string name="delete">Удалить</string>
     <string name="done">Готово</string>
     <string name="complete">Выполнить</string>
-        <string name="change_mode">123c353d38424c 403536383c</string>
-    <string name="add_task">143e31303238424c 373034304743</string>
+
+    <string name="change_mode">Вменить режим</string>
+
+    <string name="add_task">Добавить задачу</string>
 
     <!-- Пустые состояния -->
     <string name="no_tasks">Пока нет задач</string>
