@@ -20,7 +20,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Scheduleimport androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Note
+import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -217,12 +225,63 @@ private fun GreetingHeader() {
         else -> stringResource(R.string.good_evening)
     }
     val text = if (name.isNotBlank()) "$greeting, $name!" else greeting
-    Text(
-        text = text,
-        style = MaterialTheme.typography.displaySmall,
-        fontWeight = FontWeight.Bold,
-        color = AppTheme.colors.onBackground
-    )
+    
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = "WOLFTASK",
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = AppTheme.colors.primary
+            )
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
+                color = AppTheme.colors.onBackground
+            )
+        }
+        
+        // Иерархия навигации: TODAY → FINANCE → NOTES → UPCOMING → HABITS
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavigationPill("TODAY", isActive = true)
+            Icon(Icons.Filled.ArrowBack, contentDescription = null, tint = AppTheme.colors.outline)
+            NavigationPill("FINANCE")
+            Icon(Icons.Filled.ArrowBack, contentDescription = null, tint = AppTheme.colors.outline)
+            NavigationPill("NOTES")
+            Icon(Icons.Filled.ArrowBack, contentDescription = null, tint = AppTheme.colors.outline)
+            NavigationPill("UPCOMING")
+            Icon(Icons.Filled.ArrowBack, contentDescription = null, tint = AppTheme.colors.outline)
+            NavigationPill("HABITS")
+        }
+    }
+}
+
+@Composable
+private fun NavigationPill(text: String, isActive: Boolean = false) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(Radius.full))
+            .background(
+                if (isActive) AppTheme.colors.primary.copy(alpha = 0.12f)
+                else AppTheme.colors.surfaceVariant.copy(alpha = 0.6f)
+            )
+            .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+            color = if (isActive) AppTheme.colors.primary else AppTheme.colors.onSurfaceVariant
+        )
+    }
 }
 
 @Composable
@@ -250,28 +309,57 @@ private fun ProgressCard(state: TodayUiState) {
         Column(Modifier.padding(Spacing.xl)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    stringResource(R.string.todays_progress),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    "${(state.progress * 100).toInt()}%",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = AppTheme.colors.primary
-                )
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(AppTheme.colors.primary.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.Checklist,
+                        contentDescription = null,
+                        tint = AppTheme.colors.primary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        stringResource(R.string.todays_progress),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = AppTheme.colors.onSurfaceVariant
+                    )
+                    val animatedProgress by animateFloatAsState(
+                        targetValue = state.progress,
+                        animationSpec = tween(durationMillis = 800)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        LinearProgressIndicator(
+                            progress = animatedProgress,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(Radius.full)),
+                            color = AppTheme.colors.primary,
+                            trackColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.6f)
+                        )
+                        Text(
+                            "${(state.progress * 100).toInt()}%",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = AppTheme.colors.primary
+                        )
+                    }
+                }
             }
-            Spacer(Modifier.height(Spacing.md))
-            LinearProgressIndicator(
-                progress = state.progress,
-                modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(Radius.full)),
-                color = AppTheme.colors.primary,
-                trackColor = AppTheme.colors.surfaceVariant
-            )
         }
         }
     }
@@ -285,18 +373,21 @@ private fun SummaryRow(state: TodayUiState) {
     ) {
         SummaryStat(
             modifier = Modifier.weight(1f),
+            icon = Icons.Filled.Today,
             value = state.totalToday.toString(),
             label = stringResource(R.string.tasks_total),
             color = AppTheme.colors.info
         )
         SummaryStat(
             modifier = Modifier.weight(1f),
+            icon = Icons.Filled.Checklist,
             value = state.completedToday.toString(),
             label = stringResource(R.string.tasks_completed),
             color = AppTheme.colors.success
         )
         SummaryStat(
             modifier = Modifier.weight(1f),
+            icon = Icons.Filled.Schedule,
             value = state.overdueCount.toString(),
             label = stringResource(R.string.tasks_overdue),
             color = AppTheme.colors.danger
@@ -307,6 +398,7 @@ private fun SummaryRow(state: TodayUiState) {
 @Composable
 private fun SummaryStat(
     modifier: Modifier = Modifier,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     value: String,
     label: String,
     color: Color
@@ -321,8 +413,11 @@ private fun SummaryStat(
             modifier = Modifier.padding(Spacing.md),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier.size(8.dp).clip(CircleShape).background(color)
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(20.dp)
             )
             Spacer(Modifier.height(Spacing.xs))
             Text(
@@ -641,38 +736,57 @@ private fun NotesPreviewCard(state: TodayUiState, onAllNotes: () -> Unit) {
 
 @Composable
 private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
-    androidx.compose.material3.Card(
+    Card(
         modifier = Modifier.fillMaxWidth().clickable {
             state.inboxTasks.firstOrNull()?.id?.let(onTaskClick)
         },
-        elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = com.taskmanager.presentation.theme.Elevation.none),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(com.taskmanager.presentation.theme.Radius.lg),
-        colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        shape = RoundedCornerShape(Radius.lg),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
     ) {
-        androidx.compose.foundation.layout.Column(
+        Column(
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg)
         ) {
-            androidx.compose.foundation.layout.Row(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                androidx.compose.material3.Text(
-                    "Входящие",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold
-                )
-                androidx.compose.material3.Text(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(AppTheme.colors.info.copy(alpha = 0.12f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Filled.Inbox,
+                            contentDescription = null,
+                            tint = AppTheme.colors.info,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                    Text(
+                        "Входящие",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Text(
                     "${state.inboxTasks.size}",
                     style = MaterialTheme.typography.titleSmall,
                     color = AppTheme.colors.primary,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    fontWeight = FontWeight.Bold
                 )
             }
             state.inboxTasks.forEach { task ->
-                androidx.compose.foundation.layout.Row(
+                Row(
                     modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(Spacing.sm),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -680,7 +794,7 @@ private fun InboxPreviewCard(state: TodayUiState, onTaskClick: (Long) -> Unit) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppTheme.colors.outline
                     )
-                    androidx.compose.material3.Text(
+                    Text(
                         task.title,
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppTheme.colors.onSurface,
