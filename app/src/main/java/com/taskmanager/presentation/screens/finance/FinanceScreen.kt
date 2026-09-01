@@ -1,4 +1,6 @@
 package com.taskmanager.presentation.screens.finance
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -530,27 +532,99 @@ private fun GoalCard(state: FinanceUiState) {
             modifier = Modifier.fillMaxWidth().padding(Spacing.lg),
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
-            Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-            state.goals.forEach { goal ->
-                val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount).coerceIn(0.0, 1.0) else 0.0
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(AppTheme.colors.success.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(goal.title, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                    Text(
-                        "${formatMoney(goal.savedAmount, goal.currency)} / ${formatMoney(goal.targetAmount, goal.currency)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = AppTheme.colors.onSurfaceVariant
+                    Icon(
+                        Icons.Filled.ArrowUpward,
+                        contentDescription = null,
+                        tint = AppTheme.colors.success,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
-                androidx.compose.material3.LinearProgressIndicator(
-                    progress = { progress.toFloat() },
-                    modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(Radius.full)),
-                    color = AppTheme.colors.success,
-                    trackColor = AppTheme.colors.surfaceVariant
+                Text(
+                    "Цели", 
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
                 )
+            }
+            
+            state.goals.forEach { goal ->
+                val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount).coerceIn(0.0, 1.0) else 0.0
+                val isComplete = goal.savedAmount >= goal.targetAmount
+                val animatedProgress by animateFloatAsState(
+                    targetValue = progress.toFloat(),
+                    animationSpec = tween(durationMillis = 800)
+                )
+                
+                val progressColor = if (isComplete) AppTheme.colors.success else AppTheme.colors.primary
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Spacing.xs)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            goal.title, 
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            "${formatMoney(goal.savedAmount, goal.currency)} / ${formatMoney(goal.targetAmount, goal.currency)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = AppTheme.colors.onSurfaceVariant
+                        )
+                    }
+                    
+                    Spacer(Modifier.height(Spacing.xs))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                    ) {
+                        androidx.compose.material3.LinearProgressIndicator(
+                            progress = { animatedProgress },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(Radius.full)),
+                            color = progressColor,
+                            trackColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.6f)
+                        )
+                        
+                        Text(
+                            "${(progress * 100).toInt()}%",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppTheme.colors.onSurfaceVariant,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    
+                    if (isComplete) {
+                        Spacer(Modifier.height(Spacing.xs))
+                        Text(
+                            "Цель достигнута!",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppTheme.colors.success,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
         }
     }
