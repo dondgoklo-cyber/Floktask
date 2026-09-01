@@ -6,9 +6,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Note
+import androidx.compose.material.icons.filled.NoteAdd
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Today
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.ViewKanban
+import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -86,6 +105,12 @@ private val Screen.navIcon: ImageVector
         Screen.Kanban -> Icons.Filled.ViewKanban
         Screen.More -> Icons.Filled.MoreVert
         Screen.Notes -> Icons.Filled.Note
+        Screen.Profile -> Icons.Filled.Person
+        Screen.ProjectDetail -> Icons.Filled.FolderOpen
+        Screen.NoteEdit -> Icons.Filled.Edit
+        Screen.NoteEditNew -> Icons.Filled.NoteAdd
+        Screen.TaskEdit -> Icons.Filled.Edit
+        Screen.TaskEditNew -> Icons.Filled.Add
         Screen.Settings -> Icons.Filled.Settings
         Screen.Statistics -> Icons.Filled.Analytics
         Screen.Tags -> Icons.Filled.Label
