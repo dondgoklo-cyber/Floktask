@@ -296,7 +296,7 @@ private fun Quadrant(
             }
         }
     }
-}
+
 }
 
 @Composable
