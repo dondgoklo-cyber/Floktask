@@ -297,6 +297,7 @@ private fun Quadrant(
         }
     }
 }
+}
 
 @Composable
 private fun TaskQuadrantItem(
@@ -342,7 +343,6 @@ private fun TaskQuadrantItem(
             )
         }
     }
-}
 }
 
     if (showQuickAdd) {
