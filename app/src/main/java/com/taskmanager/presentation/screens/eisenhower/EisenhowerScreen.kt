@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,6 +60,9 @@ fun EisenhowerScreen(
     var hoveredQuadrant by remember { mutableStateOf<EisenhowerQuadrant?>(null) }
     val quadrantBounds = remember { mutableMapOf<EisenhowerQuadrant, Rect>() }
 
+    var showQuickAdd by remember { mutableStateOf(false) }
+    var selectedQuadrant by remember { mutableStateOf<com.taskmanager.domain.model.EisenhowerQuadrant?>(null) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -64,6 +70,13 @@ fun EisenhowerScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.surface
                 )
+            )
+        },
+        floatingActionButton = {
+            com.taskmanager.presentation.components.AppFloatingActionButton(
+                icon = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.add_task),
+                onClick = { showQuickAdd = true }
             )
         }
     ) { padding ->
@@ -329,4 +342,12 @@ private fun TaskQuadrantItem(
             )
         }
     }
-}
+
+        
+        if (showQuickAdd) {
+            com.taskmanager.presentation.screens.tasks.QuickAddSheet(
+                onDismiss = { showQuickAdd = false },
+                onCreated = { showQuickAdd = false }
+            )
+        }
+    

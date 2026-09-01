@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,6 +64,8 @@ fun KanbanScreen(
     var hoveredColumn by remember { mutableStateOf<TaskStatus?>(null) }
     val columnBounds = remember { mutableMapOf<TaskStatus, Rect>() }
 
+    var showQuickAdd by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -69,6 +73,13 @@ fun KanbanScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.surface
                 )
+            )
+        },
+        floatingActionButton = {
+            com.taskmanager.presentation.components.AppFloatingActionButton(
+                icon = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.add_task),
+                onClick = { showQuickAdd = true }
             )
         }
     ) { padding ->
@@ -240,4 +251,18 @@ private fun KanbanCard(
             )
         }
     }
-}
+
+        if (showQuickAdd) {
+            com.taskmanager.presentation.screens.tasks.QuickAddSheet(
+                onDismiss = { showQuickAdd = false },
+                onCreated = { showQuickAdd = false }
+            )
+        
+        
+        if (showQuickAdd) {
+            com.taskmanager.presentation.screens.tasks.QuickAddSheet(
+                onDismiss = { showQuickAdd = false },
+                onCreated = { showQuickAdd = false }
+            )
+        }
+    

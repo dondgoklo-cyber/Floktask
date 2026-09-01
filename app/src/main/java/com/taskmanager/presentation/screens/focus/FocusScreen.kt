@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -82,21 +84,18 @@ fun FocusScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(Spacing.lg)
         ) {
-            // Переключатель типа
+            // Кнопка смены режима
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = Spacing.lg),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
+                horizontalArrangement = Arrangement.End
             ) {
-                PomodoroType.entries.forEach { type ->
-                    val label = when (type) {
-                        PomodoroType.WORK -> stringResource(R.string.work_session)
-                        PomodoroType.SHORT_BREAK -> stringResource(R.string.short_break)
-                        PomodoroType.LONG_BREAK -> stringResource(R.string.long_break)
-                    }
-                    FilterChip(
-                        selected = state.type == type,
-                        onClick = { viewModel.selectType(type) },
-                        label = { Text(label, style = MaterialTheme.typography.labelSmall) }
+                FilledIconButton(
+                    onClick = { viewModel.selectNextType() },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.SwapHoriz,
+                        contentDescription = stringResource(R.string.change_mode)
                     )
                 }
             }
@@ -169,6 +168,12 @@ fun FocusScreen(
                         else stringResource(R.string.start_pomodoro),
                         modifier = Modifier.size(36.dp)
                     )
+                }
+                FilledIconButton(
+                    onClick = { viewModel.complete() },
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.complete))
                 }
             }
 

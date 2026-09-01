@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -79,6 +80,8 @@ fun CalendarScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    var showQuickAdd by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -102,6 +105,13 @@ fun CalendarScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.surface
                 )
+            )
+        },
+        floatingActionButton = {
+            com.taskmanager.presentation.components.AppFloatingActionButton(
+                icon = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.add_task),
+                onClick = { showQuickAdd = true }
             )
         }
     ) { padding ->
@@ -560,4 +570,12 @@ private fun AgendaView(state: CalendarUiState, viewModel: CalendarViewModel) {
             }
         }
     }
-}
+
+        
+        if (showQuickAdd) {
+            com.taskmanager.presentation.screens.tasks.QuickAddSheet(
+                onDismiss = { showQuickAdd = false },
+                onCreated = { showQuickAdd = false }
+            )
+        }
+    
