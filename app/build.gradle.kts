@@ -22,10 +22,18 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getenv("SIGNING_KEY") ?: "release.keystore")
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD") ?: ""
+            keyAlias = System.getenv("SIGNING_ALIAS") ?: "upload"
+            keyPassword = System.getenv("SIGNING_PASSWORD") ?: ""
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
-            applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
         release {
@@ -34,6 +42,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
