@@ -532,7 +532,7 @@ private fun GoalCard(state: FinanceUiState) {
         ) {
             Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.goals.forEach { goal ->
-                val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount).coerceIn(0.0, 1.0) else 0.0
+                val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount).coerceIn(BigDecimal.ZERO, BigDecimal.ONE) else BigDecimal.ZERO
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -570,8 +570,8 @@ private fun BudgetCard(state: FinanceUiState) {
         ) {
             Text("Бюджеты", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.budgets.forEach { (cat, budget) ->
-                val spent = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: 0.0
-                val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(0.0, 1.0) else 0.0
+                val spent = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: BigDecimal.ZERO
+                val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(BigDecimal.ZERO, BigDecimal.ONE) else BigDecimal.ZERO
                 val isOverBudget = spent > budget.amount
                 Row(
                     modifier = Modifier.fillMaxWidth(),

@@ -128,7 +128,7 @@ fun CategoryPieChart(
 ) {
     if (categories.isEmpty()) return
 
-    val total = categories.sumOf { it.total }.coerceAtLeast(0.001)
+    val total = categories.sumOf { it.total }.coerceAtLeast(BigDecimal("0.001"))
     val colors = listOf(
         AppTheme.colors.primary,
         AppTheme.colors.success,

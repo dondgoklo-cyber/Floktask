@@ -7,6 +7,7 @@ import com.taskmanager.domain.model.TransactionType
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.OutputStream
+import java.math.BigDecimal
 import java.io.Writer
 import java.time.Instant
 import java.text.SimpleDateFormat
@@ -94,7 +95,7 @@ class FinanceExportManager {
                 "Перевод" -> TransactionType.TRANSFER
                 else -> runCatching { TransactionType.valueOf(row[1]) }.getOrDefault(TransactionType.EXPENSE)
             }
-            val amount = row[2].toDoubleOrNull() ?: continue
+            val amount = try { BigDecimal(row[2]) } catch (e: NumberFormatException) { continue }
             val currency = row[3]
             val categoryId = categories.firstOrNull { it.name == row[4] }?.id
             val accountId = accounts.firstOrNull { it.name == row[5] }?.id
@@ -220,7 +221,7 @@ class FinanceExportManager {
 
         for (i in 0 until txArray.length()) {
             val txJson = txArray.optJSONObject(i) ?: continue
-            val amount = txJson.optDouble("amount", 0.0)
+            val amount = if (!txJson.has("amount") || txJson.isNull("amount")) BigDecimal.ZERO else try { BigDecimal(txJson.getString("amount")) } catch (e: Exception) { BigDecimal.ZERO }
             if (amount <= 0) continue
             val typeStr = txJson.optString("type", "EXPENSE")
             val type = runCatching { TransactionType.valueOf(typeStr) }.getOrDefault(TransactionType.EXPENSE)
@@ -236,7 +237,7 @@ class FinanceExportManager {
                 date = java.time.Instant.ofEpochMilli(dateMillis),
                 note = if (txJson.isNull("note")) null else txJson.optString("note", null),
                 toAccountId = if (txJson.isNull("toAccountId")) null else txJson.optLong("toAccountId", 0),
-                destinationAmount = if (txJson.isNull("destinationAmount")) null else txJson.optDouble("destinationAmount", 0.0),
+                destinationAmount = if (!txJson.has("destinationAmount") || txJson.isNull("destinationAmount")) null else try { BigDecimal(txJson.getString("destinationAmount")) } catch (e: Exception) { null },
                 destinationCurrency = if (txJson.isNull("destinationCurrency")) null else txJson.optString("destinationCurrency", null)
             ))
         }

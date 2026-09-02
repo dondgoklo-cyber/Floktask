@@ -44,6 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.math.BigDecimal
 import java.security.MessageDigest
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -423,7 +424,7 @@ class BackupManager @Inject constructor(
 
     private fun accountFromJson(o: JSONObject) = AccountEntity(
         id = o.optLong("id", 0), name = o.optString("name"),
-        initialBalance = o.optDouble("initialBalance", 0.0), currency = o.optString("currency", "RUB")
+        initialBalance = o.optBigDecimal("initialBalance", BigDecimal.ZERO), currency = o.optString("currency", "RUB")
     )
 
     private fun categoryFromJson(o: JSONObject) = CategoryEntity(
@@ -433,11 +434,11 @@ class BackupManager @Inject constructor(
     )
 
     private fun transactionFromJson(o: JSONObject) = TransactionEntity(
-        id = o.optLong("id", 0), amount = o.optDouble("amount", 0.0), type = o.optString("type", "EXPENSE"),
+        id = o.optLong("id", 0), amount = o.optBigDecimal("amount", BigDecimal.ZERO), type = o.optString("type", "EXPENSE"),
         currency = o.optString("currency", "RUB"), categoryId = o.nullableLong("categoryId"),
         accountId = o.nullableLong("accountId"), date = o.optLong("date", 0),
         note = o.optString("note").ifBlank { null }, toAccountId = o.nullableLong("toAccountId"),
-        destinationAmount = o.nullableDouble("destinationAmount"),
+        destinationAmount = o.nullableBigDecimal("destinationAmount"),
         destinationCurrency = o.optString("destinationCurrency").ifBlank { null },
         createdAt = o.optLong("createdAt", System.currentTimeMillis()),
         updatedAt = o.optLong("updatedAt", System.currentTimeMillis())
@@ -445,12 +446,12 @@ class BackupManager @Inject constructor(
 
     private fun budgetFromJson(o: JSONObject) = BudgetEntity(
         id = o.optLong("id", 0), categoryId = o.optLong("categoryId", 0),
-        amount = o.optDouble("amount", 0.0), currency = o.optString("currency", "RUB")
+        amount = o.optBigDecimal("amount", BigDecimal.ZERO), currency = o.optString("currency", "RUB")
     )
 
     private fun goalFromJson(o: JSONObject) = GoalEntity(
-        id = o.optLong("id", 0), title = o.optString("title"), targetAmount = o.optDouble("targetAmount", 0.0),
-        savedAmount = o.optDouble("savedAmount", 0.0), currency = o.optString("currency", "RUB"),
+        id = o.optLong("id", 0), title = o.optString("title"), targetAmount = o.optBigDecimal("targetAmount", BigDecimal.ZERO),
+        savedAmount = o.optBigDecimal("savedAmount", BigDecimal.ZERO), currency = o.optString("currency", "RUB"),
         deadline = o.nullableLong("deadline"), createdAt = o.optLong("createdAt", System.currentTimeMillis())
     )
 
@@ -495,6 +496,12 @@ class BackupManager @Inject constructor(
 
     private fun JSONObject.nullableInt(key: String): Int? =
         if (!has(key) || isNull(key)) null else optInt(key)
+
+    private fun JSONObject.optBigDecimal(key: String, defaultValue: BigDecimal): BigDecimal =
+        if (!has(key) || isNull(key)) defaultValue else BigDecimal(optString(key))
+
+    private fun JSONObject.nullableBigDecimal(key: String): BigDecimal? =
+        if (!has(key) || isNull(key)) null else BigDecimal(optString(key))
 
     private fun JSONObject.nullableDouble(key: String): Double? =
         if (!has(key) || isNull(key)) null else optDouble(key)

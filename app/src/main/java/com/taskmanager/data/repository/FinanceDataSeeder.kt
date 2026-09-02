@@ -5,6 +5,7 @@ import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.model.CategoryType
 import com.taskmanager.domain.repository.AccountRepository
 import com.taskmanager.domain.repository.CategoryRepository
+import java.math.BigDecimal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,7 +31,7 @@ class FinanceDataSeeder @Inject constructor(
             }
             if (accountRepository.getAccountCount() == 0) {
                 accountRepository.createAccount(
-                    Account(name = "Основной", initialBalance = 0.0, currency = "RUB")
+                    Account(name = "Основной", initialBalance = BigDecimal.ZERO, currency = "RUB")
                 )
             }
         }

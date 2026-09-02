@@ -108,8 +108,8 @@ class FinanceViewModel @Inject constructor(
     private val _goals = MutableStateFlow<List<Goal>>(emptyList())
     private val _budgets = MutableStateFlow<List<Budget>>(emptyList())
     private val _allTransactions = MutableStateFlow<List<Transaction>>(emptyList())
-    private val _totalIncome = MutableStateFlow(0.0)
-    private val _totalExpense = MutableStateFlow(0.0)
+    private val _totalIncome = MutableStateFlow(BigDecimal.ZERO)
+    private val _totalExpense = MutableStateFlow(BigDecimal.ZERO)
     private val _incomeByCurrency = MutableStateFlow<List<com.taskmanager.data.local.dao.CurrencyTotal>>(emptyList())
     private val _expenseByCurrency = MutableStateFlow<List<com.taskmanager.data.local.dao.CurrencyTotal>>(emptyList())
 
@@ -137,7 +137,7 @@ class FinanceViewModel @Inject constructor(
         val expenseByCur = _expenseByCurrency.value.associate { it.currency to it.total }
         val allCurrencies = (incomeByCur.keys + expenseByCur.keys).distinct()
         val balancesByCurrency = allCurrencies.map { cur ->
-            val bal = (incomeByCur[cur] ?: 0.0) - (expenseByCur[cur] ?: 0.0)
+            val bal = (incomeByCur[cur] ?: BigDecimal.ZERO) - (expenseByCur[cur] ?: BigDecimal.ZERO)
             AccountBalance(
                 currency = cur,
                 balance = bal,
@@ -171,15 +171,15 @@ class FinanceViewModel @Inject constructor(
             FinancePeriod.MONTH -> 30
             FinancePeriod.YEAR -> 365
         }
-        val avgDailySpending = if (daysInPeriod > 0) periodExpense / daysInPeriod else 0.0
+        val avgDailySpending = if (daysInPeriod > 0) periodExpense / daysInPeriod else BigDecimal.ZERO
         val avgMonthlySpending = avgDailySpending * 30
         val topIncomeSource = periodTx.filter { it.type == TransactionType.INCOME }
             .groupBy { it.categoryId }
             .maxByOrNull { it.value.sumOf { tx -> tx.amount } }
             ?.let { entry -> categories.find { it.id == entry.key }?.name }
         val savingsRate = if (periodIncome > 0) {
-            ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
-        } else 0.0
+            ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(BigDecimal.ZERO, BigDecimal("100"))
+        } else BigDecimal.ZERO
 
         val goals = _goals.value
         val budgets = _budgets.value
