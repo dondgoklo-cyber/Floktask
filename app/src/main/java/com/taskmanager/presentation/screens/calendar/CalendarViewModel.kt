@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 import javax.inject.Inject
+import android.util.Log
 
 enum class CalendarViewMode { DAY, THREE_DAYS, WEEK, MONTH, AGENDA }
 
@@ -94,6 +95,7 @@ class CalendarViewModel @Inject constructor(
      */
     fun updateTaskSchedule(task: Task, newStartTime: java.time.Instant, newDurationMinutes: Long?) {
         viewModelScope.launch {
+        try {
             updateTaskUseCase(
                 task.copy(
                     startTime = newStartTime,
@@ -101,7 +103,11 @@ class CalendarViewModel @Inject constructor(
                     durationMinutes = newDurationMinutes ?: task.durationMinutes
                 )
             )
+        } catch (e: Exception) {
+            Log.e("CalendarViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     /**
@@ -109,6 +115,7 @@ class CalendarViewModel @Inject constructor(
      */
     fun moveTaskToDate(task: Task, newDate: LocalDate) {
         viewModelScope.launch {
+        try {
             val currentTime = task.startTime?.atZone(zone)?.toLocalTime() ?: java.time.LocalTime.NOON
             val newInstant = newDate.atTime(currentTime).atZone(zone).toInstant()
             updateTaskUseCase(
@@ -117,6 +124,10 @@ class CalendarViewModel @Inject constructor(
                     deadline = newInstant
                 )
             )
+        } catch (e: Exception) {
+            Log.e("CalendarViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 }

@@ -6,23 +6,44 @@ import com.taskmanager.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import android.util.Log
 
 class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao
 ) : NoteRepository {
 
-    override suspend fun createNote(note: Note): Long =
+    override suspend fun createNote(note: Note): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("NoteRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         noteDao.insert(note.toEntity())
 
     override suspend fun updateNote(note: Note) {
-        noteDao.update(note.toEntity())
+        try {
+            noteDao.update(note.toEntity())
+        } catch (e: Exception) {
+            Log.e("NoteRepositoryImpl", "Error in Note)", e)
+            throw e
+        }
     }
 
     override suspend fun deleteNote(id: Long) {
-        noteDao.deleteById(id)
+        try {
+            noteDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("NoteRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
-    override fun getAllNotes(): Flow<List<Note>> =
+    override fun getAllNotes(): Flow<List<Note>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("NoteRepositoryImpl", "Error in Flow<List<Note>>", e)
+        throw e
+    }
         noteDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getPinnedNotes(): Flow<List<Note>> =
@@ -34,21 +55,41 @@ class NoteRepositoryImpl @Inject constructor(
     override fun getNotesByProject(projectId: Long): Flow<List<Note>> =
         noteDao.getByProject(projectId).map { list -> list.map { it.toDomain() } }
 
-    override suspend fun getNoteById(id: Long): Note? =
+    override suspend fun getNoteById(id: Long): Note? = try {
+        
+    } catch (e: Exception) {
+        Log.e("NoteRepositoryImpl", "Error in Note?", e)
+        throw e
+    }
         noteDao.getById(id)?.toDomain()
 
     override fun searchNotes(query: String): Flow<List<Note>> =
         noteDao.search(query).map { list -> list.map { it.toDomain() } }
 
     override suspend fun setPinned(id: Long, pinned: Boolean) {
-        noteDao.setPinned(id, pinned, System.currentTimeMillis())
+        try {
+            noteDao.setPinned(id, pinned, System.currentTimeMillis())
+        } catch (e: Exception) {
+            Log.e("NoteRepositoryImpl", "Error in Boolean)", e)
+            throw e
+        }
     }
 
     override suspend fun setArchived(id: Long, archived: Boolean) {
-        noteDao.setArchived(id, archived, System.currentTimeMillis())
+        try {
+            noteDao.setArchived(id, archived, System.currentTimeMillis())
+        } catch (e: Exception) {
+            Log.e("NoteRepositoryImpl", "Error in Boolean)", e)
+            throw e
+        }
     }
 
     override suspend fun moveToFolder(id: Long, folderId: Long?) {
-        noteDao.moveToFolder(id, folderId, System.currentTimeMillis())
+        try {
+            noteDao.moveToFolder(id, folderId, System.currentTimeMillis())
+        } catch (e: Exception) {
+            Log.e("NoteRepositoryImpl", "Error in Long?)", e)
+            throw e
+        }
     }
 }

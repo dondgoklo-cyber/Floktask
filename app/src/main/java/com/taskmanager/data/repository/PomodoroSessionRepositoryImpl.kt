@@ -6,19 +6,35 @@ import com.taskmanager.domain.repository.PomodoroSessionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import android.util.Log
 
 class PomodoroSessionRepositoryImpl @Inject constructor(
     private val pomodoroSessionDao: PomodoroSessionDao
 ) : PomodoroSessionRepository {
 
-    override suspend fun saveSession(session: PomodoroSession): Long =
+    override suspend fun saveSession(session: PomodoroSession): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("PomodoroSessionRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         pomodoroSessionDao.insert(session.toEntity())
 
     override suspend fun deleteSession(id: Long) {
-        pomodoroSessionDao.deleteById(id)
+        try {
+            pomodoroSessionDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("PomodoroSessionRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
-    override fun getAllSessions(): Flow<List<PomodoroSession>> =
+    override fun getAllSessions(): Flow<List<PomodoroSession>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("PomodoroSessionRepositoryImpl", "Error in Flow<List<PomodoroSession>>", e)
+        throw e
+    }
         pomodoroSessionDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getSessionsByTask(taskId: Long): Flow<List<PomodoroSession>> =

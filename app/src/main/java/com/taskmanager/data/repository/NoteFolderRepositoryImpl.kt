@@ -6,22 +6,43 @@ import com.taskmanager.domain.repository.NoteFolderRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import android.util.Log
 
 class NoteFolderRepositoryImpl @Inject constructor(
     private val folderDao: NoteFolderDao
 ) : NoteFolderRepository {
 
-    override suspend fun createFolder(folder: NoteFolder): Long =
+    override suspend fun createFolder(folder: NoteFolder): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("NoteFolderRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         folderDao.insert(folder.toEntity())
 
     override suspend fun updateFolder(folder: NoteFolder) {
-        folderDao.update(folder.toEntity())
+        try {
+            folderDao.update(folder.toEntity())
+        } catch (e: Exception) {
+            Log.e("NoteFolderRepositoryImpl", "Error in NoteFolder)", e)
+            throw e
+        }
     }
 
     override suspend fun deleteFolder(id: Long) {
-        folderDao.deleteById(id)
+        try {
+            folderDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("NoteFolderRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
-    override fun getAllFolders(): Flow<List<NoteFolder>> =
+    override fun getAllFolders(): Flow<List<NoteFolder>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("NoteFolderRepositoryImpl", "Error in Flow<List<NoteFolder>>", e)
+        throw e
+    }
         folderDao.getAll().map { list -> list.map { it.toDomain() } }
 }

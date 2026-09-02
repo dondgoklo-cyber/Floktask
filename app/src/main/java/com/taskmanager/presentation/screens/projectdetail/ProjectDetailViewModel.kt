@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
+import android.util.Log
 
 data class ProjectDetailUiState(
     val project: Project? = null,
@@ -74,19 +75,29 @@ class ProjectDetailViewModel @Inject constructor(
 
     fun createNoteForProject(title: String, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
+        try {
             val id = createNoteUseCase(Note(
                 title = title,
                 contentMarkdown = "",
                 projectId = _projectId.value
             ))
             onCreated(id)
+        } catch (e: Exception) {
+            Log.e("ProjectDetailViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun moveTask(task: Task, newStatus: TaskStatus) {
         if (task.status == newStatus) return
         viewModelScope.launch {
+        try {
             taskRepository.updateTask(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
+        } catch (e: Exception) {
+            Log.e("ProjectDetailViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 }

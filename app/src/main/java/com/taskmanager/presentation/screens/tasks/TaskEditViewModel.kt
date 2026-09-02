@@ -31,6 +31,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import javax.inject.Inject
+import android.util.Log
 
 @HiltViewModel
 class TaskEditViewModel @Inject constructor(
@@ -75,6 +76,7 @@ class TaskEditViewModel @Inject constructor(
 
     private fun loadTask(id: Long) {
         viewModelScope.launch {
+        try {
             getTaskByIdUseCase(id)?.let { task ->
                 _formState.value = TaskFormState(
                     title = task.title,
@@ -91,7 +93,11 @@ class TaskEditViewModel @Inject constructor(
                     recurrenceRule = task.recurrenceRule,
                     reminderDateTime = task.reminderDate?.atZone(ZoneId.of("UTC"))?.toLocalDateTime()
                 )
-            }
+        } catch (e: Exception) {
+            Log.e("TaskEditViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
         }
     }
 
@@ -144,7 +150,13 @@ class TaskEditViewModel @Inject constructor(
         if (trimmed.isNotBlank() && trimmed !in _formState.value.tags) {
             _formState.value = _formState.value.copy(tags = _formState.value.tags + trimmed)
             viewModelScope.launch {
-                val exists = tags.value.any { it.name.equals(trimmed, ignoreCase = true) }
+        try {
+            val exists = tags.value.any { it.name.equals(trimmed, ignoreCase = true)
+        } catch (e: Exception) {
+            Log.e("TaskEditViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
                 if (!exists) {
                     createTagUseCase(com.taskmanager.domain.model.Tag(name = trimmed))
                 }
@@ -171,10 +183,16 @@ class TaskEditViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
+        try {
             val (deadline, startTime) = combineDateTime(state)
             val reminderInstant = state.reminderDateTime
                 ?.atZone(ZoneId.of("UTC"))?.toInstant()
-            val existing = taskId?.let { getTaskByIdUseCase(it) }
+            val existing = taskId?.let { getTaskByIdUseCase(it)
+        } catch (e: Exception) {
+            Log.e("TaskEditViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
             val task = (existing?.copy(
                 title = state.title.trim(),
                 description = state.description.trim().ifBlank { null },

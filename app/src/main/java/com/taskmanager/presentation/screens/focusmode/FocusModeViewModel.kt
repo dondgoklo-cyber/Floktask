@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 data class FocusModeUiState(
     val task: Task? = null,
@@ -31,9 +32,14 @@ class FocusModeViewModel @Inject constructor(
 
     fun startFocus(taskId: Long) {
         viewModelScope.launch {
+        try {
             val task = getTaskByIdUseCase(taskId)
             _state.value = _state.value.copy(task = task, isActive = true)
+        } catch (e: Exception) {
+            Log.e("FocusModeViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
         // Enable DND if permission granted; UI surfaces the status.
         val applied = dndHelper.enableDnd()
         _state.value = _state.value.copy(dndEnabled = applied)

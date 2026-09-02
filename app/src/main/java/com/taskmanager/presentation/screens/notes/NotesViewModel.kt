@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 data class NotesUiState(
     val pinnedNotes: List<Note> = emptyList(),
@@ -55,34 +56,59 @@ class NotesViewModel @Inject constructor(
 
     fun createFolder(name: String) {
         viewModelScope.launch {
+        try {
             noteFolderRepository.createFolder(NoteFolder(name = name.trim()))
             closeCreateFolderDialog()
+        } catch (e: Exception) {
+            Log.e("NotesViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun createNote(onCreated: (Long) -> Unit) {
         viewModelScope.launch {
+        try {
             val id = createNoteUseCase(Note(title = "", contentMarkdown = ""))
             onCreated(id)
+        } catch (e: Exception) {
+            Log.e("NotesViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun createNoteWithContent(title: String, content: String, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
+        try {
             val id = createNoteUseCase(Note(title = title, contentMarkdown = content))
             onCreated(id)
+        } catch (e: Exception) {
+            Log.e("NotesViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun togglePin(note: Note) {
         viewModelScope.launch {
+        try {
             noteRepository.setPinned(note.id ?: 0, !note.pinned)
+        } catch (e: Exception) {
+            Log.e("NotesViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun deleteNote(id: Long) {
         viewModelScope.launch {
+        try {
             deleteNoteUseCase(id)
+        } catch (e: Exception) {
+            Log.e("NotesViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 }

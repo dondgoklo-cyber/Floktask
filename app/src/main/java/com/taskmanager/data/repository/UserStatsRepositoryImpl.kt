@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
+import android.util.Log
 
 class UserStatsRepositoryImpl @Inject constructor(
     private val userStatsDao: UserStatsDao
@@ -19,15 +20,30 @@ class UserStatsRepositoryImpl @Inject constructor(
     override fun observeStats(): Flow<UserStats?> =
         userStatsDao.observe().map { it?.toDomain() }
 
-    override suspend fun getStats(): UserStats =
+    override suspend fun getStats(): UserStats = try {
+        
+    } catch (e: Exception) {
+        Log.e("UserStatsRepositoryImpl", "Error in UserStats", e)
+        throw e
+    }
         userStatsDao.get()?.toDomain() ?: UserStats()
 
     override suspend fun saveStats(stats: UserStats) {
-        userStatsDao.upsert(stats.toEntity())
+        try {
+            userStatsDao.upsert(stats.toEntity())
+        } catch (e: Exception) {
+            Log.e("UserStatsRepositoryImpl", "Error in UserStats)", e)
+            throw e
+        }
     }
 
     override suspend fun unlockAchievement(achievement: Achievement): UserStats {
-        val current = getStats()
+        val current = try {
+        getStats()
+    } catch (e: Exception) {
+        Log.e("UserStatsRepositoryImpl", "Error in current", e)
+        throw e
+    }
         if (achievement.id in current.unlockedAchievementIds) return current
         val updated = current.copy(
             totalPoints = current.totalPoints + achievement.pointsReward,
@@ -38,12 +54,22 @@ class UserStatsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addPoints(points: Long): UserStats {
-        val current = getStats()
+        val current = try {
+        getStats()
+    } catch (e: Exception) {
+        Log.e("UserStatsRepositoryImpl", "Error in current", e)
+        throw e
+    }
         return persist(current.copy(totalPoints = current.totalPoints + points))
     }
 
     override suspend fun recordTaskCompletion(priority: Priority): UserStats {
-        val current = getStats()
+        val current = try {
+        getStats()
+    } catch (e: Exception) {
+        Log.e("UserStatsRepositoryImpl", "Error in current", e)
+        throw e
+    }
         val basePoints = when (priority) {
             Priority.HIGH -> 15L
             Priority.MEDIUM -> 10L

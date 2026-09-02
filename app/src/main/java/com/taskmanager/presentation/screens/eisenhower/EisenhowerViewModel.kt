@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 data class EisenhowerUiState(
     val quadrants: Map<EisenhowerQuadrant, List<Task>> = emptyMap(),
@@ -31,13 +32,23 @@ class EisenhowerViewModel @Inject constructor(
 
     fun moveTask(taskId: Long, quadrant: EisenhowerQuadrant) {
         viewModelScope.launch {
+        try {
             updateEisenhowerQuadrantUseCase(taskId, quadrant)
+        } catch (e: Exception) {
+            Log.e("EisenhowerViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun clearQuadrant(taskId: Long) {
         viewModelScope.launch {
+        try {
             updateEisenhowerQuadrantUseCase(taskId, null)
+        } catch (e: Exception) {
+            Log.e("EisenhowerViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 }

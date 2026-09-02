@@ -6,22 +6,43 @@ import com.taskmanager.domain.repository.TagRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import android.util.Log
 
 class TagRepositoryImpl @Inject constructor(
     private val tagDao: TagDao
 ) : TagRepository {
 
-    override suspend fun createTag(tag: Tag): Long =
+    override suspend fun createTag(tag: Tag): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("TagRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         tagDao.insert(tag.toEntity())
 
     override suspend fun updateTag(tag: Tag) {
-        tagDao.update(tag.toEntity())
+        try {
+            tagDao.update(tag.toEntity())
+        } catch (e: Exception) {
+            Log.e("TagRepositoryImpl", "Error in Tag)", e)
+            throw e
+        }
     }
 
     override suspend fun deleteTag(id: Long) {
-        tagDao.deleteById(id)
+        try {
+            tagDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("TagRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
-    override fun getAllTags(): Flow<List<Tag>> =
+    override fun getAllTags(): Flow<List<Tag>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("TagRepositoryImpl", "Error in Flow<List<Tag>>", e)
+        throw e
+    }
         tagDao.getAll().map { list -> list.map { it.toDomain() } }
 }

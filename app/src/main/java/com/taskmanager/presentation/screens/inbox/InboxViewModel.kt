@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 data class InboxUiState(
     val tasks: List<Task> = emptyList(),
@@ -28,7 +29,12 @@ class InboxViewModel @Inject constructor(
 
     fun completeTask(taskId: Long) {
         viewModelScope.launch {
+        try {
             taskRepository.setCompleted(taskId, true)
+        } catch (e: Exception) {
+            Log.e("InboxViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 }

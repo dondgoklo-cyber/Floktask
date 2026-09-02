@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
+import android.util.Log
 
 data class HabitWithCompletion(
     val habit: Habit,
@@ -63,6 +64,7 @@ class HabitsViewModel @Inject constructor(
 
     fun createHabit(name: String, color: String?, frequency: String) {
         viewModelScope.launch {
+        try {
             val habit = Habit(
                 name = name.trim(),
                 color = color,
@@ -70,12 +72,21 @@ class HabitsViewModel @Inject constructor(
             )
             createHabitUseCase(habit)
             closeCreateDialog()
+        } catch (e: Exception) {
+            Log.e("HabitsViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun toggleCompletion(habitId: Long) {
         viewModelScope.launch {
+        try {
             logHabitCompletionUseCase.toggleCompletion(habitId)
+        } catch (e: Exception) {
+            Log.e("HabitsViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 }

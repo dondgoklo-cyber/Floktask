@@ -4,6 +4,7 @@ import com.taskmanager.domain.model.HabitLog
 import com.taskmanager.domain.repository.HabitLogRepository
 import java.time.LocalDate
 import javax.inject.Inject
+import android.util.Log
 
 data class HabitStats(
     val currentStreak: Int,
@@ -17,7 +18,11 @@ class GetHabitStatsUseCase @Inject constructor(
     private val habitLogRepository: HabitLogRepository
 ) {
     suspend operator fun invoke(habitId: Long): HabitStats {
-        val logs = habitLogRepository.getByHabit(habitId)
+        val logs = runCatching {
+        habitLogRepository.getByHabit(habitId)
+    }.onFailure { e ->
+        Log.e("GetHabitStatsUseCase", "Error in invoke", e)
+    }
         val logsByDate = logs.associate { it.date to it.count }
         val today = LocalDate.now()
 

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
+import android.util.Log
 
 class TaskRepositoryImpl @Inject constructor(
     private val taskDao: TaskDao,
@@ -17,25 +18,55 @@ class TaskRepositoryImpl @Inject constructor(
     private val tagDao: TagDao
 ) : TaskRepository {
 
-    override suspend fun createTask(task: Task): Long =
+    override suspend fun createTask(task: Task): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("TaskRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         taskDao.insert(task.toEntity())
 
-    override suspend fun getTaskById(id: Long): Task? =
+    override suspend fun getTaskById(id: Long): Task? = try {
+        
+    } catch (e: Exception) {
+        Log.e("TaskRepositoryImpl", "Error in Task?", e)
+        throw e
+    }
         taskDao.getById(id)?.toDomain()
 
     override suspend fun updateTask(task: Task) {
-        taskDao.update(task.copy(updatedAt = Instant.now()).toEntity())
+        try {
+            taskDao.update(task.copy(updatedAt = Instant.now()).toEntity())
+        } catch (e: Exception) {
+            Log.e("TaskRepositoryImpl", "Error in Task)", e)
+            throw e
+        }
     }
 
     override suspend fun deleteTask(id: Long) {
-        taskDao.deleteById(id)
+        try {
+            taskDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("TaskRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
     override suspend fun setCompleted(id: Long, completed: Boolean) {
-        taskDao.setCompleted(id, completed, Instant.now().toEpochMilli())
+        try {
+            taskDao.setCompleted(id, completed, Instant.now().toEpochMilli())
+        } catch (e: Exception) {
+            Log.e("TaskRepositoryImpl", "Error in Boolean)", e)
+            throw e
+        }
     }
 
-    override fun getAllTasks(): Flow<List<Task>> =
+    override fun getAllTasks(): Flow<List<Task>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("TaskRepositoryImpl", "Error in Flow<List<Task>>", e)
+        throw e
+    }
         taskDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getTasksByProject(projectId: Long): Flow<List<Task>> =
@@ -66,12 +97,23 @@ class TaskRepositoryImpl @Inject constructor(
         taskDao.getUpcomingTasks(fromEpoch).map { list -> list.map { it.toDomain() } }
 
     override suspend fun setTaskTags(taskId: Long, tagIds: List<Long>) {
-        taskTagDao.deleteByTaskId(taskId)
-        taskTagDao.insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it) })
+        try {
+            taskTagDao.deleteByTaskId(taskId)
+        taskTagDao.insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it)
+        } catch (e: Exception) {
+            Log.e("TaskRepositoryImpl", "Error in List<Long>)", e)
+            throw e
+        }
+    })
     }
 
     override suspend fun getTaskTags(taskId: Long): List<String> {
-        val tagIds = taskTagDao.getTagIdsForTask(taskId)
+        val tagIds = try {
+        taskTagDao.getTagIdsForTask(taskId)
+    } catch (e: Exception) {
+        Log.e("TaskRepositoryImpl", "Error in tagIds", e)
+        throw e
+    }
         return tagIds.mapNotNull { id -> tagDao.getById(id)?.name }
     }
 

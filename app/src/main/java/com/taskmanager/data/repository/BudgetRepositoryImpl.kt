@@ -6,21 +6,42 @@ import com.taskmanager.domain.repository.BudgetRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import android.util.Log
 
 class BudgetRepositoryImpl @Inject constructor(
     private val budgetDao: BudgetDao
 ) : BudgetRepository {
 
-    override suspend fun upsertBudget(budget: Budget): Long =
+    override suspend fun upsertBudget(budget: Budget): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("BudgetRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         budgetDao.insert(budget.toEntity())
 
     override suspend fun deleteBudget(id: Long) {
-        budgetDao.deleteById(id)
+        try {
+            budgetDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("BudgetRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
-    override fun getAllBudgets(): Flow<List<Budget>> =
+    override fun getAllBudgets(): Flow<List<Budget>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("BudgetRepositoryImpl", "Error in Flow<List<Budget>>", e)
+        throw e
+    }
         budgetDao.getAll().map { list -> list.map { it.toDomain() } }
 
-    override suspend fun getBudgetByCategory(categoryId: Long): Budget? =
+    override suspend fun getBudgetByCategory(categoryId: Long): Budget? = try {
+        
+    } catch (e: Exception) {
+        Log.e("BudgetRepositoryImpl", "Error in Budget?", e)
+        throw e
+    }
         budgetDao.getByCategory(categoryId)?.toDomain()
 }

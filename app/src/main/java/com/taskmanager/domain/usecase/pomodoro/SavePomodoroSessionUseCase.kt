@@ -5,6 +5,7 @@ import com.taskmanager.domain.model.PomodoroType
 import com.taskmanager.domain.repository.PomodoroSessionRepository
 import java.time.Instant
 import javax.inject.Inject
+import android.util.Log
 
 class SavePomodoroSessionUseCase @Inject constructor(
     private val pomodoroSessionRepository: PomodoroSessionRepository
@@ -14,7 +15,11 @@ class SavePomodoroSessionUseCase @Inject constructor(
         durationMinutes: Int,
         type: PomodoroType = PomodoroType.WORK
     ): Long {
-        val session = PomodoroSession(
+        val session = runCatching {
+        PomodoroSession(
+    }.onFailure { e ->
+        Log.e("SavePomodoroSessionUseCase", "Error in invoke", e)
+    }
             taskId = taskId,
             startTime = Instant.now(),
             durationMinutes = durationMinutes,

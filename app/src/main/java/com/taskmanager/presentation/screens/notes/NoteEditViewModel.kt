@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 data class NoteEditState(
     val title: String = "",
@@ -45,6 +46,7 @@ class NoteEditViewModel @Inject constructor(
 
     private fun loadNote(id: Long) {
         viewModelScope.launch {
+        try {
             val note = noteRepository.getNoteById(id)
             if (note != null) {
                 currentNote = note
@@ -54,7 +56,11 @@ class NoteEditViewModel @Inject constructor(
                     isLoading = false,
                     isSaved = true
                 )
-            } else {
+        } catch (e: Exception) {
+            Log.e("NoteEditViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    } else {
                 _state.value = NoteEditState(isLoading = false)
             }
         }
@@ -74,15 +80,21 @@ class NoteEditViewModel @Inject constructor(
     private fun scheduleSave() {
         saveJob?.cancel()
         saveJob = viewModelScope.launch {
+        try {
             delay(800) // debounce 800ms
             saveNow()
+        } catch (e: Exception) {
+            Log.e("NoteEditViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun saveNow() {
         if (hasCreated && currentNote == null) return
         val s = _state.value
         viewModelScope.launch {
+        try {
             if (isNew && !hasCreated) {
                 val id = createNoteUseCase(Note(
                     title = s.title,
@@ -90,7 +102,11 @@ class NoteEditViewModel @Inject constructor(
                 ))
                 currentNote = Note(id = id, title = s.title, contentMarkdown = s.content)
                 hasCreated = true
-            } else {
+        } catch (e: Exception) {
+            Log.e("NoteEditViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    } else {
                 currentNote?.let { note ->
                     noteRepository.updateNote(note.copy(
                         title = s.title,

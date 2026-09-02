@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 data class FocusUiState(
     val type: PomodoroType = PomodoroType.WORK,
@@ -51,9 +52,14 @@ class FocusViewModel @Inject constructor(
 
     private fun observeStats() {
         viewModelScope.launch {
+        try {
             getPomodoroStatsUseCase().collect { stats ->
                 _state.value = _state.value.copy(stats = stats)
-            }
+        } catch (e: Exception) {
+            Log.e("FocusViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
         }
     }
 
@@ -61,9 +67,14 @@ class FocusViewModel @Inject constructor(
         _state.value = _state.value.copy(taskId = taskId, taskTitle = null)
         if (taskId != null) {
             viewModelScope.launch {
-                val title = taskRepository.getTaskById(taskId)?.title
+        try {
+            val title = taskRepository.getTaskById(taskId)?.title
                 _state.value = _state.value.copy(taskTitle = title)
-            }
+        } catch (e: Exception) {
+            Log.e("FocusViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
         }
     }
 
@@ -71,12 +82,17 @@ class FocusViewModel @Inject constructor(
         if (_state.value.isRunning) return
         _state.value = _state.value.copy(isRunning = true)
         timerJob = viewModelScope.launch {
+        try {
             while (_state.value.remainingSeconds > 0) {
                 delay(1000)
                 _state.value = _state.value.copy(
                     remainingSeconds = _state.value.remainingSeconds - 1
                 )
-            }
+        } catch (e: Exception) {
+            Log.e("FocusViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
             onComplete()
         }
     }
@@ -119,6 +135,7 @@ class FocusViewModel @Inject constructor(
 
     private fun onComplete() {
         viewModelScope.launch {
+        try {
             // Сохраняем сессию
             savePomodoroSessionUseCase(
                 taskId = _state.value.taskId,
@@ -133,7 +150,11 @@ class FocusViewModel @Inject constructor(
                 // После работы — перерыв (длинный каждый 4-й)
                 val nextType = if (_state.value.completedPomodoros % 4 == 0) {
                     PomodoroType.LONG_BREAK
-                } else {
+        } catch (e: Exception) {
+            Log.e("FocusViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    } else {
                     PomodoroType.SHORT_BREAK
                 }
                 selectType(nextType)

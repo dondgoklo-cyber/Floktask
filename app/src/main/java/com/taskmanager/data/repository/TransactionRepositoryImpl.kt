@@ -6,23 +6,44 @@ import com.taskmanager.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import android.util.Log
 
 class TransactionRepositoryImpl @Inject constructor(
     private val transactionDao: TransactionDao
 ) : TransactionRepository {
 
-    override suspend fun createTransaction(transaction: Transaction): Long =
+    override suspend fun createTransaction(transaction: Transaction): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("TransactionRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         transactionDao.insert(transaction.toEntity())
 
     override suspend fun updateTransaction(transaction: Transaction) {
-        transactionDao.update(transaction.toEntity())
+        try {
+            transactionDao.update(transaction.toEntity())
+        } catch (e: Exception) {
+            Log.e("TransactionRepositoryImpl", "Error in Transaction)", e)
+            throw e
+        }
     }
 
     override suspend fun deleteTransaction(id: Long) {
-        transactionDao.deleteById(id)
+        try {
+            transactionDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("TransactionRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
-    override fun getAllTransactions(): Flow<List<Transaction>> =
+    override fun getAllTransactions(): Flow<List<Transaction>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("TransactionRepositoryImpl", "Error in Flow<List<Transaction>>", e)
+        throw e
+    }
         transactionDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getTransactionsForPeriod(fromEpoch: Long, toEpoch: Long): Flow<List<Transaction>> =

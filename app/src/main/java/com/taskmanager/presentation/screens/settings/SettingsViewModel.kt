@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
 
 data class SettingsUiState(
     val userName: String = "",
@@ -30,18 +31,28 @@ class SettingsViewModel @Inject constructor(
     fun exportToUri(uri: Uri, onSuccess: () -> Unit, onError: () -> Unit) {
         _state.value = _state.value.copy(isExporting = true)
         viewModelScope.launch {
+        try {
             val ok = backupManager.exportToUri(uri)
             _state.value = _state.value.copy(isExporting = false)
             if (ok) onSuccess() else onError()
+        } catch (e: Exception) {
+            Log.e("SettingsViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 
     fun importFromUri(uri: Uri, onSuccess: () -> Unit, onError: () -> Unit) {
         _state.value = _state.value.copy(isImporting = true)
         viewModelScope.launch {
+        try {
             val ok = backupManager.importFromUri(uri)
             _state.value = _state.value.copy(isImporting = false)
             if (ok) onSuccess() else onError()
+        } catch (e: Exception) {
+            Log.e("SettingsViewModel", "Error in launch block", e)
+            // Optionally update state to show error
         }
+    }
     }
 }

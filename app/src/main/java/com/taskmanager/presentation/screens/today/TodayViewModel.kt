@@ -28,6 +28,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import javax.inject.Inject
+import android.util.Log
 
 data class TodayUiState(
     val tasksForToday: List<Task> = emptyList(),
@@ -72,7 +73,13 @@ class TodayViewModel @Inject constructor(
     init {
         observeTodayData()
         viewModelScope.launch {
-            taskRepository.getInboxTasks().collect { _inboxTasks.value = it.take(3) }
+        try {
+            taskRepository.getInboxTasks().collect { _inboxTasks.value = it.take(3)
+        } catch (e: Exception) {
+            Log.e("TodayViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
         }
     }
 
@@ -142,7 +149,13 @@ class TodayViewModel @Inject constructor(
         }.stateIn(viewModelScope, SharingStarted.Lazily, TodayUiState(isLoading = true))
             .let { flow ->
                 viewModelScope.launch {
-                    flow.collect { _state.value = it }
+        try {
+            flow.collect { _state.value = it
+        } catch (e: Exception) {
+            Log.e("TodayViewModel", "Error in launch block", e)
+            // Optionally update state to show error
+        }
+    }
                 }
             }
     }

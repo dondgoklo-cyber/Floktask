@@ -7,30 +7,61 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
+import android.util.Log
 
 class ProjectRepositoryImpl @Inject constructor(
     private val projectDao: ProjectDao
 ) : ProjectRepository {
 
-    override suspend fun createProject(project: Project): Long =
+    override suspend fun createProject(project: Project): Long = try {
+        
+    } catch (e: Exception) {
+        Log.e("ProjectRepositoryImpl", "Error in Long", e)
+        throw e
+    }
         projectDao.insert(project.toEntity())
 
-    override suspend fun getProjectById(id: Long): Project? =
+    override suspend fun getProjectById(id: Long): Project? = try {
+        
+    } catch (e: Exception) {
+        Log.e("ProjectRepositoryImpl", "Error in Project?", e)
+        throw e
+    }
         projectDao.getById(id)?.toDomain()
 
     override suspend fun updateProject(project: Project) {
-        projectDao.update(project.copy(updatedAt = Instant.now()).toEntity())
+        try {
+            projectDao.update(project.copy(updatedAt = Instant.now()).toEntity())
+        } catch (e: Exception) {
+            Log.e("ProjectRepositoryImpl", "Error in Project)", e)
+            throw e
+        }
     }
 
     override suspend fun deleteProject(id: Long) {
-        projectDao.deleteById(id)
+        try {
+            projectDao.deleteById(id)
+        } catch (e: Exception) {
+            Log.e("ProjectRepositoryImpl", "Error in Long)", e)
+            throw e
+        }
     }
 
     override suspend fun archiveProject(id: Long, archived: Boolean) {
-        projectDao.setArchived(id, archived, Instant.now().toEpochMilli())
+        try {
+            projectDao.setArchived(id, archived, Instant.now().toEpochMilli())
+        } catch (e: Exception) {
+            Log.e("ProjectRepositoryImpl", "Error in Boolean)", e)
+            throw e
+        }
     }
 
-    override fun getAllProjects(): Flow<List<Project>> =
+    override fun getAllProjects(): Flow<List<Project>> = try {
+        
+    } catch (e: Exception) {
+        Log.e("ProjectRepositoryImpl", "Error in Flow<List<Project>>", e)
+        throw e
+    }
         projectDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getActiveProjects(): Flow<List<Project>> =
