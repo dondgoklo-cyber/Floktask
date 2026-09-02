@@ -2,6 +2,7 @@ package com.taskmanager.data.repository
 
 import com.taskmanager.data.local.entity.GoalEntity
 import com.taskmanager.domain.model.Goal
+import java.math.BigDecimal
 
 fun Goal.toEntity(): GoalEntity = GoalEntity(
     id = id ?: 0,

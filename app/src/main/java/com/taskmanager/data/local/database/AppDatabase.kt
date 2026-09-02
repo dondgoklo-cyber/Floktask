@@ -54,7 +54,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         GoalEntity::class,
         TaskTagEntity::class
     ],
-    version = 13,
+    version = 14,
     exportSchema = false
 )
 @androidx.room.TypeConverters(BigDecimalConverters::class)

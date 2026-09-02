@@ -2,6 +2,7 @@ package com.taskmanager.data.repository
 
 import com.taskmanager.data.local.entity.AccountEntity
 import com.taskmanager.domain.model.Account
+import java.math.BigDecimal
 
 fun Account.toEntity(): AccountEntity = AccountEntity(
     id = id ?: 0,

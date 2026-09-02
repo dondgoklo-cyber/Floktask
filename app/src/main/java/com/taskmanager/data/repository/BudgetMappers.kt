@@ -2,6 +2,7 @@ package com.taskmanager.data.repository
 
 import com.taskmanager.data.local.entity.BudgetEntity
 import com.taskmanager.domain.model.Budget
+import java.math.BigDecimal
 
 fun Budget.toEntity(): BudgetEntity = BudgetEntity(
     id = id ?: 0,

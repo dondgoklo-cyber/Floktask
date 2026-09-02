@@ -3,6 +3,7 @@ package com.taskmanager.data.repository
 import com.taskmanager.data.local.entity.TransactionEntity
 import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
+import java.math.BigDecimal
 import java.time.Instant
 
 fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
