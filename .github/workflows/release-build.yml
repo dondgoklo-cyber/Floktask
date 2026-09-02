@@ -1,0 +1,99 @@
+name: Release APK Build
+
+# Собирает Release APK при создании тега v*
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.2.0)'
+        required: true
+        default: '1.2.0'
+
+concurrency:
+  group: release-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.4
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease --stacktrace --no-daemon
+        env:
+          GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g"
+          SIGNING_KEY: ${{ secrets.ANDROID_SIGNING_KEY }}
+          SIGNING_ALIAS: ${{ secrets.ANDROID_SIGNING_ALIAS }}
+          SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
+
+      - name: Verify APK exists
+        run: |
+          if [ ! -f app/build/outputs/apk/release/app-release.apk ]; then
+            echo "::error::Release APK not found!"
+            exit 1
+          fi
+
+      - name: Rename APK
+        run: |
+          VERSION=${{ github.event.inputs.version || github.ref_name }}
+          APK_NAME="Floktask-${VERSION}-release.apk"
+          mkdir -p release
+          cp app/build/outputs/apk/release/app-release.apk "release/${APK_NAME}"
+          echo "APK_NAME=${APK_NAME}" >> $GITHUB_ENV
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Floktask-Release-APK-${{ env.APK_NAME }}
+          path: release/${{ env.APK_NAME }}
+          retention-days: 365
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name || format('v{0}', github.event.inputs.version) }}
+          name: Floktask ${{ github.ref_name || format('v{0}', github.event.inputs.version) }}
+          body: |
+            ## 📦 Floktask Release ${{ github.ref_name || format('v{0}', github.event.inputs.version) }}
+            
+            ### What's New:
+            - Full task management with Eisenhower Matrix
+            - Kanban board with drag & drop
+            - Habits tracking with streaks
+            - Voice input support
+            - Dark theme support
+            - Subprojects hierarchy (2-3 levels)
+            - Haptic feedback for all actions
+            
+            ### Download:
+            [Floktask-${{ env.APK_NAME }}](${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name || format('v{0}', github.event.inputs.version) }}/${{ env.APK_NAME }})
+            
+            ### Install:
+            1. Download APK
+            2. Open on Android 7.0+
+            3. Allow installation from unknown sources
+          prerelease: false
+          files: release/${{ env.APK_NAME }}
+          fail_on_unmatched_files: false

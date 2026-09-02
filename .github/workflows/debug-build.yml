@@ -1,0 +1,80 @@
+name: Debug APK Build
+
+# Собирает Debug APK при каждом коммите в main
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: debug-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Полная история для тегов
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.4
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        env:
+          GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g"
+
+      - name: Rename APK with timestamp
+        run: |
+          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          APK_NAME="Floktask-v${{ github.run_number }}-debug-${TIMESTAMP}.apk"
+          mkdir -p release
+          cp app/build/outputs/apk/debug/app-debug.apk "release/${APK_NAME}"
+          echo "APK_NAME=${APK_NAME}" >> $GITHUB_ENV
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Floktask-Debug-APK
+          path: release/${{ env.APK_NAME }}
+          retention-days: 7
+          compression-level: 0  # Без сжатия для быстрой загрузки
+
+      - name: Create short commit info
+        id: commit-info
+        run: |
+          SHORT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%s | head -c 50)
+          echo "short_hash=${SHORT_HASH}" >> $GITHUB_OUTPUT
+          echo "commit_msg=${COMMIT_MSG}" >> $GITHUB_OUTPUT
+
+      - name: Upload to GitHub Release (optional)
+        uses: softprops/action-gh-release@v2
+        if: success()
+        with:
+          tag_name: nightly-${{ github.run_number }}
+          name: Floktask Debug Build #${{ github.run_number }}
+          body: |
+            **Commit:** ${{ steps.commit-info.outputs.short_hash }}
+            **Message:** ${{ steps.commit-info.outputs.commit_msg }}
+            **Build:** Debug
+            **Timestamp:** $(date)
+            
+            [Download APK](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          prerelease: true
+          files: release/${{ env.APK_NAME }}
+          fail_on_unmatched_files: false
