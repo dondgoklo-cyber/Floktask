@@ -19,26 +19,24 @@ class TaskRepositoryImpl @Inject constructor(
 ) : TaskRepository {
 
     override suspend fun createTask(task: Task): Long = try {
-        
+        taskDao.insert(task.toEntity())
     } catch (e: Exception) {
         Log.e("TaskRepositoryImpl", "Error in Long", e)
         throw e
     }
-        taskDao.insert(task.toEntity())
 
     override suspend fun getTaskById(id: Long): Task? = try {
-        
+        taskDao.getById(id)?.toDomain()
     } catch (e: Exception) {
         Log.e("TaskRepositoryImpl", "Error in Task?", e)
         throw e
     }
-        taskDao.getById(id)?.toDomain()
 
     override suspend fun updateTask(task: Task) {
         try {
             taskDao.update(task.copy(updatedAt = Instant.now()).toEntity())
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in Task)", e)
+            Log.e("TaskRepositoryImpl", "Error in Task", e)
             throw e
         }
     }
@@ -47,7 +45,7 @@ class TaskRepositoryImpl @Inject constructor(
         try {
             taskDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in Long)", e)
+            Log.e("TaskRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -56,18 +54,17 @@ class TaskRepositoryImpl @Inject constructor(
         try {
             taskDao.setCompleted(id, completed, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in Boolean)", e)
+            Log.e("TaskRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
 
     override fun getAllTasks(): Flow<List<Task>> = try {
-        
+        taskDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("TaskRepositoryImpl", "Error in Flow<List<Task>>", e)
         throw e
     }
-        taskDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getTasksByProject(projectId: Long): Flow<List<Task>> =
         taskDao.getByProject(projectId).map { list -> list.map { it.toDomain() } }
@@ -99,21 +96,20 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun setTaskTags(taskId: Long, tagIds: List<Long>) {
         try {
             taskTagDao.deleteByTaskId(taskId)
-        taskTagDao.insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it)
+            taskTagDao.insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it) })
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in List<Long>)", e)
+            Log.e("TaskRepositoryImpl", "Error in List<Long>", e)
             throw e
         }
-    })
     }
 
     override suspend fun getTaskTags(taskId: Long): List<String> {
         val tagIds = try {
-        taskTagDao.getTagIdsForTask(taskId)
-    } catch (e: Exception) {
-        Log.e("TaskRepositoryImpl", "Error in tagIds", e)
-        throw e
-    }
+            taskTagDao.getTagIdsForTask(taskId)
+        } catch (e: Exception) {
+            Log.e("TaskRepositoryImpl", "Error in tagIds", e)
+            throw e
+        }
         return tagIds.mapNotNull { id -> tagDao.getById(id)?.name }
     }
 

@@ -39,71 +39,67 @@ class TaskDetailViewModel @Inject constructor(
 
     fun loadTask(taskId: Long) {
         viewModelScope.launch {
-        try {
-            val task = taskRepository.getTaskById(taskId)
-            val projectName = task?.projectId?.let { projectRepository.getProjectById(it)?.title
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
-            val subtasks = task?.let { subtaskRepository.getSubtaskTree(it.id ?: 0) } ?: emptyList()
-            val relatedNotes = task?.projectId?.let { pid ->
-                noteRepository.getNotesByProject(pid).firstOrNull() ?: emptyList()
-            } ?: emptyList()
-            _state.value = TaskDetailState(
-                task = task,
-                projectName = projectName,
-                subtasks = subtasks,
-                relatedNotes = relatedNotes,
-                isLoading = false
-            )
+            try {
+                val task = taskRepository.getTaskById(taskId)
+                val projectName = task?.projectId?.let { projectRepository.getProjectById(it)?.title }
+                val subtasks = task?.let { subtaskRepository.getSubtaskTree(it.id ?: 0) } ?: emptyList()
+                val relatedNotes = task?.projectId?.let { pid ->
+                    noteRepository.getNotesByProject(pid).firstOrNull() ?: emptyList()
+                } ?: emptyList()
+                _state.value = TaskDetailState(
+                    task = task,
+                    projectName = projectName,
+                    subtasks = subtasks,
+                    relatedNotes = relatedNotes,
+                    isLoading = false
+                )
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                _state.value = _state.value.copy(isLoading = false)
+            }
         }
     }
 
     fun toggleComplete(task: Task) {
         viewModelScope.launch {
-        try {
-            val updated = task.copy(isCompleted = !task.isCompleted)
-            taskRepository.updateTask(updated)
-            _state.value = _state.value.copy(task = updated)
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                val updated = task.copy(isCompleted = !task.isCompleted)
+                taskRepository.updateTask(updated)
+                _state.value = _state.value.copy(task = updated)
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
+            }
         }
-    }
     }
 
     fun toggleSubtask(subtask: Subtask) {
         viewModelScope.launch {
-        try {
-            subtaskRepository.setCompleted(subtask.id ?: 0, !subtask.isCompleted)
-            loadSubtasks(subtask.taskId)
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                subtaskRepository.setCompleted(subtask.id ?: 0, !subtask.isCompleted)
+                loadSubtasks(subtask.taskId)
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
+            }
         }
-    }
     }
 
     fun addSubtask(taskId: Long, title: String, parentSubtaskId: Long? = null) {
         if (title.isBlank()) return
         viewModelScope.launch {
-        try {
-            val siblings = if (parentSubtaskId != null) {
-                findAllById(_state.value.subtasks, parentSubtaskId)?.children ?: emptyList()
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    } else {
-                _state.value.subtasks
+            try {
+                val siblings = if (parentSubtaskId != null) {
+                    findAllById(_state.value.subtasks, parentSubtaskId)?.children ?: emptyList()
+                } else {
+                    _state.value.subtasks
+                }
+                val orderIndex = (siblings.maxOfOrNull { it.orderIndex } ?: -1) + 1
+                subtaskRepository.createSubtask(
+                    Subtask(taskId = taskId, title = title.trim(), orderIndex = orderIndex, parentSubtaskId = parentSubtaskId)
+                )
+                loadSubtasks(taskId)
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
             }
-            val orderIndex = (siblings.maxOfOrNull { it.orderIndex } ?: -1) + 1
-            subtaskRepository.createSubtask(
-                Subtask(taskId = taskId, title = title.trim(), orderIndex = orderIndex, parentSubtaskId = parentSubtaskId)
-            )
-            loadSubtasks(taskId)
         }
     }
 
@@ -118,50 +114,46 @@ class TaskDetailViewModel @Inject constructor(
 
     fun deleteSubtask(subtask: Subtask) {
         viewModelScope.launch {
-        try {
-            subtaskRepository.deleteSubtask(subtask.id ?: 0)
-            loadSubtasks(subtask.taskId)
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                subtaskRepository.deleteSubtask(subtask.id ?: 0)
+                loadSubtasks(subtask.taskId)
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
+            }
         }
-    }
     }
 
     fun renameSubtask(subtask: Subtask, newTitle: String) {
         if (newTitle.isBlank()) return
         viewModelScope.launch {
-        try {
-            subtaskRepository.updateSubtask(subtask.copy(title = newTitle.trim()))
-            loadSubtasks(subtask.taskId)
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                subtaskRepository.updateSubtask(subtask.copy(title = newTitle.trim()))
+                loadSubtasks(subtask.taskId)
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
+            }
         }
-    }
     }
 
     fun reorderSubtask(taskId: Long, fromIndex: Int, toIndex: Int) {
         viewModelScope.launch {
-        try {
-            subtaskRepository.reorderSubtasks(taskId, fromIndex, toIndex)
-            loadSubtasks(taskId)
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                subtaskRepository.reorderSubtasks(taskId, fromIndex, toIndex)
+                loadSubtasks(taskId)
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
+            }
         }
-    }
     }
 
     private fun loadSubtasks(taskId: Long) {
         viewModelScope.launch {
-        try {
-            val subtasks = subtaskRepository.getSubtaskTree(taskId)
-            _state.value = _state.value.copy(subtasks = subtasks)
-        } catch (e: Exception) {
-            Log.e("TaskDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                val subtasks = subtaskRepository.getSubtaskTree(taskId)
+                _state.value = _state.value.copy(subtasks = subtasks)
+            } catch (e: Exception) {
+                Log.e("TaskDetailViewModel", "Error in launch block", e)
+            }
         }
-    }
     }
 }
