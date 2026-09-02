@@ -44,9 +44,9 @@ data class TodayUiState(
     val habitsCompleted: Int = 0,
     val habitsTotal: Int = 0,
     val projects: List<Project> = emptyList(),
-    val financeBalance: Double = 0.0,
-    val financeIncome: Double = 0.0,
-    val financeExpense: Double = 0.0,
+    val financeBalance: java.math.BigDecimal = java.math.BigDecimal.ZERO,
+    val financeIncome: java.math.BigDecimal = java.math.BigDecimal.ZERO,
+    val financeExpense: java.math.BigDecimal = java.math.BigDecimal.ZERO,
     val recentTransactions: List<Transaction> = emptyList(),
     val recentNotes: List<Note> = emptyList(),
     val inboxTasks: List<Task> = emptyList(),
@@ -181,8 +181,8 @@ class TodayViewModel @Inject constructor(
 }
 
 private data class DashboardFinanceData(
-    val income: Double,
-    val expense: Double,
+    val income: java.math.BigDecimal,
+    val expense: java.math.BigDecimal,
     val recentTx: List<Transaction>,
     val recentNotes: List<Note>
 )

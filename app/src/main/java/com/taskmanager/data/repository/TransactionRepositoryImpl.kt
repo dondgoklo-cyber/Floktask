@@ -5,6 +5,7 @@ import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -31,16 +32,16 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getRecentTransactions(limit: Int): Flow<List<Transaction>> =
         transactionDao.getRecent(limit).map { list -> list.map { it.toDomain() } }
 
-    override fun getIncomeForPeriod(fromEpoch: Long, toEpoch: Long): Flow<Double> =
+    override fun getIncomeForPeriod(fromEpoch: Long, toEpoch: Long): Flow<BigDecimal> =
         transactionDao.getIncomeForPeriod(fromEpoch, toEpoch)
 
-    override fun getExpenseForPeriod(fromEpoch: Long, toEpoch: Long): Flow<Double> =
+    override fun getExpenseForPeriod(fromEpoch: Long, toEpoch: Long): Flow<BigDecimal> =
         transactionDao.getExpenseForPeriod(fromEpoch, toEpoch)
 
-    override fun getTotalIncome(): Flow<Double> =
+    override fun getTotalIncome(): Flow<BigDecimal> =
         transactionDao.getTotalIncome()
 
-    override fun getTotalExpense(): Flow<Double> =
+    override fun getTotalExpense(): Flow<BigDecimal> =
         transactionDao.getTotalExpense()
 
     override fun getTotalIncomeByCurrency(): Flow<List<com.taskmanager.data.local.dao.CurrencyTotal>> =

@@ -1,5 +1,7 @@
 package com.taskmanager.presentation.screens.finance
 
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 
 /** Поддерживаемые валюты в приложении. */
@@ -15,27 +17,27 @@ fun currencySymbol(currency: String): String = when (currency) {
 }
 
 /** Форматирует сумму: 125400.0 → "125 400 ₽" */
-fun formatMoney(amount: Double, currency: String = "RUB"): String {
+fun formatMoney(amount: BigDecimal, currency: String = "RUB"): String {
     val symbol = currencySymbol(currency)
     val formatter = DecimalFormat("#,###")
-    val formatted = formatter.format(kotlin.math.abs(amount)).replace(",", " ")
-    val sign = if (amount < 0) "-" else ""
+    val formatted = formatter.format(amount.abs()).replace(",", " ")
+    val sign = if (amount < BigDecimal.ZERO) "-" else ""
     return "$sign$formatted $symbol"
 }
 
 /** Форматирует сумму с + знаком для доходов: 180000.0 → "+180 000 ₽" */
-fun formatSignedMoney(amount: Double, currency: String = "RUB"): String {
+fun formatSignedMoney(amount: BigDecimal, currency: String = "RUB"): String {
     val symbol = currencySymbol(currency)
     val formatter = DecimalFormat("#,###")
-    val formatted = formatter.format(kotlin.math.abs(amount)).replace(",", " ")
-    val sign = if (amount >= 0) "+" else "-"
+    val formatted = formatter.format(amount.abs()).replace(",", " ")
+    val sign = if (amount >= BigDecimal.ZERO) "+" else "-"
     return "$sign$formatted $symbol"
 }
 
 /**
- * Конвертирует сумму из одной валюты в другую используя ExchangeRateProvider.
+ * Конвертирует сумму из одной валюты в другую, используя ExchangeRateProvider.
  */
-fun convertMoney(amount: Double, fromCurrency: String, toCurrency: String, rate: Double): Double {
+fun convertMoney(amount: BigDecimal, fromCurrency: String, toCurrency: String, rate: BigDecimal): BigDecimal {
     if (fromCurrency == toCurrency) return amount
-    return amount * rate
+    return amount.multiply(rate).setScale(2, RoundingMode.HALF_EVEN)
 }

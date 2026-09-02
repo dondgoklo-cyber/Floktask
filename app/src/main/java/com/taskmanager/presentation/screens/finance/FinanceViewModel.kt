@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -49,34 +50,34 @@ data class TransactionGroup(
 data class CategoryExpense(
     val categoryName: String,
     val categoryColor: String?,
-    val total: Double
+    val total: BigDecimal
 )
 
 data class AccountBalance(
     val currency: String,
-    val balance: Double,
-    val convertedBalance: Double
+    val balance: BigDecimal,
+    val convertedBalance: BigDecimal
 )
 
 data class FinanceUiState(
-    val balance: Double = 0.0,
-    val balanceInBaseCurrency: Double = 0.0,
+    val balance: BigDecimal = BigDecimal.ZERO,
+    val balanceInBaseCurrency: BigDecimal = BigDecimal.ZERO,
     val balancesByCurrency: List<AccountBalance> = emptyList(),
     val baseCurrency: String = "RUB",
-    val periodIncome: Double = 0.0,
-    val periodExpense: Double = 0.0,
-    val net: Double = 0.0,
+    val periodIncome: BigDecimal = BigDecimal.ZERO,
+    val periodExpense: BigDecimal = BigDecimal.ZERO,
+    val net: BigDecimal = BigDecimal.ZERO,
     val transactions: List<Transaction> = emptyList(),
     val groupedTransactions: List<TransactionGroup> = emptyList(),
     val categoryExpenses: List<CategoryExpense> = emptyList(),
     val largestExpense: Transaction? = null,
-    val avgDailySpending: Double = 0.0,
-    val avgMonthlySpending: Double = 0.0,
+    val avgDailySpending: BigDecimal = BigDecimal.ZERO,
+    val avgMonthlySpending: BigDecimal = BigDecimal.ZERO,
     val topIncomeSource: String? = null,
-    val savingsRate: Double = 0.0,
+    val savingsRate: BigDecimal = BigDecimal.ZERO,
     val budgets: List<Pair<Category, Budget>> = emptyList(),
     val goals: List<Goal> = emptyList(),
-    val dailyBalances: List<Double> = emptyList(),
+    val dailyBalances: List<BigDecimal> = emptyList(),
     val accounts: List<Account> = emptyList(),
     val categories: List<Category> = emptyList(),
     val currency: String = "RUB",
@@ -219,7 +220,7 @@ class FinanceViewModel @Inject constructor(
     }
 
     fun createTransaction(
-        amount: Double,
+        amount: BigDecimal,
         type: TransactionType,
         currency: String,
         categoryId: Long?,
@@ -248,7 +249,7 @@ class FinanceViewModel @Inject constructor(
         }
     }
 
-    fun createGoal(title: String, targetAmount: Double, currency: String) {
+    fun createGoal(title: String, targetAmount: java.math.BigDecimal, currency: String) {
         viewModelScope.launch {
             goalRepository.createGoal(Goal(title = title, targetAmount = targetAmount, currency = currency))
         }
@@ -260,7 +261,7 @@ class FinanceViewModel @Inject constructor(
         }
     }
 
-    fun setBudget(categoryId: Long, amount: Double, currency: String) {
+    fun setBudget(categoryId: Long, amount: java.math.BigDecimal, currency: String) {
         viewModelScope.launch {
             budgetRepository.upsertBudget(Budget(categoryId = categoryId, amount = amount, currency = currency))
         }
@@ -291,10 +292,10 @@ class FinanceViewModel @Inject constructor(
     private fun buildDailyBalances(
         transactions: List<Transaction>,
         zone: ZoneId
-    ): List<Double> {
+    ): List<BigDecimal> {
         val sorted = transactions.sortedBy { it.date }
-        var running = 0.0
-        val result = mutableListOf<Double>()
+        var running = BigDecimal.ZERO
+        val result = mutableListOf<BigDecimal>()
         var currentDate: LocalDate? = null
         
         for (tx in sorted) {

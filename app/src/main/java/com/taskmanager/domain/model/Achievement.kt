@@ -33,16 +33,16 @@ object Achievements {
     )
 
     fun byId(id: String): Achievement? = all.firstOrNull { it.id == id }
-}
 
-/** Points needed to reach a given level (cumulative). */
-fun pointsForLevel(level: Int): Long = when {
-    level <= 1 -> 0
-    else -> 100L * (level - 1) * level / 2
-}
+    /** Points needed to reach a given level (cumulative). */
+    private fun pointsForLevel(level: Int): Long = when {
+        level <= 1 -> 0
+        else -> 100L * (level - 1) * level / 2
+    }
 
-fun levelFromPoints(points: Long): Int {
-    var level = 1
-    while (points >= pointsForLevel(level + 1)) level++
-    return level
+    private fun levelFromPoints(points: Long): Int {
+        var level = 1
+        while (points >= pointsForLevel(level + 1)) level++
+        return level
+    }
 }

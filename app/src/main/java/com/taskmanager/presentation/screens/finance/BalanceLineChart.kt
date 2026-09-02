@@ -12,40 +12,51 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Stroke
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.taskmanager.presentation.screens.finance.formatMoney
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import java.math.BigDecimal
 
 /**
  * Line chart для баланса на Compose Canvas.
- * Показывает изменение баланса по дням за выбранный период.
+ * Показывает изменение баланса за выбранный период по дням.
  */
 @Composable
 fun BalanceLineChart(
-    dailyBalances: List<Double>,
+    dailyBalances: List<BigDecimal>,
     currency: String = "RUB",
     modifier: Modifier = Modifier
 ) {
     if (dailyBalances.size < 2) return
 
-    val maxValue = (dailyBalances.maxOrNull() ?: 0.0).coerceAtLeast(1.0)
-    val minValue = (dailyBalances.minOrNull() ?: 0.0).coerceAtMost(0.0)
-    val range = (maxValue - minValue).coerceAtLeast(1.0)
+    val maxValue = (dailyBalances.maxOrNull() ?: BigDecimal.ZERO).coerceAtLeast(BigDecimal.ONE)
+    val minValue = (dailyBalances.minOrNull() ?: BigDecimal.ZERO).coerceAtMost(BigDecimal.ZERO)
+    val range = (maxValue - minValue).coerceAtLeast(BigDecimal.ONE)
     
-    val lineColor = AppTheme.colors.primary
-    val gradientColor = AppTheme.colors.primary
-    val trackColor = AppTheme.colors.surfaceVariant
+    val points = mutableListOf<Offset>()
+    val textOffsets = mutableListOf<Offset>()
+
+    dailyBalances.forEachIndexed { index, balance ->
+        val x = (index.toFloat() / (dailyBalances.size - 1)) * size.width
+        val y = size.height - ((balance.toDouble() - minValue.toDouble()) / range.toDouble() * size.height).toFloat()
+        points.add(Offset(x, y))
+        textOffsets.add(Offset(x, y - 30f))
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -54,84 +65,96 @@ fun BalanceLineChart(
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(Spacing.lg)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Spacing.lg),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Баланс по дням",
+                "Динамика баланса",
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(Spacing.md))
 
-            val safeLineColor = lineColor
-            val safeGradientColor = gradientColor
-            val safeTrackColor = trackColor
-            val safeMin = minValue
-            val safeRange = range
-            
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(RoundedCornerShape(Radius.md))
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(Radius.sm))
             ) {
-                val w = size.width
-                val h = size.height
-                val stepX = if (dailyBalances.size > 1) w / (dailyBalances.size - 1) else w
+                val canvasSize = size
+                if (points.isNotEmpty()) {
+                    // Draw line
+                    val path = Path().apply {
+                        moveTo(points[0].x, points[0].y)
+                        for (i in 1 until points.size) {
+                            lineTo(points[i].x, points[i].y)
+                        }
+                    }
 
-                // Zero line
-                val zeroY = h - ((0 - safeMin) / safeRange).toFloat() * h
-                if (zeroY in 0f..h) {
-                    drawLine(
-                        color = safeTrackColor,
-                        start = Offset(0f, zeroY),
-                        end = Offset(w, zeroY),
-                        strokeWidth = 1f
+                    drawPath(
+                        path = path,
+                        color = AppTheme.colors.primary,
+                        style = Stroke(width = 4f, cap = StrokeCap.Round)
                     )
-                }
 
-                // Build path
-                val path = Path()
-                dailyBalances.forEachIndexed { index, value ->
-                    val x = index * stepX
-                    val y = h - ((value - safeMin) / safeRange).toFloat() * h
-                    if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
-                }
+                    // Draw fill
+                    val fillPath = Path().apply {
+                        moveTo(points[0].x, points[0].y)
+                        for (i in 1 until points.size) {
+                            lineTo(points[i].x, points[i].y)
+                        }
+                        lineTo(points.last().x, size.height)
+                        lineTo(points[0].x, size.height)
+                        close()
+                    }
 
-                // Draw line
-                drawPath(
-                    path = path,
-                    color = safeLineColor,
-                    style = Stroke(width = 3f, cap = StrokeCap.Round)
-                )
-
-                // Fill area under curve
-                val fillPath = Path()
-                dailyBalances.forEachIndexed { index, value ->
-                    val x = index * stepX
-                    val y = h - ((value - safeMin) / safeRange).toFloat() * h
-                    if (index == 0) fillPath.moveTo(x, y) else fillPath.lineTo(x, y)
-                }
-                fillPath.lineTo(w, h)
-                fillPath.lineTo(0f, h)
-                fillPath.close()
-
-                drawPath(
-                    path = fillPath,
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            safeGradientColor.copy(alpha = 0.2f),
-                            Color.Transparent
+                    drawPath(
+                        path = fillPath,
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                AppTheme.colors.primary.copy(alpha = 0.3f),
+                                AppTheme.colors.primary.copy(alpha = 0.0f)
+                            ),
+                            startY = points.last().y,
+                            endY = size.height
                         )
                     )
-                )
+
+                    // Draw points
+                    points.forEach { offset ->
+                        drawCircle(
+                            color = AppTheme.colors.primary,
+                            radius = 6f,
+                            center = offset
+                        )
+                    }
+
+                    // Draw value labels
+                    points.forEachIndexed { index, offset ->
+                        val balance = dailyBalances[index]
+                        drawContext.canvas.nativeCanvas.apply {
+                            drawText(
+                                formatMoney(balance, currency),
+                                offset.x,
+                                offset.y - 10f,
+                                android.graphics.Paint().apply {
+                                    textSize = 30f
+                                    color = android.graphics.Color.WHITE
+                                    textAlign = android.graphics.Paint.Align.CENTER
+                                }
+                            )
+                        }
+                    }
+                }
             }
-            
-            Spacer(Modifier.height(Spacing.xs))
+
+            Spacer(Modifier.height(Spacing.sm))
             Text(
-                "Текущий: ${formatMoney(dailyBalances.last(), currency)}",
+                "Свайпните для деталей →",
                 style = MaterialTheme.typography.bodySmall,
-                color = AppTheme.colors.onSurfaceVariant
+                color = AppTheme.colors.textSecondary
             )
         }
     }

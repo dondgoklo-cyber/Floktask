@@ -246,6 +246,19 @@ class TaskEditViewModel @Inject constructor(
      */
     private fun combineDateTime(state: TaskFormState): Pair<Instant?, Instant?> =
         combineTaskDateTime(state, ZoneId.systemDefault())
+
+        private fun combineTaskDateTime(state: TaskFormState, zone: ZoneId): Pair<Instant?, Instant?> {
+        if (state.deadlineDate == null) return null to null
+
+        val deadlineInstant = state.deadlineDate
+            .atTime(LocalTime.of(23, 59, 59, 999_999_999))
+            .atZone(zone)
+            .toInstant()
+        val startInstant = state.startTime?.let { time ->
+            state.deadlineDate.atTime(time).atZone(zone).toInstant()
+        }
+        return deadlineInstant to startInstant
+    }
 }
 
 data class TaskFormState(
@@ -277,15 +290,4 @@ data class TaskFormState(
  * BUGFIX: ранее при заданном времени deadline и startTime получали один и тот же Instant,
  * из-за чего startTime никогда не был раньше deadline. Теперь они разделены.
  */
-fun combineTaskDateTime(state: TaskFormState, zone: ZoneId): Pair<Instant?, Instant?> {
-    if (state.deadlineDate == null) return null to null
 
-    val deadlineInstant = state.deadlineDate
-        .atTime(LocalTime.of(23, 59, 59, 999_999_999))
-        .atZone(zone)
-        .toInstant()
-    val startInstant = state.startTime?.let { time ->
-        state.deadlineDate.atTime(time).atZone(zone).toInstant()
-    }
-    return deadlineInstant to startInstant
-}

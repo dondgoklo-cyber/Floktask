@@ -43,7 +43,7 @@ object DatabaseModule {
     )
         .addMigrations(*Migrations.ALL)
         // Только при откате версии разрешаем пересоздание; upgrade всегда идёт через миграции.
-        .fallbackToDestructiveMigrationOnDowngrade()
+        .fallbackToDestructiveMigration()
         .build()
 
     @Provides

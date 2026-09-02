@@ -1,29 +1,30 @@
 package com.taskmanager.data.repository
 
 import com.taskmanager.domain.finance.ExchangeRateProvider
+import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Локальный (mock) провайдер курсов валют.
- * Содержит приближённые курсы относительно RUB.
- * Позже можно заменить на API-провайдер без изменения интерфейса.
+ * Содержит фиксированные курсы относительно RUB.
+ * Позже можно заменить на API-провайдер без изменений интерфейса.
  */
 @Singleton
 class LocalExchangeRateProvider @Inject constructor() : ExchangeRateProvider {
 
     // Курсы относительно RUB (1 unit = X RUB)
     private val ratesToRUB = mapOf(
-        "RUB" to 1.0,
-        "USD" to 90.0,
-        "EUR" to 100.0,
-        "GBP" to 115.0
+        "RUB" to BigDecimal.ONE,
+        "USD" to BigDecimal("90.0"),
+        "EUR" to BigDecimal("100.0"),
+        "GBP" to BigDecimal("115.0")
     )
 
-    override fun getRate(fromCurrency: String, toCurrency: String): Double {
-        if (fromCurrency == toCurrency) return 1.0
-        val fromRate = ratesToRUB[fromCurrency] ?: 1.0
-        val toRate = ratesToRUB[toCurrency] ?: 1.0
-        return fromRate / toRate
+    override fun getRate(fromCurrency: String, toCurrency: String): BigDecimal {
+        if (fromCurrency == toCurrency) return BigDecimal.ONE
+        val fromRate = ratesToRUB[fromCurrency] ?: BigDecimal.ONE
+        val toRate = ratesToRUB[toCurrency] ?: BigDecimal.ONE
+        return fromRate.divide(toRate, 10, java.math.RoundingMode.HALF_EVEN)
     }
 }

@@ -39,6 +39,14 @@ class ProfileViewModel @Inject constructor(
         Achievements.all.map { ach ->
             AchievementDisplay(ach, ach.id in unlockedIds)
         }
+
+        private fun progressToNextLevel(stats: UserStats): Pair<Long, Long> {
+        val currentLevelBase = pointsForLevel(stats.level)
+        val nextLevelBase = pointsForLevel(stats.level + 1)
+        val span = nextLevelBase - currentLevelBase
+        val into = stats.totalPoints - currentLevelBase
+        return into to span
+    }
 }
 
 sealed class ProfileState {
@@ -52,10 +60,4 @@ data class AchievementDisplay(
     val unlocked: Boolean
 )
 
-fun progressToNextLevel(stats: UserStats): Pair<Long, Long> {
-    val currentLevelBase = pointsForLevel(stats.level)
-    val nextLevelBase = pointsForLevel(stats.level + 1)
-    val span = nextLevelBase - currentLevelBase
-    val into = stats.totalPoints - currentLevelBase
-    return into to span
-}
+

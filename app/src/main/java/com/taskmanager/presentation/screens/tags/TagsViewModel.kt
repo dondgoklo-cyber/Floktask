@@ -113,15 +113,20 @@ class TagsViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
+
+        private fun colorToHex(color: Color): String {
+        val r = (color.red * 255).toInt()
+        val g = (color.green * 255).toInt()
+        val b = (color.blue * 255).toInt()
+        return String.format("#%02X%02X%02X", r, g, b)
+    }
+
+        private fun isPaletteColor(color: Color): Boolean = TAG_COLORS.any { it == color }
+
+        private fun isPaletteColor(color: Color): Boolean = TAG_COLORS.any { it == color }
 }
 
 /** Преобразует Color в hex-строку без альфа-канала (#RRGGBB) для хранения в БД. */
-fun colorToHex(color: Color): String {
-    val r = (color.red * 255).toInt()
-    val g = (color.green * 255).toInt()
-    val b = (color.blue * 255).toInt()
-    return String.format("#%02X%02X%02X", r, g, b)
-}
+
 
 /** Проверяет, входит ли цвет в стандартную палитру тегов. */
-fun isPaletteColor(color: Color): Boolean = TAG_COLORS.any { it == color }

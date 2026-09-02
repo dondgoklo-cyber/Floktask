@@ -72,7 +72,7 @@ fun AddTransactionSheet(
     categories: List<Category>,
     accounts: List<Account>,
     onDismiss: () -> Unit,
-    onCreate: (Double, TransactionType, String, Long?, Long?, Instant, String?) -> Unit,
+    onCreate: (java.math.BigDecimal, TransactionType, String, Long?, Long?, Instant, String?) -> Unit,
     initialType: TransactionType = TransactionType.EXPENSE,
     editingTransaction: com.taskmanager.domain.model.Transaction? = null
 ) {
@@ -231,14 +231,14 @@ fun AddTransactionSheet(
             PrimaryButton(
                 text = stringResource(R.string.save),
                 onClick = {
-                    val amount = amountText.toDoubleOrNull() ?: 0.0
-                    if (amount > 0) {
+                    val amount = amountText.toDoubleOrNull()?.let { java.math.BigDecimal.valueOf(it) } ?: java.math.BigDecimal.ZERO
+                    if (amount > java.math.BigDecimal.ZERO) {
                         val instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant()
                         onCreate(amount, type, selectedCurrency, selectedCategoryId, selectedAccountId, instant, note)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = amountText.toDoubleOrNull()?.let { it > 0 } == true
+                enabled = amountText.toDoubleOrNull()?.let { java.math.BigDecimal.valueOf(it) > java.math.BigDecimal.ZERO } == true
             )
 
             Spacer(Modifier.height(Spacing.sm))

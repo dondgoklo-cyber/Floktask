@@ -341,7 +341,7 @@ fun FinanceScreen(
 
 @Composable
 private fun BalanceCard(
-    balance: Double,
+    balance: java.math.BigDecimal,
     currency: String,
     balancesByCurrency: List<AccountBalance> = emptyList()
 ) {
@@ -420,7 +420,7 @@ private fun PeriodSelector(
 }
 
 @Composable
-private fun PeriodSummary(income: Double, expense: Double, net: Double, currency: String) {
+private fun PeriodSummary(income: java.math.BigDecimal, expense: java.math.BigDecimal, net: java.math.BigDecimal, currency: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),

@@ -37,16 +37,16 @@ interface TransactionDao {
 
     // TRANSFER excluded from income/expense calculations
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'INCOME' AND date BETWEEN :from AND :to")
-    fun getIncomeForPeriod(from: Long, to: Long): Flow<Double>
+    fun getIncomeForPeriod(from: Long, to: Long): Flow<java.math.BigDecimal>
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'EXPENSE' AND date BETWEEN :from AND :to")
-    fun getExpenseForPeriod(from: Long, to: Long): Flow<Double>
+    fun getExpenseForPeriod(from: Long, to: Long): Flow<java.math.BigDecimal>
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'INCOME'")
-    fun getTotalIncome(): Flow<Double>
+    fun getTotalIncome(): Flow<java.math.BigDecimal>
 
     @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'EXPENSE'")
-    fun getTotalExpense(): Flow<Double>
+    fun getTotalExpense(): Flow<java.math.BigDecimal>
 
     // Per-currency queries for multi-currency dashboard
     @Query("SELECT currency, COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'INCOME' GROUP BY currency")
@@ -71,5 +71,5 @@ interface TransactionDao {
 
 data class CurrencyTotal(
     val currency: String,
-    val total: Double
+    val total: java.math.BigDecimal
 )

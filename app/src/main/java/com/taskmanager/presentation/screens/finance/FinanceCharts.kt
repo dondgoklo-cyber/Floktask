@@ -27,6 +27,7 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import java.math.BigDecimal
 
 /**
  * Простой bar chart для Income vs Expenses на Compose Canvas.
@@ -34,14 +35,14 @@ import com.taskmanager.presentation.theme.Spacing
  */
 @Composable
 fun IncomeExpenseBarChart(
-    income: Double,
-    expense: Double,
+    income: BigDecimal,
+    expense: BigDecimal,
     currency: String = "RUB",
     modifier: Modifier = Modifier
 ) {
-    val maxValue = maxOf(income, expense, 1.0)
-    val incomeFraction = (income / maxValue).toFloat().coerceIn(0f, 1f)
-    val expenseFraction = (expense / maxValue).toFloat().coerceIn(0f, 1f)
+    val maxValue = maxOf(income, expense, BigDecimal.ONE)
+    val incomeFraction = (income.toDouble() / maxValue.toDouble()).toFloat().coerceIn(0f, 1f)
+    val expenseFraction = (expense.toDouble() / maxValue.toDouble()).toFloat().coerceIn(0f, 1f)
 
     Card(
         modifier = modifier.fillMaxWidth(),
