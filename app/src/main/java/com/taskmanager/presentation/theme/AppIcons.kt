@@ -17,7 +17,7 @@ object AppIcons {
     // ==================== TODAY SCREEN ICONS ====================
     
     /** Primary icon for Today screen FAB */
-    val TodayFabIcon: ImageVector = Icons.Filled.Add
+    val TodayFabIcon: ImageVector = Icons.Filled.Bolt
     
     /** Alternative icon for Today screen */
     val TodayIcon: ImageVector = Icons.Rounded.Today
@@ -47,12 +47,27 @@ object AppIcons {
     val StreakIcon: ImageVector = Icons.Filled.Whatshot
     
     
+    // ==================== INBOX SCREEN ICONS ====================
+
+    val InboxFabIcon: ImageVector = Icons.Filled.Inbox
+
+    
+    // ==================== UPCOMING SCREEN ICONS ====================
+
+    val UpcomingFabIcon: ImageVector = Icons.Filled.Event
+
+    
     // ==================== PROJECTS SCREEN ICONS ====================
     
     val ProjectsFabIcon: ImageVector = Icons.Filled.CreateNewFolder
     val ProjectsIcon: ImageVector = Icons.Rounded.Folder
     val SubprojectIcon: ImageVector = Icons.Rounded.FolderOpen
     
+    
+    // ==================== PROJECT DETAIL SCREEN ICONS ====================
+
+    val ProjectDetailFabIcon: ImageVector = Icons.Filled.Add
+
     
     // ==================== EISENHOWER SCREEN ICONS ====================
     
@@ -63,6 +78,11 @@ object AppIcons {
     val EliminateIcon: ImageVector = Icons.Filled.Delete
     
     
+    // ==================== CALENDAR SCREEN ICONS ====================
+
+    val CalendarFabIcon: ImageVector = Icons.Filled.CalendarMonth
+
+    
     // ==================== KANBAN SCREEN ICONS ====================
     
     val KanbanFabIcon: ImageVector = Icons.Filled.Add
@@ -70,6 +90,21 @@ object AppIcons {
     val InProgressIcon: ImageVector = Icons.Filled.HourglassHalf
     val DoneIcon: ImageVector = Icons.Filled.CheckCircle
     
+    
+    // ==================== NOTES SCREEN ICONS ====================
+
+    val NotesFabIcon: ImageVector = Icons.Filled.Description
+
+    
+    // ==================== TAGS SCREEN ICONS ====================
+
+    val TagsFabIcon: ImageVector = Icons.Filled.Label
+
+    
+    // ==================== FINANCE SCREEN ICONS ====================
+
+    val FinanceFabIcon: ImageVector = Icons.Filled.AttachMoney
+
     
     // ==================== VOICE INPUT ICONS ====================
     

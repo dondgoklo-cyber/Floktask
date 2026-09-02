@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +20,8 @@ data class InboxUiState(
 
 @HiltViewModel
 class InboxViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     val state: StateFlow<InboxUiState> = taskRepository.getInboxTasks()
@@ -30,5 +32,14 @@ class InboxViewModel @Inject constructor(
         viewModelScope.launch {
             taskRepository.setCompleted(taskId, true)
         }
+    }
+}
+
+
+    /**
+     * Handle FAB long-press for Inbox screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
     }
 }

@@ -94,7 +94,7 @@ fun FinanceScreen(
         floatingActionButton = {
             val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
             AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.FinanceFabIcon,
                 contentDescription = stringResource(R.string.add_transaction),
                 onClick = {
                     haptic(HapticAction.LIGHT)

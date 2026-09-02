@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +32,8 @@ data class CalendarUiState(
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val updateTaskUseCase: UpdateTaskUseCase
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val _viewMode = MutableStateFlow(CalendarViewMode.DAY)
@@ -118,5 +120,14 @@ class CalendarViewModel @Inject constructor(
                 )
             )
         }
+    }
+}
+
+
+    /**
+     * Handle FAB long-press for Calendar screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
     }
 }

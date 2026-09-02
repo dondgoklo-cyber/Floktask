@@ -10,6 +10,7 @@ import com.taskmanager.domain.usecase.tag.GetAllTagsUseCase
 import com.taskmanager.domain.usecase.tag.UpdateTagUseCase
 import com.taskmanager.presentation.components.DEFAULT_TAG_COLOR
 import com.taskmanager.presentation.components.TAG_COLORS
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +43,8 @@ class TagsViewModel @Inject constructor(
     getAllTagsUseCase: GetAllTagsUseCase,
     private val createTagUseCase: CreateTagUseCase,
     private val updateTagUseCase: UpdateTagUseCase,
-    private val deleteTagUseCase: DeleteTagUseCase
+    private val deleteTagUseCase: DeleteTagUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val _tagsState = MutableStateFlow<TagsState>(TagsState.Loading)
@@ -116,3 +118,12 @@ fun colorToHex(color: Color): String {
 
 /** Проверяет, входит ли цвет в стандартную палитру тегов. */
 fun isPaletteColor(color: Color): Boolean = TAG_COLORS.any { it == color }
+
+
+    /**
+     * Handle FAB long-press for Tags screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
+}

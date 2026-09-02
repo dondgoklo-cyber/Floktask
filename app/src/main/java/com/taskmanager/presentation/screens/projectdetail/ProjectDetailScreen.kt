@@ -96,7 +96,7 @@ fun ProjectDetailScreen(
         },
         floatingActionButton = {
             AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.ProjectDetailFabIcon,
                 contentDescription = if (viewMode == ProjectViewMode.NOTES) stringResource(R.string.add_note) else stringResource(R.string.add_task),
                 onClick = {
                     if (viewMode == ProjectViewMode.NOTES) {

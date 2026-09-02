@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ data class UpcomingUiState(
 
 @HiltViewModel
 class UpcomingViewModel @Inject constructor(
-    taskRepository: TaskRepository
+    taskRepository: TaskRepository,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val zone = ZoneId.systemDefault()
@@ -29,4 +31,13 @@ class UpcomingViewModel @Inject constructor(
         .getUpcomingTasks(LocalDate.now().atStartOfDay(zone).toInstant().toEpochMilli())
         .map { tasks -> UpcomingUiState(tasks = tasks, isLoading = false) }
         .stateIn(viewModelScope, SharingStarted.Lazily, UpcomingUiState(isLoading = true))
+}
+
+
+    /**
+     * Handle FAB long-press for Upcoming screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
 }

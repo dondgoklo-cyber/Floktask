@@ -37,7 +37,9 @@ import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.screens.tasks.QuickAddSheet
 import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.AppIcons
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.util.HapticManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +48,7 @@ fun InboxScreen(
     viewModel: InboxViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val hapticManager = viewModel.hapticManager
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
     var showQuickAdd by remember { mutableStateOf(false) }
 
@@ -82,9 +85,11 @@ fun InboxScreen(
         },
         floatingActionButton = {
             com.taskmanager.presentation.components.AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.InboxFabIcon,
                 contentDescription = stringResource(R.string.add_task),
-                onClick = { showQuickAdd = true }
+                onClick = { showQuickAdd = true },
+                onLongClick = viewModel::onFabLongClick,
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

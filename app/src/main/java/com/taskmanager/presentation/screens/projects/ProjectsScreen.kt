@@ -76,7 +76,7 @@ fun ProjectsScreen(
         },
         floatingActionButton = {
             com.taskmanager.presentation.components.AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.ProjectsFabIcon,
                 contentDescription = stringResource(R.string.new_project),
                 onClick = viewModel::openCreateDialog,
                 onLongClick = viewModel::onFabLongClick,

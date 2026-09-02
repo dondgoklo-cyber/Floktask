@@ -56,9 +56,11 @@ import com.taskmanager.presentation.components.TagColorPalette
 import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.components.parseTagColor
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.AppIcons
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.util.HapticManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +70,7 @@ fun TagsScreen(
 ) {
     val state by viewModel.tagsState.collectAsState()
     val dialogState by viewModel.dialogState.collectAsState()
+    val hapticManager = viewModel.hapticManager
     var pendingDeleteTag by remember { mutableStateOf<Tag?>(null) }
 
     Scaffold(
@@ -89,9 +92,11 @@ fun TagsScreen(
         },
         floatingActionButton = {
             AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.TagsFabIcon,
                 contentDescription = stringResource(R.string.new_tag),
-                onClick = viewModel::openCreateDialog
+                onClick = viewModel::openCreateDialog,
+                onLongClick = viewModel::onFabLongClick,
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

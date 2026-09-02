@@ -57,8 +57,10 @@ import com.taskmanager.R
 import com.taskmanager.domain.model.Task
 import com.taskmanager.presentation.components.priorityColor
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.AppIcons
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.util.HapticManager
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -109,9 +111,11 @@ fun CalendarScreen(
         },
         floatingActionButton = {
             com.taskmanager.presentation.components.AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.CalendarFabIcon,
                 contentDescription = stringResource(R.string.add_task),
-                onClick = { showQuickAdd = true }
+                onClick = { showQuickAdd = true },
+                onLongClick = viewModel::onFabLongClick,
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

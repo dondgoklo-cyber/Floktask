@@ -128,7 +128,7 @@ fun NotesScreen(
         },
         floatingActionButton = {
             AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.NotesFabIcon,
                 contentDescription = stringResource(R.string.add_note),
                 onClick = {
                     haptic(HapticAction.LIGHT)
