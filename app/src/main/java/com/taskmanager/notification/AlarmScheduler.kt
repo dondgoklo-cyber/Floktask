@@ -26,6 +26,12 @@ class AlarmScheduler @Inject constructor(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun scheduleReminder(taskId: Long, title: String, triggerAtMillis: Long) {
+        // Validate that we're not scheduling a reminder in the past
+        if (triggerAtMillis <= System.currentTimeMillis()) {
+            android.util.Log.w("AlarmScheduler", "Cannot schedule reminder in the past: $triggerAtMillis")
+            return
+        }
+        
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pendingIntent = buildPendingIntent(taskId, title, ACTION_SHOW)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

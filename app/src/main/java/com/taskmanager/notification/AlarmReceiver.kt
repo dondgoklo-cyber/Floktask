@@ -40,6 +40,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 NotificationManagerCompat.from(context).cancel(taskId.toInt())
             }
         }
+        
+        // Reschedule all reminders after any action to ensure consistency
+        alarmScheduler.rescheduleAllReminders()
     }
 
     private fun showNotification(context: Context, taskId: Long, title: String) {

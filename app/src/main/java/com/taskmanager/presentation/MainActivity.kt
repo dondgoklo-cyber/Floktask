@@ -2,12 +2,14 @@ package com.taskmanager.presentation
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.taskmanager.notification.AlarmScheduler
 import com.taskmanager.presentation.navigation.NavGraph
 import com.taskmanager.presentation.screens.onboarding.OnboardingScreen
 import com.taskmanager.presentation.theme.TaskManagerTheme
@@ -15,6 +17,7 @@ import com.taskmanager.security.PinMode
 import com.taskmanager.security.PinScreen
 import com.taskmanager.security.UserPrefs
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 private const val PREFS_NAME = "taskmanager_prefs"
 private const val KEY_ONBOARDING_DONE = "onboarding_done"
@@ -22,8 +25,20 @@ private const val KEY_ONBOARDING_DONE = "onboarding_done"
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject
+    lateinit var alarmScheduler: AlarmScheduler
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Reschedule all reminders on app startup to handle device reboots
+        try {
+            alarmScheduler.rescheduleAllReminders()
+            Log.d("MainActivity", "Reminders rescheduled successfully")
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error rescheduling reminders", e)
+        }
+        
         setContent {
             TaskManagerTheme {
                 val prefs = remember { getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
