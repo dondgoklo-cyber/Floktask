@@ -118,7 +118,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     // Room migration tests (MigrationTestHelper)
-    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
 }
 
 kapt {
