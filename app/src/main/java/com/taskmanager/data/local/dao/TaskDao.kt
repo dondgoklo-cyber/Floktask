@@ -89,4 +89,10 @@ interface TaskDao {
     /** Задачи с активным напоминанием в будущем (для перерегистрации после перезагрузки). */
     @Query("SELECT * FROM tasks WHERE reminderDate IS NOT NULL AND reminderDate > :now AND isCompleted = 0")
     suspend fun getAllTasksWithReminders(now: Long): List<TaskEntity>
+
+    @Query("UPDATE tasks SET reminderDate = :reminderDate, updatedAt = :updatedAt WHERE id = :taskId")
+    suspend fun updateReminderDate(taskId: Long, reminderDate: Long?, updatedAt: Long)
+
+    @Query("UPDATE tasks SET reminderDate = NULL, updatedAt = :updatedAt WHERE id = :taskId")
+    suspend fun cancelReminder(taskId: Long, updatedAt: Long)
 }

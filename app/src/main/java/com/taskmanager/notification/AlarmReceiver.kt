@@ -33,6 +33,8 @@ class AlarmReceiver : BroadcastReceiver() {
             action == AlarmScheduler.ACTION_SHOW -> showNotification(context, taskId, title)
             action == AlarmScheduler.ACTION_COMPLETE -> {
                 NotificationManagerCompat.from(context).cancel(taskId.toInt())
+                // Update task as completed in database
+                alarmScheduler.markTaskCompleted(taskId)
             }
             action.startsWith("com.taskmanager.action.SNOOZE_") -> {
                 val minutes = action.substringAfterLast("_").toIntOrNull() ?: 15

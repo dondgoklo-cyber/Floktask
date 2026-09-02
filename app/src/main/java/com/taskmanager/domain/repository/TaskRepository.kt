@@ -9,6 +9,8 @@ interface TaskRepository {
     suspend fun updateTask(task: Task)
     suspend fun deleteTask(id: Long)
     suspend fun setCompleted(id: Long, completed: Boolean)
+    suspend fun updateReminderDate(taskId: Long, reminderDate: Long?)
+    suspend fun cancelReminder(taskId: Long)
 
     fun getAllTasks(): Flow<List<Task>>
     fun getTasksByProject(projectId: Long): Flow<List<Task>>

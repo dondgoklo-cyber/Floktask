@@ -54,6 +54,17 @@ class AlarmScheduler @Inject constructor(
     fun snoozeReminder(taskId: Long, title: String, delayMinutes: Int) {
         val triggerAt = System.currentTimeMillis() + delayMinutes * 60_000L
         scheduleReminder(taskId, title, triggerAt)
+        // Update the reminder date in the database
+        scope.launch {
+            taskDao.updateReminderDate(taskId, triggerAt, System.currentTimeMillis())
+        }
+    }
+
+    fun markTaskCompleted(taskId: Long) {
+        scope.launch {
+            taskDao.setCompleted(taskId, true, System.currentTimeMillis())
+            cancelReminder(taskId)
+        }
     }
 
     /** Перезапланировать все активные напоминания (после перезагрузки устройства). */

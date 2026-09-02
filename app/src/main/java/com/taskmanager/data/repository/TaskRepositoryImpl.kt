@@ -59,6 +59,24 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateReminderDate(taskId: Long, reminderDate: Long?) {
+        try {
+            taskDao.updateReminderDate(taskId, reminderDate, Instant.now().toEpochMilli())
+        } catch (e: Exception) {
+            Log.e("TaskRepositoryImpl", "Error in updateReminderDate", e)
+            throw e
+        }
+    }
+
+    override suspend fun cancelReminder(taskId: Long) {
+        try {
+            taskDao.cancelReminder(taskId, Instant.now().toEpochMilli())
+        } catch (e: Exception) {
+            Log.e("TaskRepositoryImpl", "Error in cancelReminder", e)
+            throw e
+        }
+    }
+
     override fun getAllTasks(): Flow<List<Task>> = try {
         taskDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
