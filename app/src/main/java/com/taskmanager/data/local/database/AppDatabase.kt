@@ -55,7 +55,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         TaskTagEntity::class
     ],
     version = 14,
-    exportSchema = false
+    exportSchema = true
 )
 @androidx.room.TypeConverters(BigDecimalConverters::class)
 abstract class AppDatabase : RoomDatabase() {
