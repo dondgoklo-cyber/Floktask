@@ -57,6 +57,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
     version = 13,
     exportSchema = false
 )
+@androidx.room.TypeConverters(BigDecimalConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
     abstract fun projectDao(): ProjectDao
