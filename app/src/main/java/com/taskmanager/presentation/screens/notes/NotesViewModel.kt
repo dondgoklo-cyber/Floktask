@@ -96,4 +96,4 @@ class NotesViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}
+

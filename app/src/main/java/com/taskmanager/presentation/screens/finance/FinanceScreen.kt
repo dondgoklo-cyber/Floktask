@@ -52,7 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
-import com.taskmanager.presentation.components.AppFloatingActionButton
+import AppFloatingActionButton
 import androidx.hilt.navigation.compose.inject
 import com.taskmanager.util.HapticAction
 import com.taskmanager.util.HapticManager

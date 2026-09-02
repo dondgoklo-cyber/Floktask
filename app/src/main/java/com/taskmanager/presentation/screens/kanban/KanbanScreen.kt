@@ -79,7 +79,7 @@ fun KanbanScreen(
             )
         },
         floatingActionButton = {
-            com.taskmanager.presentation.components.AppFloatingActionButton(
+            AppFloatingActionButton(
                 icon = AppIcons.KanbanFabIcon,
                 contentDescription = stringResource(R.string.add_task),
                 onClick = { showQuickAdd = true },
@@ -254,18 +254,7 @@ private fun KanbanCard(
         }
     }
 
-        if (showQuickAdd) {
-            com.taskmanager.presentation.screens.tasks.QuickAddSheet(
-                onDismiss = { showQuickAdd = false },
-                onCreated = { showQuickAdd = false }
-            )
         
         
-        if (showQuickAdd) {
-            com.taskmanager.presentation.screens.tasks.QuickAddSheet(
-                onDismiss = { showQuickAdd = false },
-                onCreated = { showQuickAdd = false }
-            )
         }
-    }
     

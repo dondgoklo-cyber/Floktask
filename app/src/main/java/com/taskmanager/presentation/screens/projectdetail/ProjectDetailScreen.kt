@@ -42,7 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
-import com.taskmanager.presentation.components.AppFloatingActionButton
+import AppFloatingActionButton
 import com.taskmanager.presentation.components.EmptyState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults

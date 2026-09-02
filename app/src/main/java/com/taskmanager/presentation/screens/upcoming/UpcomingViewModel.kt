@@ -40,4 +40,4 @@ class UpcomingViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}
+

@@ -110,7 +110,7 @@ fun CalendarScreen(
             )
         },
         floatingActionButton = {
-            com.taskmanager.presentation.components.AppFloatingActionButton(
+            AppFloatingActionButton(
                 icon = AppIcons.CalendarFabIcon,
                 contentDescription = stringResource(R.string.add_task),
                 onClick = { showQuickAdd = true },
@@ -582,4 +582,4 @@ private fun AgendaView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 onCreated = { showQuickAdd = false }
             )
         }
-    
+}

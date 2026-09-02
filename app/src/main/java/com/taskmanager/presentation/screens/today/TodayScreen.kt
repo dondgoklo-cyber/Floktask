@@ -62,7 +62,7 @@ import com.taskmanager.presentation.screens.finance.formatMoney
 import com.taskmanager.presentation.screens.finance.formatSignedMoney
 import com.taskmanager.presentation.screens.finance.AddTransactionSheet
 import com.taskmanager.presentation.screens.finance.FinanceViewModel
-import com.taskmanager.presentation.components.AppFloatingActionButton
+import AppFloatingActionButton
 import com.taskmanager.presentation.components.CreateMenuSheet
 import com.taskmanager.presentation.screens.voice.VoiceTaskSheet
 import com.taskmanager.domain.model.Category

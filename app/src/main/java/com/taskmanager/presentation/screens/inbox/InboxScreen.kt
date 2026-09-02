@@ -33,7 +33,7 @@ import com.taskmanager.R
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.TaskCard
 import com.taskmanager.presentation.components.TaskListSkeleton
-import com.taskmanager.presentation.components.AppFloatingActionButton
+import AppFloatingActionButton
 import com.taskmanager.presentation.screens.tasks.QuickAddSheet
 import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 import com.taskmanager.presentation.theme.AppTheme
@@ -84,7 +84,7 @@ fun InboxScreen(
             )
         },
         floatingActionButton = {
-            com.taskmanager.presentation.components.AppFloatingActionButton(
+            AppFloatingActionButton(
                 icon = AppIcons.InboxFabIcon,
                 contentDescription = stringResource(R.string.add_task),
                 onClick = { showQuickAdd = true },

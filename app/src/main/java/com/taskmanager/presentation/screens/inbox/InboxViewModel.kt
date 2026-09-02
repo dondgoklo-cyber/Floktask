@@ -42,4 +42,4 @@ class InboxViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}
+

@@ -126,4 +126,3 @@ fun isPaletteColor(color: Color): Boolean = TAG_COLORS.any { it == color }
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}

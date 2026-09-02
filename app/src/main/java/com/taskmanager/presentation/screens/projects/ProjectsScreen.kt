@@ -48,7 +48,7 @@ import com.taskmanager.domain.model.Project
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.TaskListSkeleton
-import com.taskmanager.presentation.components.AppFloatingActionButton
+import AppFloatingActionButton
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
@@ -75,7 +75,7 @@ fun ProjectsScreen(
             )
         },
         floatingActionButton = {
-            com.taskmanager.presentation.components.AppFloatingActionButton(
+            AppFloatingActionButton(
                 icon = AppIcons.ProjectsFabIcon,
                 contentDescription = stringResource(R.string.new_project),
                 onClick = viewModel::openCreateDialog,

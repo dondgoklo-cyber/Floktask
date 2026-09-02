@@ -107,4 +107,4 @@ class ProjectDetailViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}
+

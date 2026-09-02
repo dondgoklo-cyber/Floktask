@@ -130,4 +130,4 @@ class CalendarViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}
+

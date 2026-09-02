@@ -360,4 +360,4 @@ class FinanceViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}
+

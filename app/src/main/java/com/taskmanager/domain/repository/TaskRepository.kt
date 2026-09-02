@@ -23,7 +23,7 @@ interface TaskRepository {
     suspend fun getTaskTags(taskId: Long): List<String>
     fun getTasksByTag(tagId: Long): Flow<List<Task>>
 
-    /** Задачи с запланированным временем (time blocks) за день [dayStart, dayEnd). */
+    /** Задачи с запланированным временем [time blocks] за день [dayStart, dayEnd]. */
     fun getTimedTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>>
 
     /** Все задачи дня (deadline или startTime в диапазоне). */

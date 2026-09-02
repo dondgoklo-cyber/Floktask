@@ -51,7 +51,7 @@ class UserPrefs(private val context: Context) {
 
     private fun hashPin(pin: String): String {
         // Улучшенное хэширование: SHA-256 с солью
-        // Простой пример соль (
+        // Простой пример соль
         val salt = "floktask_salt_2024"
         val bytes = (pin + salt).toByteArray(Charsets.UTF_8)
         val md = MessageDigest.getInstance("SHA-256")

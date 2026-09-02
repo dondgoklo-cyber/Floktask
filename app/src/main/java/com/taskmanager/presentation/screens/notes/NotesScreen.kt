@@ -59,7 +59,7 @@ import com.taskmanager.util.HapticAction
 import androidx.hilt.navigation.compose.inject
 import com.taskmanager.util.HapticManager
 import com.taskmanager.util.HapticAction
-import com.taskmanager.presentation.components.AppFloatingActionButton
+import AppFloatingActionButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.theme.AppTheme

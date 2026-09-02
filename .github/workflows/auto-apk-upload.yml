@@ -59,7 +59,8 @@ jobs:
           # Используем Telegram Bot API для отправки APK
           curl -F "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
             -F "document=@${{ steps.apk.outputs.file }}" \
-            -F "caption=📦 Floktask Debug Build #${{ github.run_number }}\n\nCommit: ${{ steps.commit.outputs.short_hash }}\nMessage: ${{ steps.commit.outputs.commit_msg }}\n\nDownload: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}" \
+            -F "caption=📦 Floktask Debug Build #${{ github.run_number }}\n
+            \nCommit: ${{ steps.commit.outputs.short_hash }}\nMessage: ${{ steps.commit.outputs.commit_msg }}\n\nDownload: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}" \
             -F "parse_mode=HTML" \
             "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument"
         env:

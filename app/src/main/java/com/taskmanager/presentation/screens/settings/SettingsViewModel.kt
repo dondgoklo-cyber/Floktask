@@ -55,4 +55,4 @@ class SettingsViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-}
+

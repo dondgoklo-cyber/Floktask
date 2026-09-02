@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Tag
-import com.taskmanager.presentation.components.AppFloatingActionButton
+import AppFloatingActionButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.components.EmptyState
 import com.taskmanager.presentation.components.TagColorPalette

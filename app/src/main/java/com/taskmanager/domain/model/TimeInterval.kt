@@ -17,8 +17,8 @@ data class TimeInterval(
     }
 
     /**
-     * Half-open overlap: [start, end) — touching intervals (one ends exactly
-     * when another starts) are NOT considered conflicting.
+     * Half-open overlap: [start, end) - touching intervals (one ends exactly
+     * when another starts are NOT considered conflicting.
      */
     fun overlaps(other: TimeInterval): Boolean =
         start < other.end && other.start < end
