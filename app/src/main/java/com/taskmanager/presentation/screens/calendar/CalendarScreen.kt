@@ -183,9 +183,15 @@ private fun DayView(state: CalendarUiState, viewModel: CalendarViewModel) {
 
         // Временная шкала с time blocks
         Box(modifier = Modifier.fillMaxSize()) {
+            // Предварительно группируем timed-задачи по часу (один раз), а не фильтруем
+            // весь список для каждого HourRow — было O(hours * tasks), стало O(tasks).
+            val tasksByHour = remember(timedTasks) {
+                val zone = ZoneId.systemDefault()
+                timedTasks.groupBy { it.startTime?.atZone(zone)?.hour ?: -1 }
+            }
             LazyColumn(state = scrollState) {
                 items((HOURS_START until HOURS_END).toList(), key = { it }) { hour ->
-                    HourRow(hour = hour, tasks = timedTasks, state = state, viewModel = viewModel)
+                    HourRow(hour = hour, tasks = tasksByHour[hour] ?: emptyList(), state = state, viewModel = viewModel)
                 }
             }
         }
@@ -201,9 +207,7 @@ private fun HourRow(
 ) {
     val density = LocalDensity.current
     val zone = ZoneId.systemDefault()
-    val hourTasks = tasks.filter { task ->
-        task.startTime?.atZone(zone)?.hour == hour
-    }
+    val hourTasks = tasks
 
     Row(
         modifier = Modifier

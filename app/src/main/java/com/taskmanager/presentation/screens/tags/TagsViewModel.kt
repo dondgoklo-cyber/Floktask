@@ -106,6 +106,13 @@ class TagsViewModel @Inject constructor(
             deleteTagUseCase(id)
         }
     }
+
+    /**
+     * Handle FAB long-press for Tags screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
 }
 
 /** Преобразует Color в hex-строку без альфа-канала (#RRGGBB) для хранения в БД. */
@@ -118,11 +125,3 @@ fun colorToHex(color: Color): String {
 
 /** Проверяет, входит ли цвет в стандартную палитру тегов. */
 fun isPaletteColor(color: Color): Boolean = TAG_COLORS.any { it == color }
-
-
-    /**
-     * Handle FAB long-press for Tags screen
-     */
-    fun onFabLongClick() {
-        hapticManager.mediumVibrate()
-    }

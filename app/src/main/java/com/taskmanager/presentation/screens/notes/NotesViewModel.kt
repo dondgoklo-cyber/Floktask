@@ -87,8 +87,6 @@ class NotesViewModel @Inject constructor(
             deleteNoteUseCase(id)
         }
     }
-}
-
 
     /**
      * Handle FAB long-press for Notes screen
@@ -96,4 +94,4 @@ class NotesViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-
+}

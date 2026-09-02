@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.task.SetTaskCompletedUseCase
 import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,6 +22,7 @@ data class InboxUiState(
 @HiltViewModel
 class InboxViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
+    private val setTaskCompletedUseCase: SetTaskCompletedUseCase,
     val hapticManager: HapticManager
 ) : ViewModel() {
 
@@ -30,11 +32,10 @@ class InboxViewModel @Inject constructor(
 
     fun completeTask(taskId: Long) {
         viewModelScope.launch {
-            taskRepository.setCompleted(taskId, true)
+            // Через SetTaskCompletedUseCase — отмена напоминания при завершении.
+            setTaskCompletedUseCase(taskId, true)
         }
     }
-}
-
 
     /**
      * Handle FAB long-press for Inbox screen
@@ -42,4 +43,4 @@ class InboxViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-
+}

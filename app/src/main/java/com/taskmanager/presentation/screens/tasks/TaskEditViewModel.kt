@@ -57,6 +57,10 @@ class TaskEditViewModel @Inject constructor(
     private val _formState = MutableStateFlow(TaskFormState())
     val formState: StateFlow<TaskFormState> = _formState.asStateFlow()
 
+    private val _isSaving = MutableStateFlow(false)
+    /** Активное сохранение: UI должен блокировать кнопку Save, пока true. */
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
     val projects: StateFlow<List<Project>> = getAllProjectsUseCase()
         .map { it }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
@@ -170,69 +174,78 @@ class TaskEditViewModel @Inject constructor(
             _formState.value = state.copy(titleError = true)
             return
         }
+        if (_isSaving.value) return // защита от повторного сохранения (double tap)
+        _isSaving.value = true
         viewModelScope.launch {
-            val (deadline, startTime) = combineDateTime(state)
-            val reminderInstant = state.reminderDateTime
-                ?.atZone(ZoneId.systemDefault())?.toInstant()
-            val existing = taskId?.let { getTaskByIdUseCase(it) }
-            val task = (existing?.copy(
-                title = state.title.trim(),
-                description = state.description.trim().ifBlank { null },
-                priority = state.priority,
-                projectId = state.projectId,
-                status = state.status,
-                deadline = deadline,
-                startTime = startTime,
-                durationMinutes = state.durationMinutes,
-                pomodoroEstimate = state.pomodoroEstimate,
-                eisenhowerQuadrant = state.eisenhowerQuadrant,
-                tags = state.tags,
-                recurrenceRule = state.recurrenceRule,
-                reminderDate = reminderInstant
-            ) ?: Task(
-                title = state.title.trim(),
-                description = state.description.trim().ifBlank { null },
-                priority = state.priority,
-                projectId = state.projectId,
-                status = state.status,
-                deadline = deadline,
-                startTime = startTime,
-                durationMinutes = state.durationMinutes,
-                pomodoroEstimate = state.pomodoroEstimate,
-                eisenhowerQuadrant = state.eisenhowerQuadrant,
-                tags = state.tags,
-                recurrenceRule = state.recurrenceRule,
-                reminderDate = reminderInstant
-            ))
-            val savedId = if (existing != null) {
-                updateTaskUseCase(task)
-                task.id ?: 0L
-            } else {
-                createTaskUseCase(task)
+            try {
+                val (deadline, startTime) = combineDateTime(state)
+                val reminderInstant = state.reminderDateTime
+                    ?.atZone(ZoneId.systemDefault())?.toInstant()
+                val existing = taskId?.let { getTaskByIdUseCase(it) }
+                val task = (existing?.copy(
+                    title = state.title.trim(),
+                    description = state.description.trim().ifBlank { null },
+                    priority = state.priority,
+                    projectId = state.projectId,
+                    status = state.status,
+                    deadline = deadline,
+                    startTime = startTime,
+                    durationMinutes = state.durationMinutes,
+                    pomodoroEstimate = state.pomodoroEstimate,
+                    eisenhowerQuadrant = state.eisenhowerQuadrant,
+                    tags = state.tags,
+                    recurrenceRule = state.recurrenceRule,
+                    reminderDate = reminderInstant
+                ) ?: Task(
+                    title = state.title.trim(),
+                    description = state.description.trim().ifBlank { null },
+                    priority = state.priority,
+                    projectId = state.projectId,
+                    status = state.status,
+                    deadline = deadline,
+                    startTime = startTime,
+                    durationMinutes = state.durationMinutes,
+                    pomodoroEstimate = state.pomodoroEstimate,
+                    eisenhowerQuadrant = state.eisenhowerQuadrant,
+                    tags = state.tags,
+                    recurrenceRule = state.recurrenceRule,
+                    reminderDate = reminderInstant
+                ))
+                val savedId = if (existing != null) {
+                    updateTaskUseCase(task)
+                    task.id ?: 0L
+                } else {
+                    createTaskUseCase(task)
+                }
+                // Синхронизация будильника с состоянием БД: reminder есть и задача не завершена —
+                // планируем, иначе отменяем. Ранее при удалении reminder не происходило cancelReminder.
+                if (reminderInstant != null && !task.isCompleted) {
+                    alarmScheduler.scheduleReminder(savedId, task.title, reminderInstant.toEpochMilli())
+                } else {
+                    alarmScheduler.cancelReminder(savedId)
+                }
+                onSaved()
+            } finally {
+                _isSaving.value = false
             }
-            reminderInstant?.let { inst ->
-                alarmScheduler.scheduleReminder(savedId, task.title, inst.toEpochMilli())
-            } ?: alarmScheduler.cancelReminder(savedId)
-            onSaved()
         }
     }
 
     /**
-     * Комбинирует дату дедлайна и время начала в Instant.
-     * Если есть время — deadline = date+time, startTime = date+time.
-     * Если только дата — deadline = date в полночь.
+     * Комбинирует дату дедлайна и время начала в пару (deadline, startTime) Instant.
+     *
+     * Разделяет deadline и startTime (BUGFIX: ранее при заданном времени они получали
+     * один и тот же Instant, из-за чего startTime никогда не был раньше deadline).
+     *
+     * Правила:
+     * - deadlineDate null → deadline=null, startTime=null.
+     * - startTime null (только дата) → deadline = конец дня дедлайна (23:59:59.999),
+     *   startTime=null. Это означает «срок — конец указанного дня».
+     * - startTime задан → startTime = deadlineDate+startTime, deadline = конец дня
+     *   дедлайна. startTime всегда <= deadline.
      */
-    private fun combineDateTime(state: TaskFormState): Pair<Instant?, Instant?> {
-        val zone = ZoneId.systemDefault()
-        if (state.deadlineDate == null) return null to null
-
-        val time = state.startTime ?: LocalTime.MIDNIGHT
-        val dateTime = state.deadlineDate.atTime(time)
-        val instant = dateTime.atZone(zone).toInstant()
-
-        val startInstant = if (state.startTime != null) instant else null
-        return instant to startInstant
-    }
+    private fun combineDateTime(state: TaskFormState): Pair<Instant?, Instant?> =
+        combineTaskDateTime(state, ZoneId.systemDefault())
 }
 
 data class TaskFormState(
@@ -251,3 +264,28 @@ data class TaskFormState(
     val reminderDateTime: LocalDateTime? = null,
     val titleError: Boolean = false
 )
+
+/**
+ * Чистая (тестируемая) логика комбинирования даты дедлайна и времени начала.
+ *
+ * Правила (см. TaskEditViewModel.combineDateTime):
+ * - deadlineDate null → (null, null).
+ * - startTime null (только дата) → deadline = конец дня дедлайна (23:59:59.999), startTime=null.
+ * - startTime задан → startTime = deadlineDate+startTime, deadline = конец дня дедлайна.
+ *   startTime всегда <= deadline (в пределах одного дня).
+ *
+ * BUGFIX: ранее при заданном времени deadline и startTime получали один и тот же Instant,
+ * из-за чего startTime никогда не был раньше deadline. Теперь они разделены.
+ */
+fun combineTaskDateTime(state: TaskFormState, zone: ZoneId): Pair<Instant?, Instant?> {
+    if (state.deadlineDate == null) return null to null
+
+    val deadlineInstant = state.deadlineDate
+        .atTime(LocalTime.of(23, 59, 59, 999_999_999))
+        .atZone(zone)
+        .toInstant()
+    val startInstant = state.startTime?.let { time ->
+        state.deadlineDate.atTime(time).atZone(zone).toInstant()
+    }
+    return deadlineInstant to startInstant
+}

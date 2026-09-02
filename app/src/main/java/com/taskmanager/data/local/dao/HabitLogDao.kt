@@ -26,4 +26,14 @@ interface HabitLogDao {
 
     @Query("DELETE FROM habit_logs WHERE habitId = :habitId")
     suspend fun deleteAllForHabit(habitId: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM habit_logs")
+    suspend fun snapshotAll(): List<HabitLogEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<HabitLogEntity>)
+
+    @Query("DELETE FROM habit_logs")
+    suspend fun clearAll()
+
 }

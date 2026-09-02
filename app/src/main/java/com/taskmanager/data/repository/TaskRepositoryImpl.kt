@@ -3,7 +3,6 @@ package com.taskmanager.data.repository
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.dao.TaskTagDao
 import com.taskmanager.data.local.dao.TagDao
-import com.taskmanager.data.local.entity.TaskTagEntity
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
@@ -62,6 +61,9 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>> =
         taskDao.getTasksForDay(dayStart, dayEnd).map { list -> list.map { it.toDomain() } }
 
+    override fun getTasksForRange(rangeStart: Long, rangeEnd: Long): Flow<List<Task>> =
+        taskDao.getTasksForRange(rangeStart, rangeEnd).map { list -> list.map { it.toDomain() } }
+
     override fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>> =
         taskDao.getTasksByQuadrant(quadrantName).map { list -> list.map { it.toDomain() } }
 
@@ -72,8 +74,8 @@ class TaskRepositoryImpl @Inject constructor(
         taskDao.getUpcomingTasks(fromEpoch).map { list -> list.map { it.toDomain() } }
 
     override suspend fun setTaskTags(taskId: Long, tagIds: List<Long>) {
-        taskTagDao.deleteByTaskId(taskId)
-        taskTagDao.insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it) })
+        // Атомарная замена через @Transaction в DAO — исключает гонку delete+insert.
+        taskTagDao.replaceTagsForTask(taskId, tagIds)
     }
 
     override suspend fun getTaskTags(taskId: Long): List<String> {

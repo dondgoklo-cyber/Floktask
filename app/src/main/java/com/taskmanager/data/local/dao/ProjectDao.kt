@@ -37,4 +37,14 @@ interface ProjectDao {
 
     @Query("UPDATE projects SET isArchived = :archived, updatedAt = :updatedAt WHERE id = :id")
     suspend fun setArchived(id: Long, archived: Boolean, updatedAt: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM projects")
+    suspend fun snapshotAll(): List<ProjectEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<ProjectEntity>)
+
+    @Query("DELETE FROM projects")
+    suspend fun clearAll()
+
 }

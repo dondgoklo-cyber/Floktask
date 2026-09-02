@@ -24,4 +24,14 @@ interface BudgetDao {
 
     @Query("DELETE FROM budgets WHERE id = :id")
     suspend fun deleteById(id: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM budgets")
+    suspend fun snapshotAll(): List<BudgetEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<BudgetEntity>)
+
+    @Query("DELETE FROM budgets")
+    suspend fun clearAll()
+
 }

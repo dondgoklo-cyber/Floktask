@@ -31,8 +31,6 @@ class UpcomingViewModel @Inject constructor(
         .getUpcomingTasks(LocalDate.now().atStartOfDay(zone).toInstant().toEpochMilli())
         .map { tasks -> UpcomingUiState(tasks = tasks, isLoading = false) }
         .stateIn(viewModelScope, SharingStarted.Lazily, UpcomingUiState(isLoading = true))
-}
-
 
     /**
      * Handle FAB long-press for Upcoming screen
@@ -40,4 +38,4 @@ class UpcomingViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-
+}

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.domain.notification.ReminderScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +26,7 @@ import javax.inject.Singleton
 class AlarmScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val taskDao: TaskDao
-) {
+) : ReminderScheduler {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, e ->
         Log.e("AlarmScheduler", "Coroutine error in alarm scheduler", e)
     }
@@ -37,6 +38,14 @@ class AlarmScheduler @Inject constructor(
     fun scheduleReminder(taskId: Long, title: String, triggerAtMillis: Long) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pendingIntent = buildPendingIntent(taskId, title, ACTION_SHOW)
+        // Android 12+ требует разрешение на точные будильники. Проверяем возможность и
+        // используем точный будильник только если он доступен; иначе fallback на
+        // inexact (setAndAllowWhileIdle), чтобы напоминание всё же сработало, а не падало.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+            Log.w("AlarmScheduler", "Exact alarms unavailable (Android 12+), using inexact fallback for task $taskId")
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+            return
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,

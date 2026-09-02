@@ -31,4 +31,14 @@ interface AccountDao {
 
     @Query("SELECT COUNT(*) FROM accounts")
     suspend fun count(): Int
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM accounts")
+    suspend fun snapshotAll(): List<AccountEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<AccountEntity>)
+
+    @Query("DELETE FROM accounts")
+    suspend fun clearAll()
+
 }

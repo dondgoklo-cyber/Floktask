@@ -350,9 +350,6 @@ class FinanceViewModel @Inject constructor(
             }
             .sortedByDescending { it.total }
     }
-}
-
-
 
     /**
      * Handle FAB long-press for Finance screen
@@ -360,4 +357,4 @@ class FinanceViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-
+}

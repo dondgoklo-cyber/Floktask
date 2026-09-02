@@ -57,8 +57,8 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         GoalEntity::class,
         TaskTagEntity::class
     ],
-    version = 14,
-    exportSchema = false
+    version = AppDatabase.DATABASE_VERSION,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
@@ -81,5 +81,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "taskmanager.db"
+        const val DATABASE_VERSION = 14
     }
 }

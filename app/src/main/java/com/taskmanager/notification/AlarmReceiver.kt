@@ -7,16 +7,31 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.taskmanager.R
+import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
 
 /**
  * Приёмник будильников напоминаний. Показывает уведомление с действиями:
  * выполнить задачу, отложить на 5/15/30/60 минут.
+ *
+ * Важно: действия Complete и Snooze изменяют состояние БД, а не только уведомление:
+ * - Complete: помечает задачу COMPLETED в Room и отменяет запланированный будильник.
+ * - Snooze: обновляет reminderDate в Room и перепланирует будильник, чтобы БД и
+ *   AlarmManager всегда совпадали (ранее AlarmManager знал одно время, а Room — другое).
+ *
+ * BroadcastReceiver может быть убит системой, поэтому длительные операции выполняются
+ * через goAsync() + application-scoped coroutine scope.
  */
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
@@ -24,21 +39,54 @@ class AlarmReceiver : BroadcastReceiver() {
     @Inject
     lateinit var alarmScheduler: AlarmScheduler
 
+    @Inject
+    lateinit var taskDao: TaskDao
+
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return
         val taskId = intent.getLongExtra(AlarmScheduler.EXTRA_TASK_ID, -1L)
         val title = intent.getStringExtra(AlarmScheduler.EXTRA_TASK_TITLE) ?: ""
+        if (taskId <= 0L) return
 
+        val pending = goAsync()
         when {
-            action == AlarmScheduler.ACTION_SHOW -> showNotification(context, taskId, title)
+            action == AlarmScheduler.ACTION_SHOW -> {
+                showNotification(context, taskId, title)
+                pending.finish()
+            }
             action == AlarmScheduler.ACTION_COMPLETE -> {
-                NotificationManagerCompat.from(context).cancel(taskId.toInt())
+                appScope.launch {
+                    try {
+                        // Реально завершаем задачу в БД (ранее только закрывалось уведомление).
+                        taskDao.setCompleted(taskId, true, Instant.now().toEpochMilli())
+                        alarmScheduler.cancelReminder(taskId)
+                        NotificationManagerCompat.from(context).cancel(taskId.toInt())
+                    } catch (e: Exception) {
+                        Log.e("AlarmReceiver", "Complete failed for task $taskId", e)
+                    } finally {
+                        pending.finish()
+                    }
+                }
             }
             action.startsWith("com.taskmanager.action.SNOOZE_") -> {
                 val minutes = action.substringAfterLast("_").toIntOrNull() ?: 15
-                alarmScheduler.snoozeReminder(taskId, title, minutes)
-                NotificationManagerCompat.from(context).cancel(taskId.toInt())
+                appScope.launch {
+                    try {
+                        // Единый flow Snooze: обновляем reminderDate в БД, затем перепланируем
+                        // будильник, чтобы AlarmManager и Room хранили одно время.
+                        val triggerAt = System.currentTimeMillis() + minutes * 60_000L
+                        taskDao.updateReminderDate(taskId, triggerAt, Instant.now().toEpochMilli())
+                        val resolvedTitle = runCatching { taskDao.getById(taskId)?.title }.getOrNull() ?: title
+                        alarmScheduler.scheduleReminder(taskId, resolvedTitle, triggerAt)
+                        NotificationManagerCompat.from(context).cancel(taskId.toInt())
+                    } catch (e: Exception) {
+                        Log.e("AlarmReceiver", "Snooze failed for task $taskId", e)
+                    } finally {
+                        pending.finish()
+                    }
+                }
             }
+            else -> pending.finish()
         }
     }
 
@@ -47,6 +95,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         val contentIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra(EXTRA_TASK_ID, taskId)
         }
         val contentPi = PendingIntent.getActivity(
             context, taskId.toInt(), contentIntent,
@@ -70,7 +119,7 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra(AlarmScheduler.EXTRA_TASK_ID, taskId)
         }
         val completePi = PendingIntent.getBroadcast(
-            context, ("$taskId-complete").hashCode(), completeIntent,
+            context, "$taskId-complete".hashCode(), completeIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -100,12 +149,18 @@ class AlarmReceiver : BroadcastReceiver() {
             ).apply {
                 description = context.getString(R.string.channel_reminders_desc)
             }
-            val manager = context.getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
+            context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
     }
 
     companion object {
         const val CHANNEL_ID = "task_reminders"
+        const val EXTRA_TASK_ID = "extra_task_id_alarm"
+
+        /**
+         * Application-scoped scope для BroadcastReceiver-операций. goAsync() даёт ~10с,
+         * поэтому операции должны быть короткими (DB write). SupervisorJob изолирует ошибки.
+         */
+        private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     }
 }
