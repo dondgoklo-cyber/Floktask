@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.util.HapticManager
 import com.taskmanager.presentation.theme.Spacing
 
 /**
@@ -182,7 +183,8 @@ fun AppFloatingActionButton(
     icon: ImageVector,
     contentDescription: String?,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hapticManager: HapticManager? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -192,7 +194,10 @@ fun AppFloatingActionButton(
         label = "fabScale"
     )
     FloatingActionButton(
-        onClick = onClick,
+        onClick = {
+            onClick()
+            hapticManager?.lightVibrate()
+        },
         modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
         interactionSource = interactionSource,
         shape = RoundedCornerShape(Radius.lg),

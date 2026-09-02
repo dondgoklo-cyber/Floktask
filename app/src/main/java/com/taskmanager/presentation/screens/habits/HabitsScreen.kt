@@ -57,6 +57,7 @@ import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.theme.AppIcons
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.util.HapticManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +66,7 @@ fun HabitsScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val showCreate by viewModel.showCreateDialog.collectAsState()
+    val hapticManager = viewModel.hapticManager
 
     Scaffold(
         topBar = {
@@ -79,7 +81,8 @@ fun HabitsScreen(
             com.taskmanager.presentation.components.AppFloatingActionButton(
                 icon = AppIcons.HabitsFabIcon,
                 contentDescription = stringResource(R.string.new_habit),
-                onClick = viewModel::openCreateDialog
+                onClick = viewModel::openCreateDialog,
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

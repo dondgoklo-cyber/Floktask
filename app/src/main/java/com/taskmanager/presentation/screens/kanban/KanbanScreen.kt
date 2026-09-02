@@ -52,6 +52,8 @@ import com.taskmanager.presentation.components.priorityColor
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.presentation.theme.AppIcons
+import com.taskmanager.util.HapticManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +62,7 @@ fun KanbanScreen(
     viewModel: KanbanViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val hapticManager = viewModel.hapticManager
     var draggedTaskId by remember { mutableStateOf<Long?>(null) }
     var hoveredColumn by remember { mutableStateOf<TaskStatus?>(null) }
     val columnBounds = remember { mutableMapOf<TaskStatus, Rect>() }
@@ -79,7 +82,8 @@ fun KanbanScreen(
             com.taskmanager.presentation.components.AppFloatingActionButton(
                 icon = AppIcons.KanbanFabIcon,
                 contentDescription = stringResource(R.string.add_task),
-                onClick = { showQuickAdd = true }
+                onClick = { showQuickAdd = true },
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

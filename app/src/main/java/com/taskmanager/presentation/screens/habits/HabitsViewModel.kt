@@ -7,6 +7,7 @@ import com.taskmanager.domain.usecase.habit.CreateHabitUseCase
 import com.taskmanager.domain.usecase.habit.GetActiveHabitsUseCase
 import com.taskmanager.domain.usecase.habit.GetHabitStatsUseCase
 import com.taskmanager.domain.usecase.habit.ToggleHabitCompletionUseCase
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,7 +37,8 @@ class HabitsViewModel @Inject constructor(
     private val getActiveHabitsUseCase: GetActiveHabitsUseCase,
     private val createHabitUseCase: CreateHabitUseCase,
     private val toggleHabitCompletionUseCase: ToggleHabitCompletionUseCase,
-    private val getHabitStatsUseCase: GetHabitStatsUseCase
+    private val getHabitStatsUseCase: GetHabitStatsUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val _showCreateDialog = MutableStateFlow(false)

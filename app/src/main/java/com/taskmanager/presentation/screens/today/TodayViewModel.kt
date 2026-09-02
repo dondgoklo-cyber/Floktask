@@ -17,6 +17,7 @@ import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.TaskRepository
 import com.taskmanager.domain.usecase.task.ToggleTaskCompletionUseCase
 import com.taskmanager.domain.usecase.habit.ToggleHabitCompletionUseCase
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -63,7 +64,8 @@ class TodayViewModel @Inject constructor(
     private val getRecentTransactionsUseCase: GetRecentTransactionsUseCase,
     private val getAllNotesUseCase: GetAllNotesUseCase,
     private val toggleTaskCompletionUseCase: ToggleTaskCompletionUseCase,
-    private val toggleHabitCompletionUseCase: ToggleHabitCompletionUseCase
+    private val toggleHabitCompletionUseCase: ToggleHabitCompletionUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val zone = ZoneId.systemDefault()

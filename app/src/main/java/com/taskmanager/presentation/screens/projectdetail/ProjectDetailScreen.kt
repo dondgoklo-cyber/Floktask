@@ -52,6 +52,7 @@ import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.util.HapticManager
 
 private enum class ProjectViewMode { LIST, KANBAN, NOTES }
 
@@ -66,6 +67,7 @@ fun ProjectDetailScreen(
     viewModel: ProjectDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val hapticManager = viewModel.hapticManager
     var viewMode by rememberSaveable { mutableStateOf(ProjectViewMode.LIST) }
 
     LaunchedEffect(projectId) {
@@ -102,7 +104,8 @@ fun ProjectDetailScreen(
                     } else {
                         onAddTask()
                     }
-                }
+                },
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

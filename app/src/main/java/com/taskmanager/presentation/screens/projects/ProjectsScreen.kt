@@ -53,6 +53,7 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.util.HapticManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +63,7 @@ fun ProjectsScreen(
 ) {
     val state by viewModel.projectsState.collectAsState()
     val showCreate by viewModel.showCreateDialog.collectAsState()
+    val hapticManager = viewModel.hapticManager
 
     Scaffold(
         topBar = {
@@ -76,7 +78,8 @@ fun ProjectsScreen(
             com.taskmanager.presentation.components.AppFloatingActionButton(
                 icon = Icons.Filled.Add,
                 contentDescription = stringResource(R.string.new_project),
-                onClick = viewModel::openCreateDialog
+                onClick = viewModel::openCreateDialog,
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

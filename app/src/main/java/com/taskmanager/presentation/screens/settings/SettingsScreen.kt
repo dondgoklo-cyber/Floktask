@@ -54,6 +54,7 @@ import com.taskmanager.presentation.theme.Spacing
 import com.taskmanager.security.PinMode
 import com.taskmanager.security.UserPrefs
 import com.taskmanager.security.PinScreen
+import com.taskmanager.util.HapticManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +65,7 @@ fun SettingsScreen(
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     val userPrefs = remember { UserPrefs(context) }
+    val hapticManager = viewModel.hapticManager
     var userName by remember { mutableStateOf(userPrefs.userName) }
     var hasPin by remember { mutableStateOf(userPrefs.hasPin) }
     var nameInput by remember { mutableStateOf(userPrefs.userName) }
@@ -232,6 +234,9 @@ fun SettingsScreen(
                         onCheckedChange = { value ->
                             hapticEnabled = value
                             userPrefs.hapticEnabled = value
+                            if (value && userPrefs.hapticEnabled) {
+                                hapticManager.selectionVibrate()
+                            }
                         }
                     )
                 }

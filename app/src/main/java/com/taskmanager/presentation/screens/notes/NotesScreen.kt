@@ -82,7 +82,7 @@ fun NotesScreen(
     val state by viewModel.state.collectAsState()
     val showCreateFolder by viewModel.showCreateFolder.collectAsState()
     var pendingDeleteNote by remember { mutableStateOf<Note?>(null) }
-    val hapticManager: HapticManager = inject()
+    val hapticManager = viewModel.hapticManager
     val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
 
     Scaffold(
@@ -133,7 +133,8 @@ fun NotesScreen(
                 onClick = {
                     haptic(HapticAction.LIGHT)
                     viewModel.createNote { id -> onNoteClick(id) }
-                }
+                },
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

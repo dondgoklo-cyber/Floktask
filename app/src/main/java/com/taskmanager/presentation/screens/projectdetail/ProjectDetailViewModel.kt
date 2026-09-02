@@ -11,6 +11,7 @@ import com.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.TagRepository
 import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,7 +41,8 @@ class ProjectDetailViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val tagRepository: TagRepository,
     private val noteRepository: NoteRepository,
-    private val createNoteUseCase: CreateNoteUseCase
+    private val createNoteUseCase: CreateNoteUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val _projectId = MutableStateFlow(0L)

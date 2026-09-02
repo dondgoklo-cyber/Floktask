@@ -23,6 +23,7 @@ import com.taskmanager.data.local.dao.CurrencyTotal
 import android.app.Application
 import com.taskmanager.security.UserPrefs
 import com.taskmanager.domain.usecase.finance.UpdateTransactionUseCase
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -96,7 +97,8 @@ class FinanceViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val goalRepository: GoalRepository,
     private val exchangeRateProvider: ExchangeRateProvider,
-    private val app: Application
+    private val app: Application,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val _selectedPeriod = MutableStateFlow(FinancePeriod.MONTH)

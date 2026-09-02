@@ -71,6 +71,7 @@ fun FinanceScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val selectedPeriod by viewModel.selectedPeriod.collectAsState()
+    val hapticManager = viewModel.hapticManager
     var showAddSheet by remember { mutableStateOf(false) }
     var pendingDeleteTx by remember { mutableStateOf<com.taskmanager.domain.model.Transaction?>(null) }
     var editingTx by remember { mutableStateOf<com.taskmanager.domain.model.Transaction?>(null) }
@@ -91,7 +92,6 @@ fun FinanceScreen(
             )
         },
         floatingActionButton = {
-            val hapticManager: HapticManager = inject()
             val haptic = remember(hapticManager) { { type: HapticAction -> hapticManager.perform(type) } }
             AppFloatingActionButton(
                 icon = Icons.Filled.Add,
@@ -99,7 +99,8 @@ fun FinanceScreen(
                 onClick = {
                     haptic(HapticAction.LIGHT)
                     showAddSheet = true
-                }
+                },
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

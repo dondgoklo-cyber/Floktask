@@ -150,6 +150,11 @@ class HapticManager @Inject constructor(
      * Perform haptic feedback - alias for vibrate() to match old API
      */
     fun perform(type: HapticAction) = vibrate(type)
+
+    /**
+     * Selection vibration - alias for lightVibrate()
+     */
+    fun selectionVibrate() = lightVibrate()
 }
 
 /**

@@ -6,6 +6,7 @@ import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.eisenhower.GetEisenhowerTasksUseCase
 import com.taskmanager.domain.usecase.eisenhower.UpdateEisenhowerQuadrantUseCase
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,8 @@ data class EisenhowerUiState(
 @HiltViewModel
 class EisenhowerViewModel @Inject constructor(
     getEisenhowerTasksUseCase: GetEisenhowerTasksUseCase,
-    private val updateEisenhowerQuadrantUseCase: UpdateEisenhowerQuadrantUseCase
+    private val updateEisenhowerQuadrantUseCase: UpdateEisenhowerQuadrantUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     val state: StateFlow<EisenhowerUiState> = getEisenhowerTasksUseCase()

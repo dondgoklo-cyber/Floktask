@@ -9,6 +9,7 @@ import com.taskmanager.domain.repository.NoteRepository
 import com.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.taskmanager.domain.usecase.note.DeleteNoteUseCase
 import com.taskmanager.domain.usecase.note.GetAllNotesUseCase
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,7 +33,8 @@ class NotesViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val noteFolderRepository: NoteFolderRepository,
     private val createNoteUseCase: CreateNoteUseCase,
-    private val deleteNoteUseCase: DeleteNoteUseCase
+    private val deleteNoteUseCase: DeleteNoteUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     val state: StateFlow<NotesUiState> = combine(

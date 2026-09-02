@@ -67,6 +67,7 @@ import com.taskmanager.presentation.components.CreateMenuSheet
 import com.taskmanager.presentation.screens.voice.VoiceTaskSheet
 import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.model.Account
+import com.taskmanager.util.HapticManager
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -85,6 +86,7 @@ fun TodayScreen(
     onAllNotes: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val hapticManager = viewModel.hapticManager
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
     var showQuickAdd by remember { mutableStateOf(false) }
     var showCreateMenu by remember { mutableStateOf(false) }
@@ -158,7 +160,8 @@ fun TodayScreen(
             AppFloatingActionButton(
                 icon = Icons.Filled.Add,
                 contentDescription = stringResource(R.string.create),
-                onClick = { showCreateMenu = true }
+                onClick = { showCreateMenu = true },
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

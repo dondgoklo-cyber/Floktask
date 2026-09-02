@@ -49,6 +49,8 @@ import com.taskmanager.presentation.components.priorityColor
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.presentation.theme.AppIcons
+import com.taskmanager.util.HapticManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +58,7 @@ fun EisenhowerScreen(
     viewModel: EisenhowerViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val hapticManager = viewModel.hapticManager
     var draggedTaskId by remember { mutableStateOf<Long?>(null) }
     var hoveredQuadrant by remember { mutableStateOf<EisenhowerQuadrant?>(null) }
     val quadrantBounds = remember { mutableMapOf<EisenhowerQuadrant, Rect>() }
@@ -76,7 +79,8 @@ fun EisenhowerScreen(
             com.taskmanager.presentation.components.AppFloatingActionButton(
                 icon = AppIcons.EisenhowerFabIcon,
                 contentDescription = stringResource(R.string.add_task),
-                onClick = { showQuickAdd = true }
+                onClick = { showQuickAdd = true },
+                hapticManager = hapticManager
             )
         }
     ) { padding ->

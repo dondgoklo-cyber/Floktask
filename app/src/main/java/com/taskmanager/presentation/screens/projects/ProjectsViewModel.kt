@@ -6,6 +6,7 @@ import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.repository.TaskRepository
 import com.taskmanager.domain.usecase.project.CreateProjectUseCase
 import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
+import com.taskmanager.util.HapticManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,8 @@ sealed class ProjectsState {
 class ProjectsViewModel @Inject constructor(
     getAllProjectsUseCase: GetAllProjectsUseCase,
     private val taskRepository: TaskRepository,
-    private val createProjectUseCase: CreateProjectUseCase
+    private val createProjectUseCase: CreateProjectUseCase,
+    val hapticManager: HapticManager
 ) : ViewModel() {
 
     private val _projectsState = MutableStateFlow<ProjectsState>(ProjectsState.Loading)
