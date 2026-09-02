@@ -134,6 +134,7 @@ fun NotesScreen(
                     haptic(HapticAction.LIGHT)
                     viewModel.createNote { id -> onNoteClick(id) }
                 },
+                onLongClick = viewModel::onFabLongClick,
                 hapticManager = hapticManager
             )
         }

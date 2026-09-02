@@ -352,3 +352,12 @@ class FinanceViewModel @Inject constructor(
     }
 }
 
+
+
+    /**
+     * Handle FAB long-press for Finance screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
+}

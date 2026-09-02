@@ -158,9 +158,10 @@ fun TodayScreen(
     Scaffold(
         floatingActionButton = {
             AppFloatingActionButton(
-                icon = Icons.Filled.Add,
+                icon = AppIcons.TodayFabIcon,
                 contentDescription = stringResource(R.string.create),
                 onClick = { showCreateMenu = true },
+                onLongClick = { viewModel.onFabLongClick() },
                 hapticManager = hapticManager
             )
         }

@@ -47,3 +47,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 }
+
+
+    /**
+     * Handle FAB long-press for Settings screen (if any)
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
+}

@@ -105,6 +105,7 @@ fun ProjectDetailScreen(
                         onAddTask()
                     }
                 },
+                onLongClick = viewModel::onFabLongClick,
                 hapticManager = hapticManager
             )
         }

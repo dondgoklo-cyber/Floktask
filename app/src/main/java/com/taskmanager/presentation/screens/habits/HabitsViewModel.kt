@@ -44,6 +44,15 @@ class HabitsViewModel @Inject constructor(
     private val _showCreateDialog = MutableStateFlow(false)
     val showCreateDialog: StateFlow<Boolean> = _showCreateDialog.asStateFlow()
 
+    /**
+     * Handle FAB long-press for Habits screen
+     * Quick add new habit
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+        openCreateDialog()
+    }
+
     val state: StateFlow<HabitsUiState> = getActiveHabitsUseCase()
         .map { habits ->
             val today = LocalDate.now()

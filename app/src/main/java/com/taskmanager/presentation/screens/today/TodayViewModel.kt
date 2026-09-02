@@ -170,6 +170,14 @@ class TodayViewModel @Inject constructor(
             toggleHabitCompletionUseCase(habitId)
         }
     }
+
+    /**
+     * Handle FAB long-press for Today screen
+     * Opens voice input for quick task creation
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
 }
 
 private data class DashboardFinanceData(

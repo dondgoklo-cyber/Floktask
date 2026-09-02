@@ -7,6 +7,10 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -19,7 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.graphicsLayer
@@ -54,6 +60,7 @@ fun PrimaryButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
+        modifier = tapModifier,
         interactionSource = interactionSource,
         shape = RoundedCornerShape(Radius.md),
         colors = ButtonDefaults.buttonColors(
@@ -176,7 +183,8 @@ fun AppIconButton(
 }
 
 /**
- * FAB, приведённый к общей дизайн-системе: primary цвет, без чрезмерной тени.
+ * FAB with long-press context menu support.
+ * Primary color, with shadow.
  */
 @Composable
 fun AppFloatingActionButton(
@@ -184,7 +192,8 @@ fun AppFloatingActionButton(
     contentDescription: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    hapticManager: HapticManager? = null
+    hapticManager: HapticManager? = null,
+    onLongClick: (() -> Unit)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -193,12 +202,33 @@ fun AppFloatingActionButton(
         animationSpec = tween(durationMillis = 150),
         label = "fabScale"
     )
+    
+    val tapModifier = if (onLongClick != null) {
+        modifier
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        onClick()
+                        hapticManager?.lightVibrate()
+                    },
+                    onLongPress = {
+                        onLongClick()
+                        hapticManager?.mediumVibrate()
+                    }
+                )
+            }
+            .graphicsLayer { scaleX = scale; scaleY = scale }
+    } else {
+        modifier
+            .graphicsLayer { scaleX = scale; scaleY = scale }
+    }
+    
     FloatingActionButton(
         onClick = {
             onClick()
             hapticManager?.lightVibrate()
         },
-        modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
+        modifier = tapModifier,
         interactionSource = interactionSource,
         shape = RoundedCornerShape(Radius.lg),
         containerColor = AppTheme.colors.primary,

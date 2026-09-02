@@ -79,6 +79,7 @@ fun ProjectsScreen(
                 icon = Icons.Filled.Add,
                 contentDescription = stringResource(R.string.new_project),
                 onClick = viewModel::openCreateDialog,
+                onLongClick = viewModel::onFabLongClick,
                 hapticManager = hapticManager
             )
         }

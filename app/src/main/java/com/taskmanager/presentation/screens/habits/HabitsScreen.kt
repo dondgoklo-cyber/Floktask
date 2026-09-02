@@ -82,6 +82,7 @@ fun HabitsScreen(
                 icon = AppIcons.HabitsFabIcon,
                 contentDescription = stringResource(R.string.new_habit),
                 onClick = viewModel::openCreateDialog,
+                onLongClick = viewModel::onFabLongClick,
                 hapticManager = hapticManager
             )
         }

@@ -67,3 +67,12 @@ class ProjectsViewModel @Inject constructor(
         }
     }
 }
+
+
+    /**
+     * Handle FAB long-press for Projects screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
+}

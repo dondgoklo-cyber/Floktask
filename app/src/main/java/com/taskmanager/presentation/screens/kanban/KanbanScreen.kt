@@ -83,6 +83,7 @@ fun KanbanScreen(
                 icon = AppIcons.KanbanFabIcon,
                 contentDescription = stringResource(R.string.add_task),
                 onClick = { showQuickAdd = true },
+                onLongClick = viewModel::onFabLongClick,
                 hapticManager = hapticManager
             )
         }

@@ -92,3 +92,19 @@ class ProjectDetailViewModel @Inject constructor(
         }
     }
 }
+
+
+    /**
+     * Handle FAB long-press for ProjectDetail screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
+
+    /**
+     * Handle FAB long-press for ProjectDetail screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
+}

@@ -40,4 +40,11 @@ class KanbanViewModel @Inject constructor(
             moveTaskToStatusUseCase(taskId, newStatus)
         }
     }
+
+    /**
+     * Handle FAB long-press for Kanban screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
 }

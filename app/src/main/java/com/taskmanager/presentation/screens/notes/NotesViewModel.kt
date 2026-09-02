@@ -88,3 +88,12 @@ class NotesViewModel @Inject constructor(
         }
     }
 }
+
+
+    /**
+     * Handle FAB long-press for Notes screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
+}

@@ -100,6 +100,7 @@ fun FinanceScreen(
                     haptic(HapticAction.LIGHT)
                     showAddSheet = true
                 },
+                onLongClick = viewModel::onFabLongClick,
                 hapticManager = hapticManager
             )
         }

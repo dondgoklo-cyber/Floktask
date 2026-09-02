@@ -80,6 +80,7 @@ fun EisenhowerScreen(
                 icon = AppIcons.EisenhowerFabIcon,
                 contentDescription = stringResource(R.string.add_task),
                 onClick = { showQuickAdd = true },
+                onLongClick = viewModel::onFabLongClick,
                 hapticManager = hapticManager
             )
         }
