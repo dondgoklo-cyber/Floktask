@@ -29,4 +29,14 @@ interface PomodoroSessionDao {
 
     @Query("DELETE FROM pomodoro_sessions WHERE id = :id")
     suspend fun deleteById(id: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM pomodoro_sessions")
+    suspend fun snapshotAll(): List<PomodoroSessionEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<PomodoroSessionEntity>)
+
+    @Query("DELETE FROM pomodoro_sessions")
+    suspend fun clearAll()
+
 }

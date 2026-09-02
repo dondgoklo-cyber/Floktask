@@ -31,4 +31,14 @@ interface SubtaskDao {
 
     @Query("UPDATE subtasks SET isCompleted = :completed WHERE id = :id")
     suspend fun setCompleted(id: Long, completed: Boolean)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM subtasks")
+    suspend fun snapshotAll(): List<SubtaskEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<SubtaskEntity>)
+
+    @Query("DELETE FROM subtasks")
+    suspend fun clearAll()
+
 }

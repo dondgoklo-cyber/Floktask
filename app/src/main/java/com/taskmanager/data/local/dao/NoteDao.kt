@@ -49,4 +49,14 @@ interface NoteDao {
 
     @Query("UPDATE notes SET folderId = :folderId, updatedAt = :timestamp WHERE id = :id")
     suspend fun moveToFolder(id: Long, folderId: Long?, timestamp: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM notes")
+    suspend fun snapshotAll(): List<NoteEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<NoteEntity>)
+
+    @Query("DELETE FROM notes")
+    suspend fun clearAll()
+
 }

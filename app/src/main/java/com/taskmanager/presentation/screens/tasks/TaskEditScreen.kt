@@ -89,6 +89,7 @@ fun TaskEditScreen(
     val form by viewModel.formState.collectAsState()
     val projects by viewModel.projects.collectAsState()
     val availableTags by viewModel.tags.collectAsState()
+    val isSaving by viewModel.isSaving.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var showReminderPicker by remember { mutableStateOf(false) }
@@ -381,9 +382,10 @@ fun TaskEditScreen(
 
             Button(
                 onClick = { viewModel.save(onSaved = onBack) },
+                enabled = !isSaving && form.title.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.save))
+                Text(stringResource(if (isSaving) R.string.saving else R.string.save))
             }
         }
     }

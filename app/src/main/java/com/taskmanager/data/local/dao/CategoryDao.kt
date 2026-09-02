@@ -34,4 +34,14 @@ interface CategoryDao {
 
     @Query("SELECT COUNT(*) FROM finance_categories")
     suspend fun count(): Int
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM finance_categories")
+    suspend fun snapshotAll(): List<CategoryEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<CategoryEntity>)
+
+    @Query("DELETE FROM finance_categories")
+    suspend fun clearAll()
+
 }

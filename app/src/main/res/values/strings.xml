@@ -20,6 +20,7 @@
     <string name="create">Создать</string>
     <string name="edit_task">Редактировать задачу</string>
     <string name="save">Сохранить</string>
+    <string name="saving">Сохранение…</string>
     <string name="back">Назад</string>
     <string name="cancel">Отмена</string>
     <string name="delete">Удалить</string>

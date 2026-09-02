@@ -29,6 +29,9 @@ interface TaskRepository {
     /** Все задачи дня (deadline или startTime в диапазоне). */
     fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>>
 
+    /** Задачи в диапазоне [rangeStart, rangeEnd) — для календарных views (day/3-day/week/month). */
+    fun getTasksForRange(rangeStart: Long, rangeEnd: Long): Flow<List<Task>>
+
     /** Задачи по квадранту Эйзенхауэра. */
     fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>>
 

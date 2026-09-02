@@ -28,4 +28,14 @@ interface NoteFolderDao {
 
     @Query("DELETE FROM note_folders WHERE id = :id")
     suspend fun deleteById(id: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM note_folders")
+    suspend fun snapshotAll(): List<NoteFolderEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<NoteFolderEntity>)
+
+    @Query("DELETE FROM note_folders")
+    suspend fun clearAll()
+
 }

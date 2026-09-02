@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.taskmanager.data.backup.BackupManager
 import android.net.Uri
 import com.taskmanager.util.HapticManager
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,13 +42,17 @@ class SettingsViewModel @Inject constructor(
     fun importFromUri(uri: Uri, onSuccess: () -> Unit, onError: () -> Unit) {
         _state.value = _state.value.copy(isImporting = true)
         viewModelScope.launch {
-            val ok = backupManager.importFromUri(uri)
+            val result = backupManager.importFromUri(uri)
             _state.value = _state.value.copy(isImporting = false)
-            if (ok) onSuccess() else onError()
+            when (result) {
+                BackupManager.RestoreResult.Success -> onSuccess()
+                is BackupManager.RestoreResult.Error -> {
+                    Log.e("SettingsViewModel", "Backup import failed: ${result.reason}")
+                    onError()
+                }
+            }
         }
     }
-}
-
 
     /**
      * Handle FAB long-press for Settings screen (if any)
@@ -55,4 +60,4 @@ class SettingsViewModel @Inject constructor(
     fun onFabLongClick() {
         hapticManager.mediumVibrate()
     }
-
+}

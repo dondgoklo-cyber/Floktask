@@ -16,6 +16,8 @@ import com.taskmanager.data.repository.TagRepositoryImpl
 import com.taskmanager.data.repository.TaskRepositoryImpl
 import com.taskmanager.data.repository.TransactionRepositoryImpl
 import com.taskmanager.data.repository.UserStatsRepositoryImpl
+import com.taskmanager.domain.notification.ReminderScheduler
+import com.taskmanager.notification.AlarmScheduler
 import com.taskmanager.domain.repository.HabitLogRepository
 import com.taskmanager.domain.repository.AccountRepository
 import com.taskmanager.domain.repository.BudgetRepository
@@ -105,4 +107,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindGoalRepository(impl: GoalRepositoryImpl): GoalRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReminderScheduler(impl: AlarmScheduler): ReminderScheduler
 }

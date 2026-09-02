@@ -26,10 +26,10 @@ class GetEisenhowerTasksUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
     operator fun invoke(): Flow<Map<EisenhowerQuadrant, List<Task>>> =
-        taskRepository.getAllTasks().map { tasks ->
+        taskRepository.getIncompleteTasks().map { tasks ->
             val now = Instant.now()
             val dayMillis = 24 * 60 * 60 * 1000L
-            tasks.filter { !it.isCompleted }.groupBy { task ->
+            tasks.groupBy { task ->
                 task.eisenhowerQuadrant ?: autoQuadrant(task, now, dayMillis)
             }
         }

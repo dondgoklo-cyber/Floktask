@@ -50,6 +50,10 @@ interface TaskDao {
     @Query("UPDATE tasks SET isCompleted = :completed, updatedAt = :updatedAt WHERE id = :id")
     suspend fun setCompleted(id: Long, completed: Boolean, updatedAt: Long)
 
+    /** Обновляет только reminderDate (используется при Snooze из уведомления). */
+    @Query("UPDATE tasks SET reminderDate = :reminderDate, updatedAt = :updatedAt WHERE id = :id")
+    suspend fun updateReminderDate(id: Long, reminderDate: Long?, updatedAt: Long)
+
     /**
      * Задачи с запланированным временем на день [startTime в диапазоне [dayStart, dayEnd].
      * Используется для time blocking в календаре.
@@ -62,6 +66,13 @@ interface TaskDao {
      */
     @Query("SELECT * FROM tasks WHERE (deadline IS NOT NULL AND deadline >= :dayStart AND deadline < :dayEnd) OR (startTime IS NOT NULL AND startTime >= :dayStart AND startTime < :dayEnd) ORDER BY startTime IS NULL, startTime ASC, deadline ASC")
     fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<TaskEntity>>
+
+    /**
+     * Задачи в диапазоне [rangeStart, rangeEnd) — deadline или startTime попадает в диапазон.
+     * Используется календарём для day/3-day/week/month views вместо загрузки всех задач.
+     */
+    @Query("SELECT * FROM tasks WHERE (deadline IS NOT NULL AND deadline >= :rangeStart AND deadline < :rangeEnd) OR (startTime IS NOT NULL AND startTime >= :rangeStart AND startTime < :rangeEnd) ORDER BY startTime IS NULL, startTime ASC, deadline ASC")
+    fun getTasksForRange(rangeStart: Long, rangeEnd: Long): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE eisenhowerQuadrant = :quadrant AND isCompleted = 0")
     fun getTasksByQuadrant(quadrant: String): Flow<List<TaskEntity>>
@@ -88,4 +99,14 @@ interface TaskDao {
     /** Задачи с активным напоминанием в будущем (для перерегистрации после перезагрузки). */
     @Query("SELECT * FROM tasks WHERE reminderDate IS NOT NULL AND reminderDate > :now AND isCompleted = 0")
     suspend fun getAllTasksWithReminders(now: Long): List<TaskEntity>
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM tasks")
+    suspend fun snapshotAll(): List<TaskEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<TaskEntity>)
+
+    @Query("DELETE FROM tasks")
+    suspend fun clearAll()
+
 }

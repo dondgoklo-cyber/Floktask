@@ -8,6 +8,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.OutputStream
 import java.io.Writer
+import java.time.Instant
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -22,8 +23,10 @@ class FinanceExportManager {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
     /**
-     * Экспортирует транзакции в CSV.
-     * Колонки: Date,Type,Amount,Currency,Category,Account,Description,Tags
+     * Экспортирует транзакции в CSV (RFC 4180).
+     * Колонки: Date,Type,Amount,Currency,Category,Account,Description
+     * Поля корректно экранируются: поля с запятой, кавычкой или переводом строки
+     * заключаются в двойные кавычки, внутренние кавычки удваиваются.
      */
     fun exportToCsv(
         transactions: List<Transaction>,
@@ -42,11 +45,109 @@ class FinanceExportManager {
                 TransactionType.EXPENSE -> "Расход"
                 TransactionType.TRANSFER -> "Перевод"
             }
-            val note = tx.note?.replace(",", ";")?.replace("\n", " ") ?: ""
+            val note = csvEscape(tx.note ?: "")
 
-            writer.write("$dateStr,$typeStr,${tx.amount},${tx.currency},$catName,$accName,$note\n")
+            writer.write(buildString {
+                append(csvEscape(dateStr)).append(',')
+                append(csvEscape(typeStr)).append(',')
+                append(csvEscape(tx.amount.toString())).append(',')
+                append(csvEscape(tx.currency)).append(',')
+                append(csvEscape(catName)).append(',')
+                append(csvEscape(accName)).append(',')
+                append(note)
+                append('\n')
+            })
         }
         writer.flush()
+    }
+
+    /** RFC 4180: заключить в кавычки при наличии запятой/кавычки/CRLF, удвоить кавычки. */
+    private fun csvEscape(field: String): String {
+        val needsQuoting = field.any { it == ',' || it == '"' || it == '\n' || it == '\r' }
+        return if (needsQuoting) "\"" + field.replace("\"", "\"\"") + "\"" else field
+    }
+
+    /**
+     * Парсит CSV, созданный [exportToCsv], обратно в список транзакций (round-trip).
+     * Восстанавливает Date/Type/Amount/Currency/Category/Account/Description.
+     * categoryId/accountId сопоставляются по имени с переданными справочниками.
+     */
+    fun importFromCsv(
+        csv: String,
+        categories: List<Category>,
+        accounts: List<Account>
+    ): List<Transaction> {
+        val rows = parseCsv(csv)
+        if (rows.isEmpty()) return emptyList()
+        val header = rows.first()
+        val data = rows.drop(1)
+        if (header != listOf("Date", "Type", "Amount", "Currency", "Category", "Account", "Description")) {
+            return emptyList()
+        }
+        val result = mutableListOf<Transaction>()
+        for (row in data) {
+            if (row.size < 7) continue
+            val date = runCatching { dateFormat.parse(row[0]) }.getOrNull() ?: continue
+            val type = when (row[1]) {
+                "Доход" -> TransactionType.INCOME
+                "Расход" -> TransactionType.EXPENSE
+                "Перевод" -> TransactionType.TRANSFER
+                else -> runCatching { TransactionType.valueOf(row[1]) }.getOrDefault(TransactionType.EXPENSE)
+            }
+            val amount = row[2].toDoubleOrNull() ?: continue
+            val currency = row[3]
+            val categoryId = categories.firstOrNull { it.name == row[4] }?.id
+            val accountId = accounts.firstOrNull { it.name == row[5] }?.id
+            val note = row[6].ifBlank { null }
+            result.add(
+                Transaction(
+                    amount = amount,
+                    type = type,
+                    currency = currency,
+                    categoryId = categoryId,
+                    accountId = accountId,
+                    date = Instant.ofEpochMilli(date.time),
+                    note = note
+                )
+            )
+        }
+        return result
+    }
+
+    /** Минимальный RFC 4180 CSV-парсер: поддерживает кавычки, удвоенные кавычки, CRLF. */
+    private fun parseCsv(csv: String): List<List<String>> {
+        val rows = mutableListOf<List<String>>()
+        val current = StringBuilder()
+        val fields = mutableListOf<String>()
+        var inQuotes = false
+        var i = 0
+        var rowStarted = false
+        while (i < csv.length) {
+            val c = csv[i]
+            rowStarted = true
+            when {
+                inQuotes -> {
+                    if (c == '"') {
+                        if (i + 1 < csv.length && csv[i + 1] == '"') {
+                            current.append('"'); i += 2; continue
+                        }
+                        inQuotes = false; i++
+                    } else {
+                        current.append(c); i++
+                    }
+                }
+                c == '"' -> { inQuotes = true; i++ }
+                c == ',' -> { fields.add(current.toString()); current.clear(); i++ }
+                c == '\r' -> { if (i + 1 < csv.length && csv[i + 1] == '\n') i++ else i++; fields.add(current.toString()); current.clear(); if (rowStarted) rows.add(fields.toList()); fields.clear(); rowStarted = false }
+                c == '\n' -> { fields.add(current.toString()); current.clear(); if (rowStarted) rows.add(fields.toList()); fields.clear(); rowStarted = false; i++ }
+                else -> { current.append(c); i++ }
+            }
+        }
+        if (rowStarted) {
+            fields.add(current.toString())
+            rows.add(fields.toList())
+        }
+        return rows
     }
 
     /**

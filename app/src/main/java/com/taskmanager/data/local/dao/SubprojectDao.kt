@@ -58,4 +58,14 @@ interface SubprojectDao {
 
     @Query("SELECT COUNT(*) FROM subprojects WHERE parentSubprojectId = :subprojectId")
     suspend fun countByParentSubproject(subprojectId: Long): Int
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM subprojects")
+    suspend fun snapshotAll(): List<SubprojectEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<SubprojectEntity>)
+
+    @Query("DELETE FROM subprojects")
+    suspend fun clearAll()
+
 }

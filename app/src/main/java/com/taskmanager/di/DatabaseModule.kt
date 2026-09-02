@@ -20,6 +20,7 @@ import com.taskmanager.data.local.dao.TaskTagDao
 import com.taskmanager.data.local.dao.TransactionDao
 import com.taskmanager.data.local.dao.UserStatsDao
 import com.taskmanager.data.local.database.AppDatabase
+import com.taskmanager.data.local.database.Migrations
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,7 +40,11 @@ object DatabaseModule {
         context,
         AppDatabase::class.java,
         AppDatabase.DATABASE_NAME
-    ).fallbackToDestructiveMigration().build()
+    )
+        .addMigrations(*Migrations.ALL)
+        // Только при откате версии разрешаем пересоздание; upgrade всегда идёт через миграции.
+        .fallbackToDestructiveMigrationOnDowngrade()
+        .build()
 
     @Provides
     fun provideTaskDao(db: AppDatabase): TaskDao = db.taskDao()

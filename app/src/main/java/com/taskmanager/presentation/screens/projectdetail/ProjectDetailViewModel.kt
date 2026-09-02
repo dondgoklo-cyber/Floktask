@@ -91,20 +91,12 @@ class ProjectDetailViewModel @Inject constructor(
             taskRepository.updateTask(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
         }
     }
+
+    /**
+     * Handle FAB long-press for ProjectDetail screen
+     */
+    fun onFabLongClick() {
+        hapticManager.mediumVibrate()
+    }
 }
-
-
-    /**
-     * Handle FAB long-press for ProjectDetail screen
-     */
-    fun onFabLongClick() {
-        hapticManager.mediumVibrate()
-    }
-
-    /**
-     * Handle FAB long-press for ProjectDetail screen
-     */
-    fun onFabLongClick() {
-        hapticManager.mediumVibrate()
-    }
 

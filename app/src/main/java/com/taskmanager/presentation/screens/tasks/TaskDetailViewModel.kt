@@ -9,6 +9,7 @@ import com.taskmanager.domain.repository.ProjectRepository
 import com.taskmanager.domain.repository.NoteRepository
 import com.taskmanager.domain.repository.SubtaskRepository
 import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.task.SetTaskCompletedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +31,8 @@ class TaskDetailViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val projectRepository: ProjectRepository,
     private val subtaskRepository: SubtaskRepository,
-    private val noteRepository: NoteRepository
+    private val noteRepository: NoteRepository,
+    private val setTaskCompletedUseCase: SetTaskCompletedUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskDetailState())
@@ -57,7 +59,8 @@ class TaskDetailViewModel @Inject constructor(
     fun toggleComplete(task: Task) {
         viewModelScope.launch {
             val updated = task.copy(isCompleted = !task.isCompleted)
-            taskRepository.updateTask(updated)
+            // Через SetTaskCompletedUseCase — отмена напоминания при завершении.
+            setTaskCompletedUseCase(task.id ?: 0, updated.isCompleted)
             _state.value = _state.value.copy(task = updated)
         }
     }

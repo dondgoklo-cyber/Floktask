@@ -21,4 +21,14 @@ interface GoalDao {
 
     @Query("DELETE FROM goals WHERE id = :id")
     suspend fun deleteById(id: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM goals")
+    suspend fun snapshotAll(): List<GoalEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<GoalEntity>)
+
+    @Query("DELETE FROM goals")
+    suspend fun clearAll()
+
 }

@@ -37,4 +37,14 @@ interface HabitDao {
 
     @Query("UPDATE habits SET isArchived = :archived, updatedAt = :updatedAt WHERE id = :id")
     suspend fun setArchived(id: Long, archived: Boolean, updatedAt: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM habits")
+    suspend fun snapshotAll(): List<HabitEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<HabitEntity>)
+
+    @Query("DELETE FROM habits")
+    suspend fun clearAll()
+
 }

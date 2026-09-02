@@ -31,4 +31,14 @@ interface TagDao {
 
     @Query("DELETE FROM tags WHERE id = :id")
     suspend fun deleteById(id: Long)
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM tags")
+    suspend fun snapshotAll(): List<TagEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<TagEntity>)
+
+    @Query("DELETE FROM tags")
+    suspend fun clearAll()
+
 }

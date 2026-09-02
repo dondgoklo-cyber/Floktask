@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.taskmanager.data.local.entity.TaskTagEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -37,4 +38,23 @@ interface TaskTagDao {
         WHERE tt.tagId = :tagId
     """)
     fun getTasksForTag(tagId: Long): Flow<List<com.taskmanager.data.local.entity.TaskEntity>>
+
+    /**
+     * Атомарно заменяет все теги задачи: удаляет старые связи и вставляет новые в одной транзакции.
+     * Без транзакции окно между DELETE и INSERT могло оставить задачу без тегов при сбое/конкурентном доступе.
+     */
+    @Transaction
+    suspend fun replaceTagsForTask(taskId: Long, tagIds: List<Long>) {
+        deleteByTaskId(taskId)
+        if (tagIds.isNotEmpty()) {
+            insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it) })
+        }
+    }
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM task_tags")
+    suspend fun snapshotAll(): List<TaskTagEntity>
+
+    @Query("DELETE FROM task_tags")
+    suspend fun clearAll()
+
 }

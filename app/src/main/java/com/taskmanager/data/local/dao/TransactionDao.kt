@@ -57,6 +57,16 @@ interface TransactionDao {
 
     @Query("SELECT DISTINCT currency FROM transactions")
     fun getUsedCurrencies(): Flow<List<String>>
+    // --- Backup/restore helpers (used by BackupManager) ---
+    @Query("SELECT * FROM transactions")
+    suspend fun snapshotAll(): List<TransactionEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<TransactionEntity>)
+
+    @Query("DELETE FROM transactions")
+    suspend fun clearAll()
+
 }
 
 data class CurrencyTotal(
