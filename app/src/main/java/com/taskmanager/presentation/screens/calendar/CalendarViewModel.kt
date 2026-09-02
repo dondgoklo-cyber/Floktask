@@ -37,7 +37,7 @@ class CalendarViewModel @Inject constructor(
     private val _viewMode = MutableStateFlow(CalendarViewMode.DAY)
     private val _selectedDate = MutableStateFlow(LocalDate.now())
 
-    private val zone = ZoneId.systemDefault()
+    private val zone = ZoneId.of("UTC")
 
     val state: StateFlow<CalendarUiState> = combine(
         _viewMode,

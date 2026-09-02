@@ -23,7 +23,7 @@ class UpcomingViewModel @Inject constructor(
     taskRepository: TaskRepository
 ) : ViewModel() {
 
-    private val zone = ZoneId.systemDefault()
+    private val zone = ZoneId.of("UTC")
 
     val state: StateFlow<UpcomingUiState> = taskRepository
         .getUpcomingTasks(LocalDate.now().atStartOfDay(zone).toInstant().toEpochMilli())

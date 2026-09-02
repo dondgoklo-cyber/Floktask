@@ -157,7 +157,7 @@ private fun DayHeader(date: LocalDate) {
 }
 
 private fun groupByDay(tasks: List<Task>): List<Pair<LocalDate, List<Task>>> {
-    val zone = ZoneId.systemDefault()
+    val zone = ZoneId.of("UTC")
     return tasks
         .filter { it.startTime != null || it.deadline != null }
         .groupBy { task ->

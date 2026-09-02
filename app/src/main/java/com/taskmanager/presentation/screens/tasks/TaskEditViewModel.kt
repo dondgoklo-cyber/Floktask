@@ -82,14 +82,14 @@ class TaskEditViewModel @Inject constructor(
                     priority = task.priority,
                     projectId = task.projectId,
                     status = task.status,
-                    deadlineDate = task.deadline?.atZone(ZoneId.systemDefault())?.toLocalDate(),
-                    startTime = task.startTime?.atZone(ZoneId.systemDefault())?.toLocalTime(),
+                    deadlineDate = task.deadline?.atZone(ZoneId.of("UTC"))?.toLocalDate(),
+                    startTime = task.startTime?.atZone(ZoneId.of("UTC"))?.toLocalTime(),
                     durationMinutes = task.durationMinutes,
                     pomodoroEstimate = task.pomodoroEstimate,
                     eisenhowerQuadrant = task.eisenhowerQuadrant,
                     tags = task.tags,
                     recurrenceRule = task.recurrenceRule,
-                    reminderDateTime = task.reminderDate?.atZone(ZoneId.systemDefault())?.toLocalDateTime()
+                    reminderDateTime = task.reminderDate?.atZone(ZoneId.of("UTC"))?.toLocalDateTime()
                 )
             }
         }
@@ -173,7 +173,7 @@ class TaskEditViewModel @Inject constructor(
         viewModelScope.launch {
             val (deadline, startTime) = combineDateTime(state)
             val reminderInstant = state.reminderDateTime
-                ?.atZone(ZoneId.systemDefault())?.toInstant()
+                ?.atZone(ZoneId.of("UTC"))?.toInstant()
             val existing = taskId?.let { getTaskByIdUseCase(it) }
             val task = (existing?.copy(
                 title = state.title.trim(),
@@ -223,7 +223,7 @@ class TaskEditViewModel @Inject constructor(
      * Если только дата — deadline = date в полночь.
      */
     private fun combineDateTime(state: TaskFormState): Pair<Instant?, Instant?> {
-        val zone = ZoneId.systemDefault()
+        val zone = ZoneId.of("UTC")
         if (state.deadlineDate == null) return null to null
 
         val time = state.startTime ?: LocalTime.MIDNIGHT

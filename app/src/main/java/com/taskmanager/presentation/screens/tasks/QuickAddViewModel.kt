@@ -27,7 +27,7 @@ class QuickAddViewModel @Inject constructor(
         recurrence: RecurrenceRule?
     ) {
         viewModelScope.launch {
-            val zone = ZoneId.systemDefault()
+            val zone = ZoneId.of("UTC")
             val deadline = date?.atTime(time ?: LocalTime.MIDNIGHT)?.atZone(zone)?.toInstant()
             val task = Task(
                 title = title,
@@ -41,7 +41,7 @@ class QuickAddViewModel @Inject constructor(
 
     fun createTask(parsed: ParsedQuickTask, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
-            val zone = ZoneId.systemDefault()
+            val zone = ZoneId.of("UTC")
             val (deadline, startTime) = if (parsed.deadlineDate != null && parsed.startTime != null) {
                 val instant = parsed.deadlineDate.atTime(parsed.startTime).atZone(zone).toInstant()
                 instant to instant

@@ -43,7 +43,7 @@ class AutoScheduleTasksUseCase @Inject constructor() {
         tasks: List<SchedulableTask>,
         date: LocalDate,
         busy: List<TimeInterval>,
-        zone: ZoneId = ZoneId.systemDefault(),
+        zone: ZoneId = ZoneId.of("UTC"),
         workStartHour: Int = 9,
         workEndHour: Int = 18,
         slotMinutes: Int = 15

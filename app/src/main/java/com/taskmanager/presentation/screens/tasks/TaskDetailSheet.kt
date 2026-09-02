@@ -202,7 +202,7 @@ private fun TaskDetailContent(
                             icon = Icons.Filled.CalendarMonth,
                             label = stringResource(R.string.deadline),
                             value = deadline
-                                .atZone(ZoneId.systemDefault())
+                                .atZone(ZoneId.of("UTC"))
                                 .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
                         )
                     }
@@ -211,7 +211,7 @@ private fun TaskDetailContent(
                             icon = Icons.Filled.Schedule,
                             label = stringResource(R.string.time),
                             value = start
-                                .atZone(ZoneId.systemDefault())
+                                .atZone(ZoneId.of("UTC"))
                                 .format(DateTimeFormatter.ofPattern("HH:mm"))
                         )
                     }

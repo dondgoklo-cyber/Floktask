@@ -20,7 +20,7 @@ class RecurrenceScheduler @Inject constructor() {
      * Compute the next occurrence instant for [rule] starting from [from].
      * CUSTOM is not supported here (needs its own rule definition).
      */
-    fun nextOccurrence(rule: RecurrenceRule, from: Instant, zone: ZoneId = ZoneId.systemDefault()): Instant? =
+    fun nextOccurrence(rule: RecurrenceRule, from: Instant, zone: ZoneId = ZoneId.of("UTC")): Instant? =
         when (rule) {
             RecurrenceRule.DAILY -> from.plus(1, ChronoUnit.DAYS)
             RecurrenceRule.WEEKLY -> from.plus(7, ChronoUnit.DAYS)
@@ -34,7 +34,7 @@ class RecurrenceScheduler @Inject constructor() {
      * deadline (and reminder) per the recurrence rule. Returns null if the
      * task is not recurring.
      */
-    fun nextInstance(task: Task, completedAt: Instant = Instant.now(), zone: ZoneId = ZoneId.systemDefault()): Task? {
+    fun nextInstance(task: Task, completedAt: Instant = Instant.now(), zone: ZoneId = ZoneId.of("UTC")): Task? {
         val rule = task.recurrenceRule ?: return null
         val base = task.deadline ?: completedAt
         val nextDeadline = nextOccurrence(rule, base, zone) ?: return null

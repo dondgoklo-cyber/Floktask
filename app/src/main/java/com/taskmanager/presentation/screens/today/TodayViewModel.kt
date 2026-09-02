@@ -62,7 +62,7 @@ class TodayViewModel @Inject constructor(
     private val getAllNotesUseCase: GetAllNotesUseCase
 ) : ViewModel() {
 
-    private val zone = ZoneId.systemDefault()
+    private val zone = ZoneId.of("UTC")
 
     private val _state = MutableStateFlow(TodayUiState(isLoading = true))
     val state: StateFlow<TodayUiState> = _state.asStateFlow()

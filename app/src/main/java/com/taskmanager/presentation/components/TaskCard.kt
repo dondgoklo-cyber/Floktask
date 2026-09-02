@@ -155,7 +155,7 @@ fun TaskCard(
                 ) {
                     // Deadline
                     task.deadline?.let { deadline ->
-                        val date = deadline.atZone(ZoneId.systemDefault()).toLocalDate()
+                        val date = deadline.atZone(ZoneId.of("UTC")).toLocalDate()
                         val today = LocalDate.now()
                         val daysLeft = ChronoUnit.DAYS.between(today, date)
                         val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
@@ -189,7 +189,7 @@ fun TaskCard(
 
                     // Start time
                     task.startTime?.let { start ->
-                        val time = start.atZone(ZoneId.systemDefault()).toLocalTime()
+                        val time = start.atZone(ZoneId.of("UTC")).toLocalTime()
                         Text(
                             time.format(DateTimeFormatter.ofPattern("HH:mm")),
                             style = MaterialTheme.typography.labelSmall,

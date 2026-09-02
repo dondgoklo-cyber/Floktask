@@ -142,7 +142,7 @@ class FinanceViewModel @Inject constructor(
             )
         }
         val balanceInBaseCurrency = balancesByCurrency.sumOf { it.convertedBalance }
-        val zone = ZoneId.systemDefault()
+        val zone = ZoneId.of("UTC")
         val (from, to) = periodRange(period, zone)
         val periodTx = transactions.filter { tx ->
             val txDate = tx.date.atZone(zone).toLocalDate()

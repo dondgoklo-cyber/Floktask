@@ -365,7 +365,7 @@ private fun NextTaskRow(task: Task, onClick: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(Spacing.md)
         ) {
             task.startTime?.let { start ->
-                val time = start.atZone(ZoneId.systemDefault()).toLocalTime()
+                val time = start.atZone(ZoneId.of("UTC")).toLocalTime()
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         time.format(DateTimeFormatter.ofPattern("HH:mm")),

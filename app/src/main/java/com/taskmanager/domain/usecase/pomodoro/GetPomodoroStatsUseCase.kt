@@ -21,7 +21,7 @@ class GetPomodoroStatsUseCase @Inject constructor(
     private val pomodoroSessionRepository: PomodoroSessionRepository
 ) {
     operator fun invoke(): Flow<PomodoroStats> {
-        val zone = ZoneId.systemDefault()
+        val zone = ZoneId.of("UTC")
         val today = LocalDate.now()
         val dayStart = today.atStartOfDay(zone).toInstant().toEpochMilli()
         val dayEnd = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()

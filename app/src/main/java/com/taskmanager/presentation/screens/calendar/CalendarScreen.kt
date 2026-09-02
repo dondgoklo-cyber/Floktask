@@ -186,7 +186,7 @@ private fun HourRow(
     viewModel: CalendarViewModel
 ) {
     val density = LocalDensity.current
-    val zone = ZoneId.systemDefault()
+    val zone = ZoneId.of("UTC")
     val hourTasks = tasks.filter { task ->
         task.startTime?.atZone(zone)?.hour == hour
     }
@@ -243,7 +243,7 @@ private fun DraggableTimeBlock(
     onResize: (Long) -> Unit
 ) {
     val density = LocalDensity.current
-    val zone = ZoneId.systemDefault()
+    val zone = ZoneId.of("UTC")
     var dragY by remember { mutableFloatStateOf(0f) }
 
     val startMinute = task.startTime?.atZone(zone)?.minute ?: 0
@@ -416,7 +416,7 @@ private fun DaySection(
                     ) {
                         task.startTime?.let { start ->
                             Text(
-                                start.atZone(ZoneId.systemDefault())
+                                start.atZone(ZoneId.of("UTC"))
                                     .toLocalTime()
                                     .format(DateTimeFormatter.ofPattern("HH:mm")),
                                 style = MaterialTheme.typography.labelSmall,

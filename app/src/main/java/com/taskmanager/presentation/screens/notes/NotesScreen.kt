@@ -363,7 +363,7 @@ private fun FolderRow(name: String, onClick: () -> Unit) {
 }
 
 private fun formatDate(instant: Instant): String {
-    val zone = ZoneId.systemDefault()
+    val zone = ZoneId.of("UTC")
     return instant.atZone(zone).toLocalDate()
         .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT))
 }

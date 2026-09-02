@@ -392,7 +392,7 @@ fun TaskEditScreen(
         val initialDate = form.deadlineDate ?: LocalDate.now()
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = initialDate
-                .atStartOfDay(ZoneId.systemDefault())
+                .atStartOfDay(ZoneId.of("UTC"))
                 .toInstant()
                 .toEpochMilli()
         )
@@ -402,7 +402,7 @@ fun TaskEditScreen(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         viewModel.onDeadlineChange(date)
                     }
@@ -421,7 +421,7 @@ fun TaskEditScreen(
         val initialDate = form.reminderDateTime?.toLocalDate() ?: form.deadlineDate ?: LocalDate.now()
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = initialDate
-                .atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                .atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
         )
         DatePickerDialog(
             onDismissRequest = { showReminderPicker = false },
@@ -429,7 +429,7 @@ fun TaskEditScreen(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault()).toLocalDate()
+                            .atZone(ZoneId.of("UTC")).toLocalDate()
                         val time = form.reminderDateTime?.toLocalTime() ?: LocalTime.of(9, 0)
                         viewModel.onReminderChange(date.atTime(time))
                     }

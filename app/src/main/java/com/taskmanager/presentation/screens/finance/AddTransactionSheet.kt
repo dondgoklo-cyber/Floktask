@@ -84,7 +84,7 @@ fun AddTransactionSheet(
     val safeAccounts = accounts.ifEmpty { listOf(com.taskmanager.domain.model.Account(name = "Основной", currency = "RUB")) }
     var selectedCurrency by remember { mutableStateOf(editingTransaction?.currency ?: "RUB") }
     var note by remember { mutableStateOf(editingTransaction?.note ?: "") }
-    var date by remember { mutableStateOf(editingTransaction?.date?.atZone(ZoneId.systemDefault())?.toLocalDate() ?: LocalDate.now()) }
+    var date by remember { mutableStateOf(editingTransaction?.date?.atZone(ZoneId.of("UTC"))?.toLocalDate() ?: LocalDate.now()) }
     var showDatePicker by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
@@ -233,7 +233,7 @@ fun AddTransactionSheet(
                 onClick = {
                     val amount = amountText.toDoubleOrNull() ?: 0.0
                     if (amount > 0) {
-                        val instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                        val instant = date.atStartOfDay(ZoneId.of("UTC")).toInstant()
                         onCreate(amount, type, selectedCurrency, selectedCategoryId, selectedAccountId, instant, note)
                     }
                 },
@@ -248,7 +248,7 @@ fun AddTransactionSheet(
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = date
-                .atStartOfDay(ZoneId.systemDefault())
+                .atStartOfDay(ZoneId.of("UTC"))
                 .toInstant().toEpochMilli()
         )
         DatePickerDialog(
@@ -257,7 +257,7 @@ fun AddTransactionSheet(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                     }
                     showDatePicker = false
