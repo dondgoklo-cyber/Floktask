@@ -1,7 +1,9 @@
 package com.taskmanager.domain.usecase.task
 
+import com.taskmanager.domain.alarm.AlarmScheduler
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
+import io.mockk.mockk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -36,6 +38,10 @@ class TaskUseCasesTest {
             store.remove(id)
         }
 
+        override suspend fun cancelReminder(taskId: Long) {
+            // no-op for mock
+        }
+
         override fun getAllTasks(): Flow<List<Task>> = flowOf(store.values.toList())
         override fun getTasksByProject(projectId: Long): Flow<List<Task>> = flowOf(emptyList())
         override fun getCompletedTasks(): Flow<List<Task>> = flowOf(emptyList())
@@ -65,8 +71,9 @@ class TaskUseCasesTest {
 
     @Test
     fun `deleteTask removes the task`() = runBlocking {
+        val alarmScheduler = mockk<AlarmScheduler>()
         val id = fakeRepo.createTask(Task(title = "y", createdAt = Instant.now(), updatedAt = Instant.now()))
-        val useCase = DeleteTaskUseCase(fakeRepo)
+        val useCase = DeleteTaskUseCase(fakeRepo, alarmScheduler)
         useCase(id)
         assertNull(fakeRepo.getTaskById(id))
     }
