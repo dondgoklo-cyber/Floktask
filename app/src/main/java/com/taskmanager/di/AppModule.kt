@@ -2,6 +2,8 @@ package com.taskmanager.di
 
 import android.content.Context
 import coil.ImageLoader
+import com.taskmanager.data.logger.AndroidLogger
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.haptic.HapticManager
 import com.taskmanager.image.ImageLoaderFactory
 import dagger.Module
@@ -28,4 +30,7 @@ object AppModule {
     @Singleton
     fun provideExchangeRateProvider(): com.taskmanager.domain.finance.ExchangeRateProvider =
         com.taskmanager.data.repository.LocalExchangeRateProvider()
-}
+
+    @Provides
+    @Singleton
+    fun provideLogger(): Logger = AndroidLogger()

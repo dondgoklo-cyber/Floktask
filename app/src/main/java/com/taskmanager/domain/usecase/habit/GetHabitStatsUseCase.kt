@@ -1,10 +1,10 @@
 package com.taskmanager.domain.usecase.habit
 
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.HabitLog
 import com.taskmanager.domain.repository.HabitLogRepository
 import java.time.LocalDate
 import javax.inject.Inject
-import android.util.Log
 
 data class HabitStats(
     val currentStreak: Int,
@@ -15,13 +15,14 @@ data class HabitStats(
 )
 
 class GetHabitStatsUseCase @Inject constructor(
-    private val habitLogRepository: HabitLogRepository
+    private val habitLogRepository: HabitLogRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(habitId: Long): HabitStats {
         val logs = runCatching {
             habitLogRepository.getByHabit(habitId)
         }.onFailure { e ->
-            Log.e("GetHabitStatsUseCase", "Error in invoke", e)
+            logger.error("GetHabitStatsUseCase", "Error in invoke", e)
         }.getOrThrow()
         
         val logsByDate: Map<LocalDate, Int> = logs.groupBy { it.date }.mapValues { (_, values) ->
