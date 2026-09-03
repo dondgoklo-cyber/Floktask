@@ -62,6 +62,10 @@ import com.taskmanager.presentation.theme.Elevation
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.data.repository.FinanceExportManager
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.utils.divideSafe
+import com.taskmanager.utils.sumOfBigDecimal
+import com.taskmanager.utils.toDisplayDouble
+import com.taskmanager.utils.toMoneyBigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,7 +142,7 @@ fun FinanceScreen(
                     val imported = exportManager.importFromJson(json)
                     imported.forEach { tx ->
                         viewModel.createTransaction(
-                            tx.amount, tx.type, tx.currency, tx.categoryId,
+                            tx.amount.toDisplayDouble(), tx.type, tx.currency, tx.categoryId,
                             tx.accountId, tx.date, tx.note
                         )
                     }
@@ -290,7 +294,7 @@ fun FinanceScreen(
         AlertDialog(
             onDismissRequest = { pendingDeleteTx = null },
             title = { Text("Удалить операцию?") },
-            text = { Text(formatMoney(tx.amount, tx.currency)) },
+            text = { Text(formatMoney(tx.amount.toDisplayDouble(), tx.currency)) },
             confirmButton = {
                 TextButton(onClick = {
                     tx.id?.let { viewModel.deleteTransaction(it) }
@@ -358,7 +362,7 @@ private fun BalanceCard(
             )
             Spacer(Modifier.height(Spacing.xs))
             Text(
-                formatMoney(balance, currency),
+                formatMoney(balance.toDisplayDouble(), currency),
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
                 color = AppTheme.colors.onPrimary
@@ -377,7 +381,7 @@ private fun BalanceCard(
                             color = AppTheme.colors.onPrimary.copy(alpha = 0.7f)
                         )
                         Text(
-                            formatMoney(ab.balance, ab.currency),
+                            formatMoney(ab.balance.toDisplayDouble(), ab.currency),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium,
                             color = AppTheme.colors.onPrimary.copy(alpha = 0.9f)
@@ -503,7 +507,7 @@ private fun CategoryBreakdown(
                         Text(cat.categoryName, style = MaterialTheme.typography.bodyMedium)
                     }
                     Text(
-                        formatMoney(cat.total, currency),
+                        formatMoney(cat.total.toDisplayDouble(), currency),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = AppTheme.colors.onSurface
@@ -528,7 +532,7 @@ private fun GoalCard(state: FinanceUiState) {
         ) {
             Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.goals.forEach { goal ->
-                val progress = if (goal.targetAmount > 0) (goal.savedAmount / goal.targetAmount).coerceIn(0.0, 1.0) else 0.0
+                val progress = if (goal.targetAmount > BigDecimal.ZERO) (goal.savedAmount.toDisplayDouble() / goal.targetAmount.toDisplayDouble()).coerceIn(0.0, 1.0) else 0.0
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -536,7 +540,7 @@ private fun GoalCard(state: FinanceUiState) {
                 ) {
                     Text(goal.title, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     Text(
-                        "${formatMoney(goal.savedAmount, goal.currency)} / ${formatMoney(goal.targetAmount, goal.currency)}",
+                        "${formatMoney(goal.savedAmount.toDisplayDouble(), goal.currency)} / ${formatMoney(goal.targetAmount.toDisplayDouble(), goal.currency)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = AppTheme.colors.onSurfaceVariant
                     )
@@ -566,9 +570,11 @@ private fun BudgetCard(state: FinanceUiState) {
         ) {
             Text("Бюджеты", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.budgets.forEach { (cat, budget) ->
-                val spent = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: 0.0
-                val progress = if (budget.amount > 0) (spent / budget.amount).coerceIn(0.0, 1.0) else 0.0
-                val isOverBudget = spent > budget.amount
+                val spentBd = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: BigDecimal.ZERO
+                val spent = spentBd.toDisplayDouble()
+                val budgetAmount = budget.amount.toDisplayDouble()
+                val progress = if (budgetAmount > 0) (spent / budgetAmount).coerceIn(0.0, 1.0) else 0.0
+                val isOverBudget = spent > budgetAmount
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -576,7 +582,7 @@ private fun BudgetCard(state: FinanceUiState) {
                 ) {
                     Text(cat.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     Text(
-                        "${formatMoney(spent, budget.currency)} / ${formatMoney(budget.amount, budget.currency)}",
+                        "${formatMoney(spent, budget.currency)} / ${formatMoney(budgetAmount, budget.currency)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = if (isOverBudget) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant
                     )
@@ -609,15 +615,15 @@ private fun AnalyticsCard(state: FinanceUiState) {
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
-            AnalyticsRow("Средние траты в день", formatMoney(state.avgDailySpending, state.baseCurrency))
-            AnalyticsRow("Средние траты в месяц", formatMoney(state.avgMonthlySpending, state.baseCurrency))
+            AnalyticsRow("Средние траты в день", formatMoney(state.avgDailySpending.toDisplayDouble(), state.baseCurrency))
+            AnalyticsRow("Средние траты в месяц", formatMoney(state.avgMonthlySpending.toDisplayDouble(), state.baseCurrency))
             AnalyticsRow("Норма сбережений", "${state.savingsRate.toInt()}%")
             state.topIncomeSource?.let { source ->
                 AnalyticsRow("Основной источник дохода", source)
             }
             state.largestExpense?.let { tx ->
                 val catName = state.categories.find { it.id == tx.categoryId }?.name ?: tx.note ?: "Расход"
-                AnalyticsRow("Крупнейший расход", "${formatMoney(tx.amount, tx.currency)} — $catName")
+                AnalyticsRow("Крупнейший расход", "${formatMoney(tx.amount.toDisplayDouble(), tx.currency)} — $catName")
             }
         }
     }

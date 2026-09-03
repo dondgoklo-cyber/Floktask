@@ -23,6 +23,10 @@ import com.taskmanager.data.local.dao.CurrencyTotal
 import android.app.Application
 import com.taskmanager.security.UserPrefs
 import com.taskmanager.domain.usecase.finance.UpdateTransactionUseCase
+import com.taskmanager.utils.divideSafe
+import com.taskmanager.utils.sumOfBigDecimal
+import com.taskmanager.utils.toDisplayDouble
+import com.taskmanager.utils.toMoneyBigDecimal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -148,8 +152,8 @@ class FinanceViewModel @Inject constructor(
             val txDate = tx.date.atZone(zone).toLocalDate()
             !txDate.isBefore(from) && !txDate.isAfter(to)
         }
-        val periodIncome = periodTx.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-        val periodExpense = periodTx.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+        val periodIncome = periodTx.filter { it.type == TransactionType.INCOME }.sumOfBigDecimal { it.amount }.toDisplayDouble()
+        val periodExpense = periodTx.filter { it.type == TransactionType.EXPENSE }.sumOfBigDecimal { it.amount }.toDisplayDouble()
         val net = periodIncome - periodExpense
         val balance = totalIncome - totalExpense
 
@@ -161,7 +165,7 @@ class FinanceViewModel @Inject constructor(
 
         // Analytics
         val largestExpense = periodTx.filter { it.type == TransactionType.EXPENSE }
-            .maxByOrNull { it.amount }
+            .maxByOrNull { it.amount.toDisplayDouble() }
         val daysInPeriod = when (period) {
             FinancePeriod.TODAY -> 1
             FinancePeriod.WEEK -> 7
@@ -172,7 +176,7 @@ class FinanceViewModel @Inject constructor(
         val avgMonthlySpending = avgDailySpending * 30
         val topIncomeSource = periodTx.filter { it.type == TransactionType.INCOME }
             .groupBy { it.categoryId }
-            .maxByOrNull { it.value.sumOf { tx -> tx.amount } }
+            .maxByOrNull { it.value.sumOfBigDecimal { tx -> tx.amount }.toDisplayDouble() }
             ?.let { entry -> categories.find { it.id == entry.key }?.name }
         val savingsRate = if (periodIncome > 0) {
             ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
@@ -302,8 +306,8 @@ class FinanceViewModel @Inject constructor(
             }
             currentDate = txDate
             when (tx.type) {
-                TransactionType.INCOME -> running += tx.amount
-                TransactionType.EXPENSE -> running -= tx.amount
+                TransactionType.INCOME -> running += tx.amount.toDisplayDouble()
+                TransactionType.EXPENSE -> running -= tx.amount.toDisplayDouble()
                 TransactionType.TRANSFER -> {}
             }
         }
@@ -343,7 +347,7 @@ class FinanceViewModel @Inject constructor(
                 CategoryExpense(
                     categoryName = cat?.name ?: "Без категории",
                     categoryColor = cat?.color,
-                    total = txs.sumOf { it.amount }
+                    total = txs.sumOfBigDecimal { it.amount }.toDisplayDouble()
                 )
             }
             .sortedByDescending { it.total }
