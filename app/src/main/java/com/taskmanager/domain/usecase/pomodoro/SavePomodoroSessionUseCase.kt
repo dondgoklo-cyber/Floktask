@@ -1,13 +1,14 @@
 package com.taskmanager.domain.usecase.pomodoro
 
-import android.util.Log
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.PomodoroSession
 import com.taskmanager.domain.model.PomodoroType
 import com.taskmanager.domain.repository.PomodoroSessionRepository
 import java.time.Instant
 import javax.inject.Inject
 
-class SavePomodoroSessionUseCase @Inject constructor(
+class SavePomodoroSessionUseCase @Inject constructor( 
+    private val logger: Logger,
     private val pomodoroSessionRepository: PomodoroSessionRepository
 ) {
     suspend operator fun invoke(
@@ -24,6 +25,6 @@ class SavePomodoroSessionUseCase @Inject constructor(
         )
         pomodoroSessionRepository.saveSession(session)
     }.onFailure { e ->
-        Log.e("SavePomodoroSessionUseCase", "Error in invoke", e)
+        logger.error("SavePomodoroSessionUseCase", "Error in invoke", e)
     }.getOrThrow()
 }

@@ -1,0 +1,29 @@
+package com.taskmanager.data.logger
+
+import android.util.Log
+import com.taskmanager.domain.logger.Logger
+
+/**
+ * Android implementation of Logger interface.
+ * Delegates to android.util.Log for actual logging.
+ * 
+ * Part of Phase 1 architecture stabilization - Task #1
+ */
+class AndroidLogger : Logger {
+    override fun debug(tag: String, message: String) {
+        Log.d(tag, message)
+    }
+    
+    override fun info(tag: String, message: String) {
+        Log.i(tag, message)
+    }
+    
+    override fun warn(tag: String, message: String) {
+        Log.w(tag, message)
+    }
+    
+    override fun error(tag: String, message: String, throwable: Throwable?) {
+        if (throwable != null) Log.e(tag, message, throwable)
+        else Log.e(tag, message)
+    }
+}

@@ -2,14 +2,15 @@ package com.taskmanager.domain.usecase.finance
 
 import com.taskmanager.domain.repository.CategoryRepository
 import javax.inject.Inject
-import android.util.Log
+import com.taskmanager.domain.logger.Logger
 
-class DeleteCategoryUseCase @Inject constructor(
+class DeleteCategoryUseCase @Inject constructor( 
+    private val logger: Logger,
     private val repository: CategoryRepository
 ) {
     suspend operator fun invoke(id: Long) = runCatching {
         repository.deleteCategory(id)
     }.onFailure { e ->
-        Log.e("DeleteCategoryUseCase", "Error in invoke", e)
+        logger.error("DeleteCategoryUseCase", "Error in invoke", e)
     }
 }

@@ -3,16 +3,17 @@ package com.taskmanager.domain.usecase.habit
 import com.taskmanager.domain.repository.HabitLogRepository
 import java.time.LocalDate
 import javax.inject.Inject
-import android.util.Log
+import com.taskmanager.domain.logger.Logger
 
-class LogHabitCompletionUseCase @Inject constructor(
+class LogHabitCompletionUseCase @Inject constructor( 
+    private val logger: Logger,
     private val habitLogRepository: HabitLogRepository
 ) {
     suspend operator fun invoke(habitId: Long, date: LocalDate = LocalDate.now(), count: Int = 1): Long =
         runCatching {
             habitLogRepository.logCompletion(habitId, date, count)
         }.onFailure { e ->
-            Log.e("LogHabitCompletionUseCase", "Error in invoke", e)
+            logger.error("LogHabitCompletionUseCase", "Error in invoke", e)
         }.getOrThrow()
 
     suspend fun toggleCompletion(habitId: Long, date: LocalDate = LocalDate.now()) {
