@@ -106,9 +106,9 @@ fun UpcomingScreen(
                 EmptyState(
                     icon = Icons.Filled.Event,
                     title = stringResource(R.string.upcoming_empty_title),
-                    subtitle = stringResource(R.string.upcoming_empty_subtitle),
+                    message = stringResource(R.string.upcoming_empty_subtitle),
                     modifier = Modifier.padding(padding),
-                    actionText = stringResource(R.string.add_task),
+                    actionLabel = stringResource(R.string.add_task),
                     onAction = { showQuickAdd = true }
                 )
             }

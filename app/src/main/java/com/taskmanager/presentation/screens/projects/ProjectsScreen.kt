@@ -90,9 +90,9 @@ fun ProjectsScreen(
                     EmptyState(
                         icon = Icons.Filled.Folder,
                         title = stringResource(R.string.no_projects),
-                        subtitle = "Создайте проект, чтобы группировать задачи",
+                        message = "Создайте проект, чтобы группировать задачи",
                         modifier = Modifier.padding(padding),
-                        actionText = stringResource(R.string.new_project),
+                        actionLabel = stringResource(R.string.new_project),
                         onAction = viewModel::openCreateDialog
                     )
                 } else {

@@ -141,8 +141,8 @@ fun ProjectDetailScreen(
                     EmptyState(
                         icon = Icons.Filled.Add,
                         title = "В этом проекте пока нет задач",
-                        subtitle = "Создайте первую задачу в проекте",
-                        actionText = stringResource(R.string.add_task),
+                        message = "Создайте первую задачу в проекте",
+                        actionLabel = stringResource(R.string.add_task),
                         onAction = onAddTask
                     )
                 }
@@ -282,8 +282,8 @@ private fun ProjectNotesList(
         EmptyState(
             icon = Icons.Filled.Add,
             title = "В проекте пока нет заметок",
-            subtitle = "Заметки помогут хранить документацию и идеи по проекту",
-            actionText = stringResource(R.string.add_note),
+            message = "Заметки помогут хранить документацию и идеи по проекту",
+            actionLabel = stringResource(R.string.add_note),
             onAction = onCreateNote
         )
     } else {
