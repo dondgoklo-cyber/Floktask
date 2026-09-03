@@ -80,4 +80,13 @@ class NoteRepositoryImpl @Inject constructor(
             throw e
         }
     }
+
+    override suspend fun moveToFolder(id: Long, folderId: Long?) {
+        try {
+            noteDao.moveToFolder(id, folderId, System.currentTimeMillis())
+        } catch (e: Exception) {
+            Log.e("NoteRepositoryImpl", "Error in moveToFolder", e)
+            throw e
+        }
+    }
 }

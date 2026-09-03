@@ -69,4 +69,22 @@ class SubtaskRepositoryImpl @Inject constructor(
         }
         return all
     }
+
+    override suspend fun reorderSubtasks(taskId: Long, fromIndex: Int, toIndex: Int) {
+        try {
+            val subtasks = subtaskDao.getListByTask(taskId).map { it.toDomain() }.toMutableList()
+            if (fromIndex < 0 || fromIndex >= subtasks.size) return
+            if (toIndex < 0 || toIndex > subtasks.size) return
+            
+            val item = subtasks.removeAt(fromIndex)
+            subtasks.add(toIndex.coerceAtMost(subtasks.size), item)
+            
+            subtasks.forEachIndexed { index, subtask ->
+                subtaskDao.updateOrder(subtask.id, index)
+            }
+        } catch (e: Exception) {
+            Log.e("SubtaskRepositoryImpl", "Error in reorderSubtasks", e)
+            throw e
+        }
+    }
 }

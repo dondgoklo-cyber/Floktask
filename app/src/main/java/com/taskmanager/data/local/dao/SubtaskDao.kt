@@ -31,4 +31,7 @@ interface SubtaskDao {
 
     @Query("UPDATE subtasks SET isCompleted = :completed WHERE id = :id")
     suspend fun setCompleted(id: Long, completed: Boolean)
+
+    @Query("UPDATE subtasks SET orderIndex = :newOrder WHERE id = :id")
+    suspend fun updateOrder(id: Long, newOrder: Int)
 }

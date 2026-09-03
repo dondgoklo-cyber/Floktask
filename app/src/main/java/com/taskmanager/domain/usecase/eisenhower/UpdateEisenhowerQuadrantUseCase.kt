@@ -8,10 +8,11 @@ import android.util.Log
 class UpdateEisenhowerQuadrantUseCase @Inject constructor(
     private val taskRepository: TaskRepository
 ) {
-    suspend operator fun invoke(taskId: Long, quadrant: EisenhowerQuadrant?) = runCatching {
-        val task = taskRepository.getTaskById(taskId) ?: return
+    suspend operator fun invoke(taskId: Long, quadrant: EisenhowerQuadrant?): Result<Unit> = runCatching {
+        val task = taskRepository.getTaskById(taskId) ?: return@runCatching
         taskRepository.updateTask(task.copy(eisenhowerQuadrant = quadrant))
+        Result.success(Unit)
     }.onFailure { e ->
         Log.e("UpdateEisenhowerQuadrantUseCase", "Error in invoke", e)
-    }
+    }.getOrElse { Result.failure(it) }
 }

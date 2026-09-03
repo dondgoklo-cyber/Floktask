@@ -12,5 +12,5 @@ class CreateCategoryUseCase @Inject constructor(
         repository.createCategory(category)
     }.onFailure { e ->
         Log.e("CreateCategoryUseCase", "Error in invoke", e)
-    }
+    }.getOrThrow()
 }

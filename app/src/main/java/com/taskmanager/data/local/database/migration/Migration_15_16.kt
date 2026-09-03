@@ -47,7 +47,8 @@ val MIGRATION_15_16 = object : Migration(15, 16) {
                             "INSERT INTO tags (name) VALUES (?)",
                             arrayOf(tagName)
                         )
-                        tagId = database.lastInsertRowId
+                        val idStatement = database.compileStatement("SELECT last_insert_rowid()")
+                        tagId = idStatement.simpleQueryForLong()
                     }
                     tagCursor.close()
                     

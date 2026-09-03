@@ -4,6 +4,9 @@ import com.taskmanager.domain.model.Account
 import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
+import com.taskmanager.utils.toDisplayDouble
+import com.taskmanager.utils.toDisplayString
+import com.taskmanager.utils.toMoneyBigDecimal
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.OutputStream
@@ -23,7 +26,7 @@ class FinanceExportManager {
 
     /**
      * Экспортирует транзакции в CSV.
-     * Колонки: Date,Type,Amount,Currency,Category,Account,Description,Tags
+     * Колонки: Date,Type,Amount,Currency,Category,Account,Description
      */
     fun exportToCsv(
         transactions: List<Transaction>,
@@ -38,13 +41,13 @@ class FinanceExportManager {
             val accName = accounts.find { it.id == tx.accountId }?.name ?: ""
             val dateStr = dateFormat.format(Date(tx.date.toEpochMilli()))
             val typeStr = when (tx.type) {
-                TransactionType.INCOME -> "Доход"
-                TransactionType.EXPENSE -> "Расход"
-                TransactionType.TRANSFER -> "Перевод"
+                TransactionType.INCOME -> "\u0414\u043e\u0445\u043e\u0434"
+                TransactionType.EXPENSE -> "\u0420\u0430\u0441\u0445\u043e\u0434"
+                TransactionType.TRANSFER -> "\u041f\u0435\u0440\u0435\u0432\u043e\u0434"
             }
             val note = tx.note?.replace(",", ";")?.replace("\n", " ") ?: ""
 
-            writer.write("$dateStr,$typeStr,${tx.amount},${tx.currency},$catName,$accName,$note\n")
+            writer.write("$dateStr,$typeStr,${tx.amount.toDisplayDouble()},${tx.currency},$catName,$accName,$note\n")
         }
         writer.flush()
     }
@@ -66,7 +69,7 @@ class FinanceExportManager {
             accountsArray.put(JSONObject().apply {
                 put("id", acc.id ?: 0)
                 put("name", acc.name)
-                put("initialBalance", acc.initialBalance)
+                put("initialBalance", acc.initialBalance.toDisplayDouble())
                 put("currency", acc.currency)
             })
         }
@@ -90,7 +93,7 @@ class FinanceExportManager {
         transactions.forEach { tx ->
             txArray.put(JSONObject().apply {
                 put("id", tx.id ?: 0)
-                put("amount", tx.amount)
+                put("amount", tx.amount.toDisplayDouble())
                 put("type", tx.type.name)
                 put("currency", tx.currency)
                 put("categoryId", tx.categoryId ?: JSONObject.NULL)
@@ -98,7 +101,7 @@ class FinanceExportManager {
                 put("date", tx.date.toEpochMilli())
                 put("note", tx.note ?: JSONObject.NULL)
                 put("toAccountId", tx.toAccountId ?: JSONObject.NULL)
-                put("destinationAmount", tx.destinationAmount ?: JSONObject.NULL)
+                put("destinationAmount", tx.destinationAmount?.toDisplayDouble() ?: JSONObject.NULL)
                 put("destinationCurrency", tx.destinationCurrency ?: JSONObject.NULL)
             })
         }
@@ -108,9 +111,8 @@ class FinanceExportManager {
     }
 
     /**
-     * Импортирует финансовые данные из JSON.
-     * Возвращает список транзакций для создания.
-     * Валидирует сумму (>0), дату, тип.
+     * Импортирует данные из JSON.
+     * Валидирует: сумму (>0), дату, тип.
      */
     fun importFromJson(jsonStr: String): List<Transaction> {
         val result = mutableListOf<Transaction>()
@@ -127,7 +129,7 @@ class FinanceExportManager {
             val currency = txJson.optString("currency", "RUB")
 
             result.add(Transaction(
-                amount = amount,
+                amount = amount.toMoneyBigDecimal(),
                 type = type,
                 currency = currency,
                 categoryId = if (txJson.isNull("categoryId")) null else txJson.optLong("categoryId", 0),
@@ -135,7 +137,7 @@ class FinanceExportManager {
                 date = java.time.Instant.ofEpochMilli(dateMillis),
                 note = if (txJson.isNull("note")) null else txJson.optString("note", null),
                 toAccountId = if (txJson.isNull("toAccountId")) null else txJson.optLong("toAccountId", 0),
-                destinationAmount = if (txJson.isNull("destinationAmount")) null else txJson.optDouble("destinationAmount", 0.0),
+                destinationAmount = if (txJson.isNull("destinationAmount")) null else txJson.optDouble("destinationAmount", 0.0).toMoneyBigDecimal(),
                 destinationCurrency = if (txJson.isNull("destinationCurrency")) null else txJson.optString("destinationCurrency", null)
             ))
         }
@@ -143,7 +145,7 @@ class FinanceExportManager {
     }
 
     /**
-     * Генерирует имя файла для экспорта.
+     * Генерирует имя файла с timestamp.
      */
     fun generateFileName(prefix: String, extension: String): String {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())

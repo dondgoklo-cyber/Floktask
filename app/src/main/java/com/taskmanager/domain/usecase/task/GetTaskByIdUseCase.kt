@@ -12,5 +12,5 @@ class GetTaskByIdUseCase @Inject constructor(
         taskRepository.getTaskById(id)
     }.onFailure { e ->
         Log.e("GetTaskByIdUseCase", "Error in invoke", e)
-    }
+    }.getOrNull()
 }

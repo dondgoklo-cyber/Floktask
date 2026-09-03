@@ -12,5 +12,5 @@ class CreateNoteUseCase @Inject constructor(
         repository.createNote(note)
     }.onFailure { e ->
         Log.e("CreateNoteUseCase", "Error in invoke", e)
-    }
+    }.getOrThrow()
 }

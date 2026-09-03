@@ -17,4 +17,7 @@ interface UserStatsDao {
 
     @Query("SELECT * FROM user_stats WHERE id = 1")
     suspend fun get(): UserStatsEntity?
+
+    @Query("SELECT * FROM achievements WHERE required_task_count <= :taskCount")
+    suspend fun getAchievementsForTaskCount(taskCount: Int): List<com.taskmanager.data.local.entity.AchievementEntity>
 }

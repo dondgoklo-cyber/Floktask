@@ -19,11 +19,14 @@ class GetHabitStatsUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(habitId: Long): HabitStats {
         val logs = runCatching {
-        habitLogRepository.getByHabit(habitId)
-    }.onFailure { e ->
-        Log.e("GetHabitStatsUseCase", "Error in invoke", e)
-    }
-        val logsByDate = logs.associate { it.date to it.count }
+            habitLogRepository.getByHabit(habitId)
+        }.onFailure { e ->
+            Log.e("GetHabitStatsUseCase", "Error in invoke", e)
+        }.getOrThrow()
+        
+        val logsByDate: Map<LocalDate, Int> = logs.groupBy { it.date }.mapValues { (_, values) ->
+            values.sumOf { it.count }
+        }
         val today = LocalDate.now()
 
         // Текущая серия (идём назад от сегодня)

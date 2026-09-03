@@ -12,5 +12,5 @@ class CreateAccountUseCase @Inject constructor(
         repository.createAccount(account)
     }.onFailure { e ->
         Log.e("CreateAccountUseCase", "Error in invoke", e)
-    }
+    }.getOrThrow()
 }
