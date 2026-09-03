@@ -3,6 +3,7 @@ package com.taskmanager.domain.usecase.schedule
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.conflict.TimeInterval
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -22,7 +23,7 @@ class AutoScheduleTasksUseCaseTest {
     private fun schedulable(task: Task, minutes: Int) = SchedulableTask(task, minutes)
 
     @Test
-    fun `places tasks in free gaps`() {
+    fun `places tasks in free gaps`() = runTest {
         val tasks = listOf(schedulable(task(), 60), schedulable(task(), 30))
         val result = useCase(tasks, date, emptyList(), zone)
         assertEquals(2, result.placements.size)
@@ -30,7 +31,7 @@ class AutoScheduleTasksUseCaseTest {
     }
 
     @Test
-    fun `reports unscheduled when no gap fits`() {
+    fun `reports unscheduled when no gap fits`() = runTest {
         val busy = listOf(
             TimeInterval(
                 date.atTime(10, 0).atZone(zone).toInstant(),
@@ -44,7 +45,7 @@ class AutoScheduleTasksUseCaseTest {
     }
 
     @Test
-    fun `high priority scheduled before low`() {
+    fun `high priority scheduled before low`() = runTest {
         val high = schedulable(task(Priority.HIGH), 60)
         val low = schedulable(task(Priority.LOW), 60)
         val result = useCase(listOf(low, high), date, emptyList(), zone)
@@ -54,7 +55,7 @@ class AutoScheduleTasksUseCaseTest {
     }
 
     @Test
-    fun `placements do not overlap`() {
+    fun `placements do not overlap`() = runTest {
         val tasks = listOf(
             schedulable(task(), 60),
             schedulable(task(), 60),
@@ -69,7 +70,7 @@ class AutoScheduleTasksUseCaseTest {
     }
 
     @Test
-    fun `empty tasks yields empty result`() {
+    fun `empty tasks yields empty result`() = runTest {
         val result = useCase(emptyList(), date, emptyList(), zone)
         assertTrue(result.placements.isEmpty())
         assertTrue(result.unscheduled.isEmpty())
