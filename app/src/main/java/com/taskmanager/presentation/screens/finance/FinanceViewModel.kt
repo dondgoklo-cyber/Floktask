@@ -25,7 +25,6 @@ import com.taskmanager.security.UserPrefs
 import com.taskmanager.domain.usecase.finance.UpdateTransactionUseCase
 import com.taskmanager.utils.divideSafe
 import com.taskmanager.utils.sumOfBigDecimal
-import com.taskmanager.utils.toDisplayDouble
 import com.taskmanager.utils.toMoneyBigDecimal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -152,8 +151,8 @@ class FinanceViewModel @Inject constructor(
             val txDate = tx.date.atZone(zone).toLocalDate()
             !txDate.isBefore(from) && !txDate.isAfter(to)
         }
-        val periodIncome = periodTx.filter { it.type == TransactionType.INCOME }.sumOfBigDecimal { it.amount }
-        val periodExpense = periodTx.filter { it.type == TransactionType.EXPENSE }.sumOfBigDecimal { it.amount }
+        val periodIncome = periodTx.filter { it.type == TransactionType.INCOME }.sumOfBigDecimal { it.amount }.toDouble()
+        val periodExpense = periodTx.filter { it.type == TransactionType.EXPENSE }.sumOfBigDecimal { it.amount }.toDouble()
         val net = periodIncome - periodExpense
         val balance = totalIncome - totalExpense
 
@@ -165,7 +164,7 @@ class FinanceViewModel @Inject constructor(
 
         // Analytics
         val largestExpense = periodTx.filter { it.type == TransactionType.EXPENSE }
-            .maxByOrNull { it.amount }
+            .maxByOrNull { it.amount.toDouble() }
         val daysInPeriod = when (period) {
             FinancePeriod.TODAY -> 1
             FinancePeriod.WEEK -> 7
@@ -176,7 +175,7 @@ class FinanceViewModel @Inject constructor(
         val avgMonthlySpending = avgDailySpending * 30
         val topIncomeSource = periodTx.filter { it.type == TransactionType.INCOME }
             .groupBy { it.categoryId }
-            .maxByOrNull { it.value.sumOfBigDecimal { tx -> tx.amount } }
+            .maxByOrNull { it.value.sumOfBigDecimal { tx -> tx.amount }.toDouble() }
             ?.let { entry -> categories.find { it.id == entry.key }?.name }
         val savingsRate = if (periodIncome > 0) {
             ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
@@ -232,7 +231,7 @@ class FinanceViewModel @Inject constructor(
         viewModelScope.launch {
             createTransactionUseCase(
                 Transaction(
-                    amount = amount,
+                    amount = amount.toMoneyBigDecimal(),
                     type = type,
                     currency = currency,
                     categoryId = categoryId,
@@ -252,7 +251,7 @@ class FinanceViewModel @Inject constructor(
 
     fun createGoal(title: String, targetAmount: Double, currency: String) {
         viewModelScope.launch {
-            goalRepository.createGoal(Goal(title = title, targetAmount = targetAmount, currency = currency))
+            goalRepository.createGoal(Goal(title = title, targetAmount = targetAmount.toMoneyBigDecimal(), currency = currency))
         }
     }
 
@@ -264,7 +263,7 @@ class FinanceViewModel @Inject constructor(
 
     fun setBudget(categoryId: Long, amount: Double, currency: String) {
         viewModelScope.launch {
-            budgetRepository.upsertBudget(Budget(categoryId = categoryId, amount = amount, currency = currency))
+            budgetRepository.upsertBudget(Budget(categoryId = categoryId, amount = amount.toMoneyBigDecimal(), currency = currency))
         }
     }
 
