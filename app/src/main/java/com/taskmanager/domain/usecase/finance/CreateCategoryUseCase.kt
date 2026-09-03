@@ -1,16 +1,17 @@
 package com.taskmanager.domain.usecase.finance
 
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.repository.CategoryRepository
 import javax.inject.Inject
-import android.util.Log
 
 class CreateCategoryUseCase @Inject constructor(
-    private val repository: CategoryRepository
+    private val repository: CategoryRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(category: Category): Long = runCatching {
         repository.createCategory(category)
     }.onFailure { e ->
-        Log.e("CreateCategoryUseCase", "Error in invoke", e)
+        logger.error("CreateCategoryUseCase", "Error in invoke", e)
     }.getOrThrow()
 }
