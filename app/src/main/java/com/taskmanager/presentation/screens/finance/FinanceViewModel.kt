@@ -152,8 +152,8 @@ class FinanceViewModel @Inject constructor(
             val txDate = tx.date.atZone(zone).toLocalDate()
             !txDate.isBefore(from) && !txDate.isAfter(to)
         }
-        val periodIncome = periodTx.filter { it.type == TransactionType.INCOME }.sumOfBigDecimal { it.amount }.toDisplayDouble()
-        val periodExpense = periodTx.filter { it.type == TransactionType.EXPENSE }.sumOfBigDecimal { it.amount }.toDisplayDouble()
+        val periodIncome = periodTx.filter { it.type == TransactionType.INCOME }.sumOfBigDecimal { it.amount }
+        val periodExpense = periodTx.filter { it.type == TransactionType.EXPENSE }.sumOfBigDecimal { it.amount }
         val net = periodIncome - periodExpense
         val balance = totalIncome - totalExpense
 
@@ -165,7 +165,7 @@ class FinanceViewModel @Inject constructor(
 
         // Analytics
         val largestExpense = periodTx.filter { it.type == TransactionType.EXPENSE }
-            .maxByOrNull { it.amount.toDisplayDouble() }
+            .maxByOrNull { it.amount }
         val daysInPeriod = when (period) {
             FinancePeriod.TODAY -> 1
             FinancePeriod.WEEK -> 7
@@ -176,7 +176,7 @@ class FinanceViewModel @Inject constructor(
         val avgMonthlySpending = avgDailySpending * 30
         val topIncomeSource = periodTx.filter { it.type == TransactionType.INCOME }
             .groupBy { it.categoryId }
-            .maxByOrNull { it.value.sumOfBigDecimal { tx -> tx.amount }.toDisplayDouble() }
+            .maxByOrNull { it.value.sumOfBigDecimal { tx -> tx.amount } }
             ?.let { entry -> categories.find { it.id == entry.key }?.name }
         val savingsRate = if (periodIncome > 0) {
             ((periodIncome - periodExpense) / periodIncome * 100).coerceIn(0.0, 100.0)
@@ -306,8 +306,8 @@ class FinanceViewModel @Inject constructor(
             }
             currentDate = txDate
             when (tx.type) {
-                TransactionType.INCOME -> running += tx.amount.toDisplayDouble()
-                TransactionType.EXPENSE -> running -= tx.amount.toDisplayDouble()
+                TransactionType.INCOME -> running += tx.amount.toDouble()
+                TransactionType.EXPENSE -> running -= tx.amount.toDouble()
                 TransactionType.TRANSFER -> {}
             }
         }
@@ -347,7 +347,7 @@ class FinanceViewModel @Inject constructor(
                 CategoryExpense(
                     categoryName = cat?.name ?: "Без категории",
                     categoryColor = cat?.color,
-                    total = txs.sumOfBigDecimal { it.amount }.toDisplayDouble()
+                    total = txs.sumOfBigDecimal { it.amount }.toDouble()
                 )
             }
             .sortedByDescending { it.total }
