@@ -1,0 +1,86 @@
+%% API Call Sequence Diagram
+%% Floktask - Task Creation Flow
+%% Date: 2026-09-08
+%% Author: Architect
+
+sequenceDiagram
+    participant Client
+    participant APIGateway
+    participant AuthFilter
+    participant TaskService
+    participant TaskDB
+    participant Cache
+    participant NotificationService
+
+    %% Client makes request
+    Note over Client: User creates new task
+    Client->>APIGateway: POST /api/v1/tasks
+    Client->>APIGateway: Authorization: Bearer {jwt_token}
+    Client->>APIGateway: Content-Type: application/json
+    Client->>APIGateway: {title: "New Task", description: "...", projectId: 123}
+
+    %% API Gateway processes request
+    APIGateway->>AuthFilter: Validate JWT token
+    AuthFilter->>AuthFilter: Extract claims from token
+    AuthFilter->>AuthFilter: Verify signature
+    alt Valid token
+        AuthFilter-->>APIGateway: Authentication successful
+        AuthFilter-->>APIGateway: userId: 456, roles: [USER]
+    else Invalid token
+        AuthFilter-->>APIGateway: 401 Unauthorized
+        APIGateway-->>Client: 401 Unauthorized
+        return
+    end
+    
+    %% Rate limiting check
+    APIGateway->>Cache: GET rate_limit:user:456
+    Cache-->>APIGateway: current: 50, limit: 100
+    alt Within limit
+        APIGateway->>Cache: INCR rate_limit:user:456
+        Cache-->>APIGateway: new: 51
+    else Rate limit exceeded
+        APIGateway-->>Client: 429 Too Many Requests
+        return
+    end
+    
+    %% Request routing
+    APIGateway->>TaskService: POST /tasks
+    APIGateway->>TaskService: X-User-Id: 456
+    APIGateway->>TaskService: X-Request-Id: abc123
+    
+    %% Task Service processes request
+    TaskService->>TaskService: Validate request body
+    alt Validation fails
+        TaskService-->>APIGateway: 400 Bad Request
+        APIGateway-->>Client: 400 Bad Request
+        return
+    end
+    
+    TaskService->>TaskDB: BEGIN TRANSACTION
+    TaskService->>TaskDB: INSERT INTO tasks (user_id, title, description, project_id, status, created_at, updated_at)
+    TaskService->>TaskDB: VALUES (456, 'New Task', '...', 123, 'todo', NOW(), NOW())
+    TaskDB-->>TaskService: task_id: 789
+    
+    TaskService->>TaskDB: UPDATE projects SET task_count = task_count + 1 WHERE id = 123
+    TaskDB-->>TaskService: rows_affected: 1
+    TaskService->>TaskDB: COMMIT TRANSACTION
+    
+    %% Cache update
+    TaskService->>Cache: DELETE cache:tasks:user:456
+    TaskService->>Cache: DELETE cache:project:123:tasks
+    
+    %% Notification
+    alt Reminder set
+        TaskService->>NotificationService: Schedule reminder
+        NotificationService->>NotificationService: Create notification
+    end
+    
+    %% Response
+    TaskService-->>APIGateway: 201 Created
+    TaskService-->>APIGateway: {id: 789, title: "New Task", ...}
+    APIGateway-->>Client: 201 Created
+    APIGateway-->>Client: {id: 789, title: "New Task", ...}
+    
+    %% Sync notification
+    Note over TaskService: Notify sync service for offline clients
+    TaskService->>RedisQueue: PUBLISH sync:user:456 {entity: task, id: 789, action: create}

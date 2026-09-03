@@ -1,0 +1,73 @@
+%% Sync Sequence Diagram
+%% Floktask - Offline-First Synchronization
+%% Date: 2026-09-06
+%% Author: Architect
+
+sequenceDiagram
+    participant Client
+    participant APIGateway
+    participant SyncService
+    participant MainDB
+    participant RedisQueue
+
+    %% Initial Sync Request
+    Note over Client: User opens app or triggers sync
+    Client->>APIGateway: GET /api/v1/sync?since=2026-09-01T10:00:00Z
+    APIGateway->>SyncService: Forward request
+    
+    %% Server processes sync request
+    SyncService->>MainDB: SELECT changes WHERE updated_at > since AND user_id = ?
+    MainDB-->>SyncService: [change1, change2, change3]
+    SyncService->>SyncService: Check for conflicts
+    alt No conflicts
+        SyncService->>SyncService: Prepare response
+    else Conflicts found
+        SyncService->>MainDB: SELECT conflict_data WHERE entity_id IN (...) AND user_id = ?
+        MainDB-->>SyncService: [conflict1, conflict2]
+        SyncService->>SyncService: Mark conflicts as pending
+    end
+    SyncService-->>APIGateway: 200 OK {changes, conflicts, version}
+    APIGateway-->>Client: 200 OK {changes, conflicts, version}
+    
+    %% Client applies changes
+    Client->>Client: Apply changes to local DB
+    alt Conflicts exist
+        Client->>Client: Show conflict resolution UI
+        Client->>Client: User resolves conflicts
+        Client->>Client: Store resolution locally
+    end
+    Client->>Client: Update last_sync_timestamp
+    
+    %% Client sends local changes
+    Client->>APIGateway: POST /api/v1/sync {changes: [local1, local2], version: X}
+    APIGateway->>SyncService: Forward request
+    
+    %% Server processes client changes
+    SyncService->>SyncService: Validate changes
+    SyncService->>MainDB: BEGIN TRANSACTION
+    loop For each change
+        SyncService->>MainDB: SELECT current_version WHERE entity_id = ?
+        MainDB-->>SyncService: current_data
+        alt No conflict
+            SyncService->>MainDB: UPDATE/INSERT/DELETE entity
+        else Conflict detected
+            SyncService->>SyncService: Create conflict record
+            SyncService->>MainDB: INSERT INTO sync_conflicts
+        end
+    end
+    SyncService->>MainDB: COMMIT TRANSACTION
+    SyncService-->>APIGateway: 200 OK {applied: [...], conflicts: [...]}
+    APIGateway-->>Client: 200 OK {applied: [...], conflicts: [...]}
+    
+    %% Client handles response
+    Client->>Client: Remove applied changes from sync queue
+    alt Conflicts returned
+        Client->>Client: Add conflicts to local conflict list
+        Client->>Client: Show conflict notification
+    end
+    
+    %% Background sync for other devices
+    Note over SyncService: Notify other devices via WebSocket
+    SyncService->>RedisQueue: PUBLISH sync:user:{userId} {changeIds}
+    RedisQueue-->>SyncService: ACK
+    SyncService->>OtherClients: WebSocket: {type: SYNC_UPDATE, data: {...}}

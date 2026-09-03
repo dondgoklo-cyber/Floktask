@@ -1,0 +1,116 @@
+%% Deployment Diagram
+%% Floktask - Cloud Infrastructure
+%% Date: 2026-09-05
+%% Author: Architect
+
+graph TD
+    %% === Cloud Provider ===
+    subgraph AWS["AWS Cloud"]
+        %% === Networking ===
+        subgraph Networking["Networking"]
+            VPC[VPC\n10.0.0.0/16]:::network
+            InternetGateway[Internet Gateway]:::network
+            NATGateway[NAT Gateway]:::network
+            Route53[Route 53\nDNS]:::network
+            CloudFront[CloudFront\nCDN]:::network
+            ALB[Application Load Balancer]:::network
+        end
+
+        %% === Compute ===
+        subgraph Compute["Compute"]
+            EKS[EKS Cluster\nKubernetes]:::compute
+            ECS[ECS\nDocker Containers]:::compute
+            Lambda[Lambda\nServerless]:::compute
+        end
+
+        %% === Database ===
+        subgraph Database["Database"]
+            RDS[(RDS PostgreSQL\nMulti-AZ)]:::database
+            ElastiCache[(ElastiCache Redis\nCluster)]:::database
+        end
+
+        %% === Storage ===
+        subgraph Storage["Storage"]
+            S3[(S3\nFile Storage)]:::storage
+            EFS[(EFS\nShared Storage)]:::storage
+        end
+
+        %% === Messaging ===
+        subgraph Messaging["Messaging"]
+            SQS[SQS\nQueue]:::messaging
+            SNS[SNS\nNotifications]:::messaging
+        end
+
+        %% === Monitoring ===
+        subgraph Monitoring["Monitoring"]
+            CloudWatch[CloudWatch\nLogs & Metrics]:::monitoring
+            XRay[X-Ray\nTracing]:::monitoring
+        end
+
+        %% === Security ===
+        subgraph Security["Security"]
+            IAM[IAM\nIdentity & Access]:::security
+            WAF[WAF\nWeb Application Firewall]:::security
+            SecretsManager[Secrets Manager]:::security
+        end
+    end
+
+    %% === Kubernetes Cluster ===
+    subgraph EKSCluster["EKS Cluster"]
+        subgraph Namespaces["Namespaces"]
+            Production[Production Namespace]:::namespace
+            Staging[Staging Namespace]:::namespace
+            Development[Development Namespace]:::namespace
+        end
+
+        subgraph Nodes["Node Groups"]
+            NodeGroup1[Node Group 1\nOn-Demand]:::node
+            NodeGroup2[Node Group 2\nSpot]:::node
+        end
+
+        subgraph Services["Kubernetes Services"]
+            Ingress[Ingress Controller]:::k8s
+            APIGateway[API Gateway]:::k8s
+            UserService[User Service]:::k8s
+            TaskService[Task Service]:::k8s
+            ProjectService[Project Service]:::k8s
+            SyncService[Sync Service]:::k8s
+            AIService[AI Service]:::k8s
+            NotificationService[Notification Service]:::k8s
+        end
+    end
+
+    %% === Connections ===
+    Internet[Internet] --> Route53
+    Route53 --> CloudFront
+    CloudFront --> WAF
+    WAF --> ALB
+    ALB --> EKS
+    
+    EKS --> RDS
+    EKS --> ElastiCache
+    EKS --> S3
+    EKS --> SQS
+    EKS --> SNS
+    
+    VPC --> InternetGateway
+    VPC --> NATGateway
+    NATGateway --> InternetGateway
+    
+    CloudWatch --> AllServices
+    XRay --> AllServices
+    
+    %% === Styles ===
+    classDef network fill:#e6f7ff,stroke:#1890ff,stroke-width:2px;
+    classDef compute fill:#fff2e8,stroke:#fa8c16,stroke-width:2px;
+    classDef database fill:#fff0f6,stroke:#f759ab,stroke-width:2px;
+    classDef storage fill:#f6ffed,stroke:#5cdbd3,stroke-width:2px;
+    classDef messaging fill:#e6fffa,stroke:#13c2c2,stroke-width:2px;
+    classDef monitoring fill:#f9e6ff,stroke:#722ed1,stroke-width:2px;
+    classDef security fill:#f0f0f0,stroke:#8c8c8c,stroke-width:2px;
+    classDef namespace fill:#f0f0f0,stroke:#434343,stroke-width:1px;
+    classDef node fill:#fafafa,stroke:#d9d9d9,stroke-width:1px;
+    classDef k8s fill:#e8f4f8,stroke:#21a0c2,stroke-width:2px;
+
+    %% === Notes ===
+    linkStyle default stroke:#666,stroke-width:1px;

@@ -1,0 +1,345 @@
+{
+  "timestamp": "2026-09-15T10:00:00Z",
+  "architect": {
+    "completed": [
+      {
+        "id": "AR-001",
+        "title": "Микросервисная архитектура",
+        "output": "agents/architect/adr/ADR-001-microservices.md",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49",
+        "completedAt": "2026-09-05T10:00:00Z"
+      },
+      {
+        "id": "AR-002",
+        "title": "Offline-first подход",
+        "output": "agents/architect/adr/ADR-002-offline-first.md",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49",
+        "completedAt": "2026-09-06T10:00:00Z"
+      },
+      {
+        "id": "AR-003",
+        "title": "API дизайн",
+        "output": "agents/architect/adr/ADR-003-api-design.md",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49",
+        "completedAt": "2026-09-08T10:00:00Z"
+      },
+      {
+        "id": "AR-004",
+        "title": "Схема базы данных",
+        "output": "agents/architect/adr/ADR-004-database-schema.md",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49",
+        "completedAt": "2026-09-10T10:00:00Z"
+      },
+      {
+        "id": "AR-005",
+        "title": "Система аутентификации",
+        "output": "agents/architect/adr/ADR-005-auth-system.md",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49",
+        "completedAt": "2026-09-12T10:00:00Z"
+      },
+      {
+        "id": "AR-006",
+        "title": "Архитектура Timeline View",
+        "output": "agents/architect/adr/ADR-006-timeline-architecture.md",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49",
+        "completedAt": "2026-09-15T10:00:00Z"
+      },
+      {
+        "id": "AR-007",
+        "title": "Архитектура Gantt Charts",
+        "output": "agents/architect/adr/ADR-007-gantt-architecture.md",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49",
+        "completedAt": "2026-09-15T10:00:00Z"
+      }
+    ],
+    "inProgress": [
+      {
+        "id": "AR-008",
+        "title": "Кроссплатформенная архитектура (KMP)",
+        "priority": "P1",
+        "due": "2026-09-20",
+        "status": "in_progress",
+        "startedAt": "2026-09-15T10:00:00Z"
+      }
+    ],
+    "pending": [
+      {
+        "id": "AR-009",
+        "title": "Безопасность и авторизация",
+        "priority": "P1",
+        "due": "2026-09-22",
+        "status": "pending"
+      },
+      {
+        "id": "AR-010",
+        "title": "План масштабируемости",
+        "priority": "P1",
+        "due": "2026-09-25",
+        "status": "pending"
+      },
+      {
+        "id": "AR-011",
+        "title": "Интеграции (Calendar, Telegram)",
+        "priority": "P2",
+        "due": "2026-09-28",
+        "status": "pending"
+      },
+      {
+        "id": "AR-012",
+        "title": "Коллаборация (общие проекты)",
+        "priority": "P2",
+        "due": "2026-10-01",
+        "status": "pending"
+      }
+    ]
+  },
+  "backend": {
+    "assigned": [
+      {
+        "id": "BE-001",
+        "title": "Реализовать API Gateway",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/adr/ADR-001-microservices.md",
+          "agents/architect/api-specs/v1/openapi.yaml",
+          "agents/architect/infrastructure/cloud/aws-architecture.md"
+        ],
+        "status": "assigned",
+        "assignee": "backend",
+        "dependencies": ["AR-001", "AR-003"]
+      },
+      {
+        "id": "BE-002",
+        "title": "Реализовать User Service",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/adr/ADR-005-auth-system.md",
+          "agents/architect/adr/ADR-004-database-schema.md"
+        ],
+        "status": "assigned",
+        "assignee": "backend",
+        "dependencies": ["AR-005", "AR-004"]
+      },
+      {
+        "id": "BE-003",
+        "title": "Реализовать Task Service",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/adr/ADR-004-database-schema.md",
+          "agents/architect/api-specs/v1/openapi.yaml"
+        ],
+        "status": "assigned",
+        "assignee": "backend",
+        "dependencies": ["AR-004", "AR-003"]
+      },
+      {
+        "id": "BE-004",
+        "title": "Реализовать Sync Service",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/adr/ADR-002-offline-first.md",
+          "agents/architect/adr/ADR-003-api-design.md"
+        ],
+        "status": "assigned",
+        "assignee": "backend",
+        "dependencies": ["AR-002", "AR-003"]
+      },
+      {
+        "id": "BE-005",
+        "title": "Реализовать Project Service",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/adr/ADR-004-database-schema.md"
+        ],
+        "status": "assigned",
+        "assignee": "backend",
+        "dependencies": ["AR-004"]
+      },
+      {
+        "id": "BE-006",
+        "title": "Реализовать Notification Service",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-001-microservices.md"
+        ],
+        "status": "pending",
+        "assignee": "backend",
+        "dependencies": ["AR-001"]
+      }
+    ],
+    "pending": [
+      {
+        "id": "BE-007",
+        "title": "Реализовать AI Service",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-001-microservices.md"
+        ],
+        "status": "pending",
+        "dependencies": ["AR-001"]
+      },
+      {
+        "id": "BE-008",
+        "title": "Реализовать Timeline Service",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-006-timeline-architecture.md"
+        ],
+        "status": "pending",
+        "dependencies": ["AR-006"]
+      },
+      {
+        "id": "BE-009",
+        "title": "Реализовать Gantt Service",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-007-gantt-architecture.md"
+        ],
+        "status": "pending",
+        "dependencies": ["AR-007"]
+      }
+    ]
+  },
+  "frontend": {
+    "assigned": [
+      {
+        "id": "FE-001",
+        "title": "Интеграция с новым API",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/api-specs/v1/openapi.yaml",
+          "agents/architect/adr/ADR-003-api-design.md"
+        ],
+        "status": "assigned",
+        "assignee": "frontend",
+        "dependencies": ["AR-003"]
+      },
+      {
+        "id": "FE-002",
+        "title": "JWT аутентификация на клиенте",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/adr/ADR-005-auth-system.md"
+        ],
+        "status": "assigned",
+        "assignee": "frontend",
+        "dependencies": ["AR-005"]
+      },
+      {
+        "id": "FE-003",
+        "title": "Offline-first кэширование",
+        "priority": "P0",
+        "docs": [
+          "agents/architect/adr/ADR-002-offline-first.md"
+        ],
+        "status": "assigned",
+        "assignee": "frontend",
+        "dependencies": ["AR-002"]
+      }
+    ],
+    "pending": [
+      {
+        "id": "FE-004",
+        "title": "Реализовать Timeline View",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-006-timeline-architecture.md"
+        ],
+        "status": "pending",
+        "assignee": "frontend",
+        "dependencies": ["AR-006", "BE-008"]
+      },
+      {
+        "id": "FE-005",
+        "title": "Реализовать Gantt Charts",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-007-gantt-architecture.md"
+        ],
+        "status": "pending",
+        "assignee": "frontend",
+        "dependencies": ["AR-007", "BE-009"]
+      },
+      {
+        "id": "FE-006",
+        "title": "WebSocket интеграция",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-003-api-design.md"
+        ],
+        "status": "pending",
+        "dependencies": ["AR-003"]
+      }
+    ]
+  },
+  "product_manager": {
+    "review": [
+      {
+        "id": "PM-001",
+        "title": "Ревью ADR-001 через ADR-007",
+        "docs": [
+          "agents/architect/adr/ADR-001-microservices.md",
+          "agents/architect/adr/ADR-002-offline-first.md",
+          "agents/architect/adr/ADR-003-api-design.md",
+          "agents/architect/adr/ADR-004-database-schema.md",
+          "agents/architect/adr/ADR-005-auth-system.md",
+          "agents/architect/adr/ADR-006-timeline-architecture.md",
+          "agents/architect/adr/ADR-007-gantt-architecture.md"
+        ],
+        "status": "pending",
+        "priority": "P0"
+      }
+    ],
+    "approval": [
+      {
+        "id": "PM-002",
+        "title": "Утвердить архитектурные решения",
+        "status": "pending",
+        "priority": "P0",
+        "pr": "https://github.com/dondgoklo-cyber/Floktask/pull/49"
+      }
+    ]
+  },
+  "designer": {
+    "tasks": [
+      {
+        "id": "DE-001",
+        "title": "Дизайн Timeline View интерфейса",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-006-timeline-architecture.md",
+          "agents/architect/diagrams/data-flow.mmd"
+        ],
+        "status": "pending",
+        "dependencies": ["AR-006"]
+      },
+      {
+        "id": "DE-002",
+        "title": "Дизайн Gantt Charts интерфейса",
+        "priority": "P1",
+        "docs": [
+          "agents/architect/adr/ADR-007-gantt-architecture.md"
+        ],
+        "status": "pending",
+        "dependencies": ["AR-007"]
+      },
+      {
+        "id": "DE-003",
+        "title": "Design System для new UI компонентов",
+        "priority": "P2",
+        "status": "pending"
+      }
+    ]
+  },
+  "shared": {
+    "contracts": {
+      "api": "agents/architect/api-specs/v1/openapi.yaml",
+      "data_models": "agents/architect/adr/ADR-004-database-schema.md",
+      "architecture": "agents/architect/adr/"
+    },
+    "knowledge_base": {
+      "system_overview": "agents/architect/diagrams/system-architecture.mmd",
+      "tech_stack": "agents/architect/infrastructure/cloud/aws-architecture.md"
+    }
+  }
+}
