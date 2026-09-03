@@ -61,7 +61,7 @@ import com.taskmanager.domain.model.TransactionType
 import com.taskmanager.presentation.screens.finance.AddTransactionSheet
 import com.taskmanager.presentation.screens.finance.formatMoney
 import com.taskmanager.presentation.screens.finance.formatSignedMoney
-import com.taskmanager.utils.toDisplayDouble
+
 import com.taskmanager.presentation.screens.finance.FinanceViewModel
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.components.CreateMenuSheet
@@ -534,7 +534,7 @@ private fun FinanceSummaryCard(state: TodayUiState, onAllFinance: () -> Unit) {
                         color = AppTheme.colors.onSurfaceVariant
                     )
                     androidx.compose.material3.Text(
-                        formatSignedMoney(state.financeIncome.toDisplayDouble()),
+                        formatSignedMoney(state.financeIncome),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
                         color = AppTheme.colors.success
@@ -547,7 +547,7 @@ private fun FinanceSummaryCard(state: TodayUiState, onAllFinance: () -> Unit) {
                         color = AppTheme.colors.onSurfaceVariant
                     )
                     androidx.compose.material3.Text(
-                        formatSignedMoney(-state.financeExpense.toDisplayDouble()),
+                        formatSignedMoney(-state.financeExpense),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
                         color = AppTheme.colors.danger
@@ -569,7 +569,7 @@ private fun FinanceSummaryCard(state: TodayUiState, onAllFinance: () -> Unit) {
                             modifier = Modifier.weight(1f)
                         )
                         androidx.compose.material3.Text(
-                            formatSignedMoney(if (tx.type == TransactionType.INCOME) tx.amount.toDisplayDouble() else -tx.amount.toDisplayDouble()),
+                            formatSignedMoney(if (tx.type == TransactionType.INCOME) tx.amount.toDouble() else -tx.amount.toDouble()),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
                             color = if (tx.type == TransactionType.INCOME) AppTheme.colors.success else AppTheme.colors.danger
