@@ -41,6 +41,7 @@ class BatchTaskOperationsUseCaseTest {
         override fun getIncompleteTasks(): Flow<List<Task>> = flowOf(emptyList())
         override fun searchTasks(query: String): Flow<List<Task>> = flowOf(emptyList())
         override fun getInboxTasks(): Flow<List<Task>> = flowOf(emptyList())
+        override suspend fun getTaskTags(taskId: Long): List<String> = emptyList()
     }
 
     private val useCase = BatchTaskOperationsUseCase(fakeRepo)
