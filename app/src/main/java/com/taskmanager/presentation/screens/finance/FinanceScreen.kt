@@ -281,8 +281,8 @@ fun FinanceScreen(
                     EmptyState(
                         icon = Icons.Filled.AccountBalanceWallet,
                         title = stringResource(R.string.no_transactions),
-                        subtitle = "Здесь появятся ваши доходы и расходы",
-                        actionText = stringResource(R.string.add_transaction),
+                        message = "Здесь появятся ваши доходы и расходы",
+                        actionLabel = stringResource(R.string.add_transaction),
                         onAction = { showAddSheet = true }
                     )
                 }

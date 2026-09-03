@@ -28,7 +28,10 @@
     <string name="change_mode">Вменить режим</string>
     <string name="add_task">Добавить задачу</string>
 
-    <!-- Пустые состояния -->
+    
+    <string name="today">Сегодня</string>
+    <string name="plan">План</string>
+    <string name="insights">Аналитика</string><!-- Пустые состояния -->
     <string name="no_tasks">Пока нет задач</string>
     <string name="no_projects">Пока нет проектов</string>
     <string name="no_habits">Пока нет привычек</string>

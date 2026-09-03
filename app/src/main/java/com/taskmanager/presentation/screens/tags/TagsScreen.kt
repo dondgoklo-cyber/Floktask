@@ -105,9 +105,9 @@ fun TagsScreen(
                     EmptyState(
                         icon = Icons.Filled.Label,
                         title = stringResource(R.string.no_tags),
-                        subtitle = "Создайте теги, чтобы помечать задачи цветом",
+                        message = "Создайте теги, чтобы помечать задачи цветом",
                         modifier = Modifier.padding(padding),
-                        actionText = stringResource(R.string.new_tag),
+                        actionLabel = stringResource(R.string.new_tag),
                         onAction = viewModel::openCreateDialog
                     )
                 } else {

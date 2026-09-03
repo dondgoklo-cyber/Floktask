@@ -140,9 +140,9 @@ fun NotesScreen(
             EmptyState(
                 icon = Icons.Filled.Description,
                 title = stringResource(R.string.no_notes),
-                subtitle = "Создайте заметку — идеи, конспекты, инструкции",
+                message = "Создайте заметку — идеи, конспекты, инструкции",
                 modifier = Modifier.padding(padding),
-                actionText = stringResource(R.string.add_note),
+                actionLabel = stringResource(R.string.add_note),
                 onAction = {
                     haptic(HapticType.LIGHT)
                     viewModel.createNote { id -> onNoteClick(id) }
