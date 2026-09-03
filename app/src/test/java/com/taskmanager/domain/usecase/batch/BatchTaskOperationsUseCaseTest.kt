@@ -4,6 +4,7 @@ import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Instant
@@ -30,6 +31,10 @@ class BatchTaskOperationsUseCaseTest {
             store.remove(id)
         }
 
+        override suspend fun cancelReminder(taskId: Long) {
+            // no-op for mock
+        }
+
         override fun getAllTasks(): Flow<List<Task>> = flowOf(store.values.toList())
         override fun getTasksByProject(projectId: Long): Flow<List<Task>> = flowOf(emptyList())
         override fun getCompletedTasks(): Flow<List<Task>> = flowOf(emptyList())
@@ -50,7 +55,7 @@ class BatchTaskOperationsUseCaseTest {
     }
 
     @Test
-    fun `complete marks all selected as completed`() {
+    fun `complete marks all selected as completed`() = runTest {
         val ids = seed(3)
         val result = useCase.complete(ids, completed = true)
         assertEquals(3, result.affected)
@@ -58,14 +63,14 @@ class BatchTaskOperationsUseCaseTest {
     }
 
     @Test
-    fun `complete skips missing ids`() {
+    fun `complete skips missing ids`() = runTest {
         val ids = seed(1) + listOf(999L)
         val result = useCase.complete(ids, completed = true)
         assertEquals(1, result.affected)
     }
 
     @Test
-    fun `delete removes all selected`() {
+    fun `delete removes all selected`() = runTest {
         val ids = seed(3)
         val result = useCase.delete(ids)
         assertEquals(3, result.affected)
@@ -73,14 +78,14 @@ class BatchTaskOperationsUseCaseTest {
     }
 
     @Test
-    fun `moveToProject sets projectId on all selected`() {
+    fun `moveToProject sets projectId on all selected`() = runTest {
         val ids = seed(2)
         useCase.moveToProject(ids, projectId = 42L)
         ids.forEach { id -> assertEquals(42L, store[id]?.projectId) }
     }
 
     @Test
-    fun `empty list affects nothing`() {
+    fun `empty list affects nothing`() = runTest {
         assertEquals(0, useCase.complete(emptyList(), true).affected)
         assertEquals(0, useCase.delete(emptyList()).affected)
         assertEquals(0, useCase.moveToProject(emptyList(), null).affected)
