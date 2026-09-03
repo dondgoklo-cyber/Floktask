@@ -13,7 +13,8 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
-import com.taskmanager.MainActivity
+import androidx.compose.ui.text.font.FontWeight
+import com.taskmanager.presentation.MainActivity
 
 /**
  * Home-screen widget showing today's tasks + a quick-add entry point
