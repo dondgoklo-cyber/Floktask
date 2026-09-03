@@ -2,6 +2,7 @@ package com.taskmanager.presentation.screens.focusmode
 
 import android.app.NotificationManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -16,6 +17,7 @@ import javax.inject.Singleton
  *
  * IMPORTANT: This implementation captures and restores the previous interruption filter
  * to avoid leaving the device in an unexpected DND state after focus mode exits.
+ * Uses SharedPreferences to persist state across process death.
  */
 @Singleton
 class DndHelper @Inject constructor(
@@ -25,16 +27,28 @@ class DndHelper @Inject constructor(
     private val notificationManager: NotificationManager
         get() = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+    private val prefs: SharedPreferences by lazy {
+        context.getSharedPreferences("dnd_prefs", Context.MODE_PRIVATE)
+    }
+
     /**
      * Stores the previous interruption filter before enabling DND.
      * null means DND was not enabled or state was not captured.
      */
-    private var previousFilter: Int? = null
+    private var previousFilter: Int?
+        get() = prefs.getInt(KEY_PREVIOUS_FILTER, -1).takeIf { it != -1 }
+        set(value) {
+            prefs.edit().putInt(KEY_PREVIOUS_FILTER, value ?: -1).apply()
+        }
 
     /**
      * Flag to prevent nested DND state changes.
      */
-    private var isDndActive: Boolean = false
+    private var isDndActive: Boolean
+        get() = prefs.getBoolean(KEY_DND_ACTIVE, false)
+        set(value) {
+            prefs.edit().putBoolean(KEY_DND_ACTIVE, value).apply()
+        }
 
     val isPolicyAccessGranted: Boolean
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -109,5 +123,10 @@ class DndHelper @Inject constructor(
     fun reset() {
         previousFilter = null
         isDndActive = false
+    }
+
+    companion object {
+        private const val KEY_PREVIOUS_FILTER = "previous_filter"
+        private const val KEY_DND_ACTIVE = "dnd_active"
     }
 }
