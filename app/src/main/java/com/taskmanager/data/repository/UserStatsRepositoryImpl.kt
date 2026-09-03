@@ -21,29 +21,28 @@ class UserStatsRepositoryImpl @Inject constructor(
         userStatsDao.observe().map { it?.toDomain() }
 
     override suspend fun getStats(): UserStats = try {
-        
+        userStatsDao.get()?.toDomain() ?: UserStats()
     } catch (e: Exception) {
         Log.e("UserStatsRepositoryImpl", "Error in UserStats", e)
         throw e
     }
-        userStatsDao.get()?.toDomain() ?: UserStats()
 
     override suspend fun saveStats(stats: UserStats) {
         try {
             userStatsDao.upsert(stats.toEntity())
         } catch (e: Exception) {
-            Log.e("UserStatsRepositoryImpl", "Error in UserStats)", e)
+            Log.e("UserStatsRepositoryImpl", "Error in UserStats", e)
             throw e
         }
     }
 
     override suspend fun unlockAchievement(achievement: Achievement): UserStats {
         val current = try {
-        getStats()
-    } catch (e: Exception) {
-        Log.e("UserStatsRepositoryImpl", "Error in current", e)
-        throw e
-    }
+            getStats()
+        } catch (e: Exception) {
+            Log.e("UserStatsRepositoryImpl", "Error in current", e)
+            throw e
+        }
         if (achievement.id in current.unlockedAchievementIds) return current
         val updated = current.copy(
             totalPoints = current.totalPoints + achievement.pointsReward,
@@ -55,21 +54,21 @@ class UserStatsRepositoryImpl @Inject constructor(
 
     override suspend fun addPoints(points: Long): UserStats {
         val current = try {
-        getStats()
-    } catch (e: Exception) {
-        Log.e("UserStatsRepositoryImpl", "Error in current", e)
-        throw e
-    }
+            getStats()
+        } catch (e: Exception) {
+            Log.e("UserStatsRepositoryImpl", "Error in current", e)
+            throw e
+        }
         return persist(current.copy(totalPoints = current.totalPoints + points))
     }
 
     override suspend fun recordTaskCompletion(priority: Priority): UserStats {
         val current = try {
-        getStats()
-    } catch (e: Exception) {
-        Log.e("UserStatsRepositoryImpl", "Error in current", e)
-        throw e
-    }
+            getStats()
+        } catch (e: Exception) {
+            Log.e("UserStatsRepositoryImpl", "Error in current", e)
+            throw e
+        }
         val basePoints = when (priority) {
             Priority.HIGH -> 15L
             Priority.MEDIUM -> 10L
@@ -82,26 +81,23 @@ class UserStatsRepositoryImpl @Inject constructor(
             completedTasks = newCompleted,
             updatedAt = Instant.now()
         )
-
-        if (newCompleted == 1) updated = unlockAchievementInternal(updated, Achievements.FIRST_TASK)
-        if (newCompleted == 10) updated = unlockAchievementInternal(updated, Achievements.TEN_TASKS)
-        if (newCompleted == 50) updated = unlockAchievementInternal(updated, Achievements.FIFTY_TASKS)
-        if (priority == Priority.HIGH) updated = unlockAchievementInternal(updated, Achievements.HIGH_PRIORITY)
-
+        
+        // Check for achievements
+        val achievements = Achievements.getAchievementsForTaskCount(newCompleted)
+        for (ach in achievements) {
+            if (ach.id !in updated.unlockedAchievementIds) {
+                updated = updated.copy(
+                    totalPoints = updated.totalPoints + ach.pointsReward,
+                    unlockedAchievementIds = updated.unlockedAchievementIds + ach.id
+                )
+            }
+        }
+        
         return persist(updated)
     }
 
-    private fun unlockAchievementInternal(stats: UserStats, achievement: Achievement): UserStats {
-        if (achievement.id in stats.unlockedAchievementIds) return stats
-        return stats.copy(
-            totalPoints = stats.totalPoints + achievement.pointsReward,
-            unlockedAchievementIds = stats.unlockedAchievementIds + achievement.id
-        )
-    }
-
     private suspend fun persist(stats: UserStats): UserStats {
-        val withLevel = stats.copy(level = levelFromPoints(stats.totalPoints))
-        userStatsDao.upsert(withLevel.toEntity())
-        return withLevel
+        userStatsDao.upsert(stats.toEntity())
+        return stats
     }
 }

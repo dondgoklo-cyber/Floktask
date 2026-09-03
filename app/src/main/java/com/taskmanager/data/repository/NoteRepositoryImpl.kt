@@ -13,18 +13,17 @@ class NoteRepositoryImpl @Inject constructor(
 ) : NoteRepository {
 
     override suspend fun createNote(note: Note): Long = try {
-        
+        noteDao.insert(note.toEntity())
     } catch (e: Exception) {
         Log.e("NoteRepositoryImpl", "Error in Long", e)
         throw e
     }
-        noteDao.insert(note.toEntity())
 
     override suspend fun updateNote(note: Note) {
         try {
             noteDao.update(note.toEntity())
         } catch (e: Exception) {
-            Log.e("NoteRepositoryImpl", "Error in Note)", e)
+            Log.e("NoteRepositoryImpl", "Error in Note", e)
             throw e
         }
     }
@@ -33,18 +32,17 @@ class NoteRepositoryImpl @Inject constructor(
         try {
             noteDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("NoteRepositoryImpl", "Error in Long)", e)
+            Log.e("NoteRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
 
     override fun getAllNotes(): Flow<List<Note>> = try {
-        
+        noteDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("NoteRepositoryImpl", "Error in Flow<List<Note>>", e)
         throw e
     }
-        noteDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getPinnedNotes(): Flow<List<Note>> =
         noteDao.getPinned().map { list -> list.map { it.toDomain() } }
@@ -56,12 +54,11 @@ class NoteRepositoryImpl @Inject constructor(
         noteDao.getByProject(projectId).map { list -> list.map { it.toDomain() } }
 
     override suspend fun getNoteById(id: Long): Note? = try {
-        
+        noteDao.getById(id)?.toDomain()
     } catch (e: Exception) {
         Log.e("NoteRepositoryImpl", "Error in Note?", e)
         throw e
     }
-        noteDao.getById(id)?.toDomain()
 
     override fun searchNotes(query: String): Flow<List<Note>> =
         noteDao.search(query).map { list -> list.map { it.toDomain() } }
@@ -70,7 +67,7 @@ class NoteRepositoryImpl @Inject constructor(
         try {
             noteDao.setPinned(id, pinned, System.currentTimeMillis())
         } catch (e: Exception) {
-            Log.e("NoteRepositoryImpl", "Error in Boolean)", e)
+            Log.e("NoteRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
@@ -79,16 +76,7 @@ class NoteRepositoryImpl @Inject constructor(
         try {
             noteDao.setArchived(id, archived, System.currentTimeMillis())
         } catch (e: Exception) {
-            Log.e("NoteRepositoryImpl", "Error in Boolean)", e)
-            throw e
-        }
-    }
-
-    override suspend fun moveToFolder(id: Long, folderId: Long?) {
-        try {
-            noteDao.moveToFolder(id, folderId, System.currentTimeMillis())
-        } catch (e: Exception) {
-            Log.e("NoteRepositoryImpl", "Error in Long?)", e)
+            Log.e("NoteRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }

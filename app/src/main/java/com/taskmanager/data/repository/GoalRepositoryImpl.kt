@@ -13,18 +13,17 @@ class GoalRepositoryImpl @Inject constructor(
 ) : GoalRepository {
 
     override suspend fun createGoal(goal: Goal): Long = try {
-        
+        goalDao.insert(goal.toEntity())
     } catch (e: Exception) {
         Log.e("GoalRepositoryImpl", "Error in Long", e)
         throw e
     }
-        goalDao.insert(goal.toEntity())
 
     override suspend fun updateGoal(goal: Goal) {
         try {
             goalDao.update(goal.toEntity())
         } catch (e: Exception) {
-            Log.e("GoalRepositoryImpl", "Error in Goal)", e)
+            Log.e("GoalRepositoryImpl", "Error in Goal", e)
             throw e
         }
     }
@@ -33,16 +32,15 @@ class GoalRepositoryImpl @Inject constructor(
         try {
             goalDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("GoalRepositoryImpl", "Error in Long)", e)
+            Log.e("GoalRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
 
     override fun getAllGoals(): Flow<List<Goal>> = try {
-        
+        goalDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("GoalRepositoryImpl", "Error in Flow<List<Goal>>", e)
         throw e
     }
-        goalDao.getAll().map { list -> list.map { it.toDomain() } }
 }

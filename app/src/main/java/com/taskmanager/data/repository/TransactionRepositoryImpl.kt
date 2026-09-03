@@ -13,18 +13,17 @@ class TransactionRepositoryImpl @Inject constructor(
 ) : TransactionRepository {
 
     override suspend fun createTransaction(transaction: Transaction): Long = try {
-        
+        transactionDao.insert(transaction.toEntity())
     } catch (e: Exception) {
         Log.e("TransactionRepositoryImpl", "Error in Long", e)
         throw e
     }
-        transactionDao.insert(transaction.toEntity())
 
     override suspend fun updateTransaction(transaction: Transaction) {
         try {
             transactionDao.update(transaction.toEntity())
         } catch (e: Exception) {
-            Log.e("TransactionRepositoryImpl", "Error in Transaction)", e)
+            Log.e("TransactionRepositoryImpl", "Error in Transaction", e)
             throw e
         }
     }
@@ -33,18 +32,17 @@ class TransactionRepositoryImpl @Inject constructor(
         try {
             transactionDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("TransactionRepositoryImpl", "Error in Long)", e)
+            Log.e("TransactionRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
 
     override fun getAllTransactions(): Flow<List<Transaction>> = try {
-        
+        transactionDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("TransactionRepositoryImpl", "Error in Flow<List<Transaction>>", e)
         throw e
     }
-        transactionDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getTransactionsForPeriod(fromEpoch: Long, toEpoch: Long): Flow<List<Transaction>> =
         transactionDao.getForPeriod(fromEpoch, toEpoch).map { list -> list.map { it.toDomain() } }

@@ -14,26 +14,24 @@ class ProjectRepositoryImpl @Inject constructor(
 ) : ProjectRepository {
 
     override suspend fun createProject(project: Project): Long = try {
-        
+        projectDao.insert(project.toEntity())
     } catch (e: Exception) {
         Log.e("ProjectRepositoryImpl", "Error in Long", e)
         throw e
     }
-        projectDao.insert(project.toEntity())
 
     override suspend fun getProjectById(id: Long): Project? = try {
-        
+        projectDao.getById(id)?.toDomain()
     } catch (e: Exception) {
         Log.e("ProjectRepositoryImpl", "Error in Project?", e)
         throw e
     }
-        projectDao.getById(id)?.toDomain()
 
     override suspend fun updateProject(project: Project) {
         try {
             projectDao.update(project.copy(updatedAt = Instant.now()).toEntity())
         } catch (e: Exception) {
-            Log.e("ProjectRepositoryImpl", "Error in Project)", e)
+            Log.e("ProjectRepositoryImpl", "Error in Project", e)
             throw e
         }
     }
@@ -42,7 +40,7 @@ class ProjectRepositoryImpl @Inject constructor(
         try {
             projectDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("ProjectRepositoryImpl", "Error in Long)", e)
+            Log.e("ProjectRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -51,18 +49,17 @@ class ProjectRepositoryImpl @Inject constructor(
         try {
             projectDao.setArchived(id, archived, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("ProjectRepositoryImpl", "Error in Boolean)", e)
+            Log.e("ProjectRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
 
     override fun getAllProjects(): Flow<List<Project>> = try {
-        
+        projectDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("ProjectRepositoryImpl", "Error in Flow<List<Project>>", e)
         throw e
     }
-        projectDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getActiveProjects(): Flow<List<Project>> =
         projectDao.getActive().map { list -> list.map { it.toDomain() } }

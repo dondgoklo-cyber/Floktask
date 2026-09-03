@@ -14,18 +14,17 @@ class CategoryRepositoryImpl @Inject constructor(
 ) : CategoryRepository {
 
     override suspend fun createCategory(category: Category): Long = try {
-        
+        categoryDao.insert(category.toEntity())
     } catch (e: Exception) {
         Log.e("CategoryRepositoryImpl", "Error in Long", e)
         throw e
     }
-        categoryDao.insert(category.toEntity())
 
     override suspend fun updateCategory(category: Category) {
         try {
             categoryDao.update(category.toEntity())
         } catch (e: Exception) {
-            Log.e("CategoryRepositoryImpl", "Error in Category)", e)
+            Log.e("CategoryRepositoryImpl", "Error in Category", e)
             throw e
         }
     }
@@ -34,18 +33,17 @@ class CategoryRepositoryImpl @Inject constructor(
         try {
             categoryDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("CategoryRepositoryImpl", "Error in Long)", e)
+            Log.e("CategoryRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
 
     override fun getAllCategories(): Flow<List<Category>> = try {
-        
+        categoryDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("CategoryRepositoryImpl", "Error in Flow<List<Category>>", e)
         throw e
     }
-        categoryDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getCategoriesByType(type: CategoryType): Flow<List<Category>> =
         categoryDao.getByType(type.name).map { list -> list.map { it.toDomain() } }

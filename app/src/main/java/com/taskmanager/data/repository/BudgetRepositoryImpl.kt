@@ -13,35 +13,32 @@ class BudgetRepositoryImpl @Inject constructor(
 ) : BudgetRepository {
 
     override suspend fun upsertBudget(budget: Budget): Long = try {
-        
+        budgetDao.insert(budget.toEntity())
     } catch (e: Exception) {
         Log.e("BudgetRepositoryImpl", "Error in Long", e)
         throw e
     }
-        budgetDao.insert(budget.toEntity())
 
     override suspend fun deleteBudget(id: Long) {
         try {
             budgetDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("BudgetRepositoryImpl", "Error in Long)", e)
+            Log.e("BudgetRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
 
     override fun getAllBudgets(): Flow<List<Budget>> = try {
-        
+        budgetDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("BudgetRepositoryImpl", "Error in Flow<List<Budget>>", e)
         throw e
     }
-        budgetDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override suspend fun getBudgetByCategory(categoryId: Long): Budget? = try {
-        
+        budgetDao.getByCategory(categoryId)?.toDomain()
     } catch (e: Exception) {
         Log.e("BudgetRepositoryImpl", "Error in Budget?", e)
         throw e
     }
-        budgetDao.getByCategory(categoryId)?.toDomain()
 }

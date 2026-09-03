@@ -14,26 +14,24 @@ class HabitRepositoryImpl @Inject constructor(
 ) : HabitRepository {
 
     override suspend fun createHabit(habit: Habit): Long = try {
-        
+        habitDao.insert(habit.toEntity())
     } catch (e: Exception) {
         Log.e("HabitRepositoryImpl", "Error in Long", e)
         throw e
     }
-        habitDao.insert(habit.toEntity())
 
     override suspend fun getHabitById(id: Long): Habit? = try {
-        
+        habitDao.getById(id)?.toDomain()
     } catch (e: Exception) {
         Log.e("HabitRepositoryImpl", "Error in Habit?", e)
         throw e
     }
-        habitDao.getById(id)?.toDomain()
 
     override suspend fun updateHabit(habit: Habit) {
         try {
             habitDao.update(habit.copy(updatedAt = Instant.now()).toEntity())
         } catch (e: Exception) {
-            Log.e("HabitRepositoryImpl", "Error in Habit)", e)
+            Log.e("HabitRepositoryImpl", "Error in Habit", e)
             throw e
         }
     }
@@ -42,7 +40,7 @@ class HabitRepositoryImpl @Inject constructor(
         try {
             habitDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("HabitRepositoryImpl", "Error in Long)", e)
+            Log.e("HabitRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -51,18 +49,17 @@ class HabitRepositoryImpl @Inject constructor(
         try {
             habitDao.setArchived(id, archived, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("HabitRepositoryImpl", "Error in Boolean)", e)
+            Log.e("HabitRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
 
     override fun getActiveHabits(): Flow<List<Habit>> = try {
-        
+        habitDao.getActive().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("HabitRepositoryImpl", "Error in Flow<List<Habit>>", e)
         throw e
     }
-        habitDao.getActive().map { list -> list.map { it.toDomain() } }
 
     override fun getAllHabits(): Flow<List<Habit>> =
         habitDao.getAll().map { list -> list.map { it.toDomain() } }
