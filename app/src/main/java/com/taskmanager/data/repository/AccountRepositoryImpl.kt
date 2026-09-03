@@ -13,18 +13,17 @@ class AccountRepositoryImpl @Inject constructor(
 ) : AccountRepository {
 
     override suspend fun createAccount(account: Account): Long = try {
-        
+        accountDao.insert(account.toEntity())
     } catch (e: Exception) {
         Log.e("AccountRepositoryImpl", "Error in Long", e)
         throw e
     }
-        accountDao.insert(account.toEntity())
 
     override suspend fun updateAccount(account: Account) {
         try {
             accountDao.update(account.toEntity())
         } catch (e: Exception) {
-            Log.e("AccountRepositoryImpl", "Error in Account)", e)
+            Log.e("AccountRepositoryImpl", "Error in Account", e)
             throw e
         }
     }
@@ -33,18 +32,17 @@ class AccountRepositoryImpl @Inject constructor(
         try {
             accountDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("AccountRepositoryImpl", "Error in Long)", e)
+            Log.e("AccountRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
 
     override fun getAllAccounts(): Flow<List<Account>> = try {
-        
+        accountDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("AccountRepositoryImpl", "Error in Flow<List<Account>>", e)
         throw e
     }
-        accountDao.getAll().map { list -> list.map { it.toDomain() } }
 
     override suspend fun getAccountCount(): Int = try {
         accountDao.count()

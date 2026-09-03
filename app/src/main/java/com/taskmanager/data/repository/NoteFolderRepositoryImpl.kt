@@ -13,18 +13,17 @@ class NoteFolderRepositoryImpl @Inject constructor(
 ) : NoteFolderRepository {
 
     override suspend fun createFolder(folder: NoteFolder): Long = try {
-        
+        folderDao.insert(folder.toEntity())
     } catch (e: Exception) {
         Log.e("NoteFolderRepositoryImpl", "Error in Long", e)
         throw e
     }
-        folderDao.insert(folder.toEntity())
 
     override suspend fun updateFolder(folder: NoteFolder) {
         try {
             folderDao.update(folder.toEntity())
         } catch (e: Exception) {
-            Log.e("NoteFolderRepositoryImpl", "Error in NoteFolder)", e)
+            Log.e("NoteFolderRepositoryImpl", "Error in NoteFolder", e)
             throw e
         }
     }
@@ -33,16 +32,15 @@ class NoteFolderRepositoryImpl @Inject constructor(
         try {
             folderDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("NoteFolderRepositoryImpl", "Error in Long)", e)
+            Log.e("NoteFolderRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
 
     override fun getAllFolders(): Flow<List<NoteFolder>> = try {
-        
+        folderDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("NoteFolderRepositoryImpl", "Error in Flow<List<NoteFolder>>", e)
         throw e
     }
-        folderDao.getAll().map { list -> list.map { it.toDomain() } }
 }

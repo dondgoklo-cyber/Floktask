@@ -15,15 +15,15 @@ class HabitLogRepositoryImpl @Inject constructor(
 
     override suspend fun logCompletion(habitId: Long, date: LocalDate, count: Int): Long {
         val entity = try {
-        HabitLog(
-    } catch (e: Exception) {
-        Log.e("HabitLogRepositoryImpl", "Error in entity", e)
-        throw e
-    }
-            habitId = habitId,
-            date = date,
-            count = count
-        ).toEntity()
+            HabitLog(
+                habitId = habitId,
+                date = date,
+                count = count
+            ).toEntity()
+        } catch (e: Exception) {
+            Log.e("HabitLogRepositoryImpl", "Error in entity", e)
+            throw e
+        }
         return habitLogDao.insert(entity)
     }
 
@@ -31,32 +31,29 @@ class HabitLogRepositoryImpl @Inject constructor(
         try {
             habitLogDao.deleteForDay(habitId, date.toEpochDay())
         } catch (e: Exception) {
-            Log.e("HabitLogRepositoryImpl", "Error in LocalDate)", e)
+            Log.e("HabitLogRepositoryImpl", "Error in LocalDate", e)
             throw e
         }
     }
 
     override fun observeByHabit(habitId: Long): Flow<List<HabitLog>> = try {
-        
+        habitLogDao.observeByHabit(habitId).map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
         Log.e("HabitLogRepositoryImpl", "Error in Flow<List<HabitLog>>", e)
         throw e
     }
-        habitLogDao.observeByHabit(habitId).map { list -> list.map { it.toDomain() } }
 
     override suspend fun getByHabit(habitId: Long): List<HabitLog> = try {
-        
+        habitLogDao.getByHabit(habitId).map { it.toDomain() }
     } catch (e: Exception) {
         Log.e("HabitLogRepositoryImpl", "Error in List<HabitLog>", e)
         throw e
     }
-        habitLogDao.getByHabit(habitId).map { it.toDomain() }
 
     override suspend fun getForDay(habitId: Long, date: LocalDate): HabitLog? = try {
-        
+        habitLogDao.getForDay(habitId, date.toEpochDay())?.toDomain()
     } catch (e: Exception) {
         Log.e("HabitLogRepositoryImpl", "Error in HabitLog?", e)
         throw e
     }
-        habitLogDao.getForDay(habitId, date.toEpochDay())?.toDomain()
 }
