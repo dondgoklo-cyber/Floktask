@@ -149,14 +149,12 @@ fun ProjectDetailScreen(
                 viewMode == ProjectViewMode.LIST -> {
                     ProjectTaskList(
                         tasks = state.tasks,
-                        tagColors = state.tagColors,
                         onTaskClick = onTaskClick
                     )
                 }
                 viewMode == ProjectViewMode.KANBAN -> {
                     ProjectKanbanView(
                         tasks = state.tasks,
-                        tagColors = state.tagColors,
                         onMoveTask = { task, status -> viewModel.moveTask(task, status) },
                         onTaskClick = onTaskClick
                     )
@@ -176,7 +174,6 @@ fun ProjectDetailScreen(
 @Composable
 private fun ProjectTaskList(
     tasks: List<Task>,
-    tagColors: Map<String, String>,
     onTaskClick: (Long) -> Unit
 ) {
     LazyColumn(
@@ -188,8 +185,7 @@ private fun ProjectTaskList(
             TaskCard(
                 task = task,
                 onClick = { task.id?.let(onTaskClick) },
-                onCheckedChange = { },
-                tagColors = tagColors
+                onCheckedChange = { }
             )
         }
     }
@@ -198,7 +194,6 @@ private fun ProjectTaskList(
 @Composable
 private fun ProjectKanbanView(
     tasks: List<Task>,
-    tagColors: Map<String, String>,
     onMoveTask: (Task, TaskStatus) -> Unit,
     onTaskClick: (Long) -> Unit
 ) {
@@ -216,7 +211,6 @@ private fun ProjectKanbanView(
             KanbanColumn(
                 status = status,
                 tasks = columnTasks,
-                tagColors = tagColors,
                 onMoveTask = { onMoveTask(it, status) },
                 onTaskClick = onTaskClick
             )
@@ -228,7 +222,6 @@ private fun ProjectKanbanView(
 private fun KanbanColumn(
     status: TaskStatus,
     tasks: List<Task>,
-    tagColors: Map<String, String>,
     onMoveTask: (Task) -> Unit,
     onTaskClick: (Long) -> Unit
 ) {
@@ -265,8 +258,7 @@ private fun KanbanColumn(
             TaskCard(
                 task = task,
                 onClick = { task.id?.let(onTaskClick) },
-                onCheckedChange = { },
-                tagColors = tagColors
+                onCheckedChange = { }
             )
         }
     }
