@@ -1,6 +1,6 @@
 package com.taskmanager.domain.usecase.task
 
-import com.taskmanager.domain.alarm.AlarmScheduler
+import com.taskmanager.notification.AlarmScheduler
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
 import io.mockk.mockk
@@ -47,6 +47,8 @@ class TaskUseCasesTest {
         override fun getCompletedTasks(): Flow<List<Task>> = flowOf(emptyList())
         override fun getIncompleteTasks(): Flow<List<Task>> = flowOf(emptyList())
         override fun searchTasks(query: String): Flow<List<Task>> = flowOf(emptyList())
+        override fun getInboxTasks(): Flow<List<Task>> = flowOf(emptyList())
+        override suspend fun getTaskTags(taskId: Long): List<String> = emptyList()
     }
 
     @Test
