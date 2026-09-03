@@ -28,7 +28,10 @@ jobs:
           cache: 'gradle'
 
       - name: Run ktlint
-        run: ./gradlew ktlintCheck --stacktrace --no-daemon
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.5
+          arguments: ktlintCheck --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx2g"
 
@@ -48,7 +51,10 @@ jobs:
           cache: 'gradle'
 
       - name: Run tests
-        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.5
+          arguments: testDebugUnitTest --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx4g"
 
@@ -68,7 +74,10 @@ jobs:
           cache: 'gradle'
 
       - name: Build project
-        run: ./gradlew assembleDebug --dry-run --stacktrace --no-daemon
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.5
+          arguments: assembleDebug --dry-run --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx2g"
 
@@ -82,6 +91,6 @@ jobs:
 
       - name: Check for dependency updates
         run: |
-          # Проверяем есть ли обновления в gradle файлах
+          # Можно добавить скрипт для проверки обновлений зависимостей в gradle файлах
           echo "Checking for dependency updates..."
-          # Можно добавить скрипт для проверки обновлений
+          # Например: ./gradlew dependencyUpdates
