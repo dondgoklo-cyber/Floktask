@@ -83,7 +83,8 @@ class UserStatsRepositoryImpl @Inject constructor(
         )
         
         // Check for achievements
-        val achievements = Achievements.getAchievementsForTaskCount(newCompleted)
+        // TODO: Implement achievement system with proper DAO
+        val achievements = emptyList<Achievement>()
         for (ach in achievements) {
             if (ach.id !in updated.unlockedAchievementIds) {
                 updated = updated.copy(
