@@ -10,9 +10,8 @@ class RecordTaskCompletionUseCase @Inject constructor(
     private val repository: UserStatsRepository
 ) {
     suspend operator fun invoke(priority: Priority): UserStats = runCatching {
-        
+        repository.recordTaskCompletion(priority)
     }.onFailure { e ->
         Log.e("RecordTaskCompletionUseCase", "Error in invoke", e)
-    }
-        repository.recordTaskCompletion(priority)
+    }.getOrThrow()
 }

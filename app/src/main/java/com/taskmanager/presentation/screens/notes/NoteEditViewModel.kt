@@ -46,22 +46,21 @@ class NoteEditViewModel @Inject constructor(
 
     private fun loadNote(id: Long) {
         viewModelScope.launch {
-        try {
-            val note = noteRepository.getNoteById(id)
-            if (note != null) {
-                currentNote = note
-                _state.value = NoteEditState(
-                    title = note.title,
-                    content = note.contentMarkdown,
-                    isLoading = false,
-                    isSaved = true
-                )
-        } catch (e: Exception) {
-            Log.e("NoteEditViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    } else {
-                _state.value = NoteEditState(isLoading = false)
+            try {
+                val note = noteRepository.getNoteById(id)
+                if (note != null) {
+                    currentNote = note
+                    _state.value = NoteEditState(
+                        title = note.title,
+                        content = note.contentMarkdown,
+                        isLoading = false,
+                        isSaved = true
+                    )
+                } else {
+                    _state.value = NoteEditState(isLoading = false)
+                }
+            } catch (e: Exception) {
+                Log.e("NoteEditViewModel", "Error in launch block", e)
             }
         }
     }
@@ -76,51 +75,43 @@ class NoteEditViewModel @Inject constructor(
         scheduleSave()
     }
 
-    /** Debounced autosave — не пишет в БД на каждое нажатие клавиши. */
     private fun scheduleSave() {
         saveJob?.cancel()
         saveJob = viewModelScope.launch {
-        try {
-            delay(800) // debounce 800ms
-            saveNow()
-        } catch (e: Exception) {
-            Log.e("NoteEditViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                delay(800)
+                saveNow()
+            } catch (e: Exception) {
+                Log.e("NoteEditViewModel", "Error in launch block", e)
+            }
         }
-    }
     }
 
     fun saveNow() {
         if (hasCreated && currentNote == null) return
         val s = _state.value
         viewModelScope.launch {
-        try {
-            if (isNew && !hasCreated) {
-                val id = createNoteUseCase(Note(
-                    title = s.title,
-                    contentMarkdown = s.content
-                ))
-                currentNote = Note(id = id, title = s.title, contentMarkdown = s.content)
-                hasCreated = true
-        } catch (e: Exception) {
-            Log.e("NoteEditViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    } else {
-                currentNote?.let { note ->
-                    noteRepository.updateNote(note.copy(
+            try {
+                if (isNew && !hasCreated) {
+                    val id = createNoteUseCase(Note(
                         title = s.title,
                         contentMarkdown = s.content
                     ))
-                    currentNote = note.copy(title = s.title, contentMarkdown = s.content)
+                    currentNote = Note(id = id, title = s.title, contentMarkdown = s.content)
+                    hasCreated = true
+                } else {
+                    currentNote?.let { note ->
+                        noteRepository.updateNote(note.copy(
+                            title = s.title,
+                            contentMarkdown = s.content
+                        ))
+                        currentNote = note.copy(title = s.title, contentMarkdown = s.content)
+                    }
                 }
+                _state.value = _state.value.copy(isSaved = true)
+            } catch (e: Exception) {
+                Log.e("NoteEditViewModel", "Error in launch block", e)
             }
-            _state.value = _state.value.copy(isSaved = true)
         }
-    }
-
-    override fun onCleared() {
-        saveNow()
-        super.onCleared()
     }
 }

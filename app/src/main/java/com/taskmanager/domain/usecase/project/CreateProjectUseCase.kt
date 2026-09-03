@@ -9,9 +9,8 @@ class CreateProjectUseCase @Inject constructor(
     private val projectRepository: ProjectRepository
 ) {
     suspend operator fun invoke(project: Project): Long = runCatching {
-        
+        projectRepository.createProject(project)
     }.onFailure { e ->
         Log.e("CreateProjectUseCase", "Error in invoke", e)
-    }
-        projectRepository.createProject(project)
+    }.getOrThrow()
 }

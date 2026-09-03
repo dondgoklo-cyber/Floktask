@@ -54,22 +54,18 @@ class SearchViewModel @Inject constructor(
 
     private fun observeCatalogs() {
         viewModelScope.launch {
-        try {
-            projectRepository.getAllProjects().collect { _allProjects.value = it
-        } catch (e: Exception) {
-            Log.e("SearchViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
+            try {
+                projectRepository.getAllProjects().collect { _allProjects.value = it }
+            } catch (e: Exception) {
+                Log.e("SearchViewModel", "Error in launch block", e)
+            }
         }
         viewModelScope.launch {
-        try {
-            habitRepository.getAllHabits().collect { _allHabits.value = it
-        } catch (e: Exception) {
-            Log.e("SearchViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
+            try {
+                habitRepository.getAllHabits().collect { _allHabits.value = it }
+            } catch (e: Exception) {
+                Log.e("SearchViewModel", "Error in launch block", e)
+            }
         }
     }
 
@@ -111,24 +107,22 @@ class SearchViewModel @Inject constructor(
             _noteResults.value = emptyList()
         } else {
             viewModelScope.launch {
-        try {
-            taskRepository.searchTasks(q).collect { results ->
-                    _taskResults.value = results
-        } catch (e: Exception) {
-            Log.e("SearchViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
+                try {
+                    taskRepository.searchTasks(q).collect { results ->
+                        _taskResults.value = results
+                    }
+                } catch (e: Exception) {
+                    Log.e("SearchViewModel", "Error in launch block", e)
+                }
             }
             viewModelScope.launch {
-        try {
-            searchNotesUseCase(q).collect { results ->
-                    _noteResults.value = results
-        } catch (e: Exception) {
-            Log.e("SearchViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
+                try {
+                    searchNotesUseCase(q).collect { results ->
+                        _noteResults.value = results
+                    }
+                } catch (e: Exception) {
+                    Log.e("SearchViewModel", "Error in launch block", e)
+                }
             }
         }
     }

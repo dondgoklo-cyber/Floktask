@@ -73,13 +73,11 @@ class TodayViewModel @Inject constructor(
     init {
         observeTodayData()
         viewModelScope.launch {
-        try {
-            taskRepository.getInboxTasks().collect { _inboxTasks.value = it.take(3)
-        } catch (e: Exception) {
-            Log.e("TodayViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
+            try {
+                taskRepository.getInboxTasks().collect { _inboxTasks.value = it.take(3) }
+            } catch (e: Exception) {
+                Log.e("TodayViewModel", "Error in launch block", e)
+            }
         }
     }
 
@@ -108,7 +106,6 @@ class TodayViewModel @Inject constructor(
             val totalToday = tasks.size
             val overdue = tasks.count { !it.isCompleted && it.deadline != null && it.deadline.toEpochMilli() < now }
 
-            // Ближайшие невыполненные задачи со временем
             val nextTasks = tasks
                 .filter { !it.isCompleted && it.startTime != null && it.startTime.toEpochMilli() >= now }
                 .sortedBy { it.startTime }
@@ -118,7 +115,6 @@ class TodayViewModel @Inject constructor(
                 .filter { it.isCompleted }
                 .sumOf { it.durationMinutes }
 
-            // Привычки: проверяем выполнение за сегодня
             val habitStates = habits.map { habit ->
                 val log = habitLogRepository.getForDay(habit.id ?: 0, today)
                 habit to (log != null)
@@ -149,13 +145,11 @@ class TodayViewModel @Inject constructor(
         }.stateIn(viewModelScope, SharingStarted.Lazily, TodayUiState(isLoading = true))
             .let { flow ->
                 viewModelScope.launch {
-        try {
-            flow.collect { _state.value = it
-        } catch (e: Exception) {
-            Log.e("TodayViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
+                    try {
+                        flow.collect { _state.value = it }
+                    } catch (e: Exception) {
+                        Log.e("TodayViewModel", "Error in launch block", e)
+                    }
                 }
             }
     }

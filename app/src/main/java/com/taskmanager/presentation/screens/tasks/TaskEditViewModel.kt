@@ -68,7 +68,6 @@ class TaskEditViewModel @Inject constructor(
 
     init {
         taskId?.let { loadTask(it) }
-        // При создании из Project — предзаполнить projectId
         if (taskId == null && projectIdArg != null) {
             _formState.value = _formState.value.copy(projectId = projectIdArg)
         }
@@ -76,28 +75,27 @@ class TaskEditViewModel @Inject constructor(
 
     private fun loadTask(id: Long) {
         viewModelScope.launch {
-        try {
-            getTaskByIdUseCase(id)?.let { task ->
-                _formState.value = TaskFormState(
-                    title = task.title,
-                    description = task.description.orEmpty(),
-                    priority = task.priority,
-                    projectId = task.projectId,
-                    status = task.status,
-                    deadlineDate = task.deadline?.atZone(ZoneId.of("UTC"))?.toLocalDate(),
-                    startTime = task.startTime?.atZone(ZoneId.of("UTC"))?.toLocalTime(),
-                    durationMinutes = task.durationMinutes,
-                    pomodoroEstimate = task.pomodoroEstimate,
-                    eisenhowerQuadrant = task.eisenhowerQuadrant,
-                    tags = task.tags,
-                    recurrenceRule = task.recurrenceRule,
-                    reminderDateTime = task.reminderDate?.atZone(ZoneId.of("UTC"))?.toLocalDateTime()
-                )
-        } catch (e: Exception) {
-            Log.e("TaskEditViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
+            try {
+                getTaskByIdUseCase(id)?.let { task ->
+                    _formState.value = TaskFormState(
+                        title = task.title,
+                        description = task.description.orEmpty(),
+                        priority = task.priority,
+                        projectId = task.projectId,
+                        status = task.status,
+                        deadlineDate = task.deadline?.atZone(ZoneId.of("UTC"))?.toLocalDate(),
+                        startTime = task.startTime?.atZone(ZoneId.of("UTC"))?.toLocalTime(),
+                        durationMinutes = task.durationMinutes,
+                        pomodoroEstimate = task.pomodoroEstimate,
+                        eisenhowerQuadrant = task.eisenhowerQuadrant,
+                        tags = task.tags,
+                        recurrenceRule = task.recurrenceRule,
+                        reminderDateTime = task.reminderDate?.atZone(ZoneId.of("UTC"))?.toLocalDateTime()
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("TaskEditViewModel", "Error in launch block", e)
+            }
         }
     }
 
@@ -150,15 +148,13 @@ class TaskEditViewModel @Inject constructor(
         if (trimmed.isNotBlank() && trimmed !in _formState.value.tags) {
             _formState.value = _formState.value.copy(tags = _formState.value.tags + trimmed)
             viewModelScope.launch {
-        try {
-            val exists = tags.value.any { it.name.equals(trimmed, ignoreCase = true)
-        } catch (e: Exception) {
-            Log.e("TaskEditViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
-                if (!exists) {
-                    createTagUseCase(com.taskmanager.domain.model.Tag(name = trimmed))
+                try {
+                    val exists = tags.value.any { it.name.equals(trimmed, ignoreCase = true) }
+                    if (!exists) {
+                        createTagUseCase(com.taskmanager.domain.model.Tag(name = trimmed))
+                    }
+                } catch (e: Exception) {
+                    Log.e("TaskEditViewModel", "Error in launch block", e)
                 }
             }
         }
@@ -183,63 +179,56 @@ class TaskEditViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-        try {
-            val (deadline, startTime) = combineDateTime(state)
-            val reminderInstant = state.reminderDateTime
-                ?.atZone(ZoneId.of("UTC"))?.toInstant()
-            val existing = taskId?.let { getTaskByIdUseCase(it)
-        } catch (e: Exception) {
-            Log.e("TaskEditViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
-    }
-            val task = (existing?.copy(
-                title = state.title.trim(),
-                description = state.description.trim().ifBlank { null },
-                priority = state.priority,
-                projectId = state.projectId,
-                status = state.status,
-                deadline = deadline,
-                startTime = startTime,
-                durationMinutes = state.durationMinutes,
-                pomodoroEstimate = state.pomodoroEstimate,
-                eisenhowerQuadrant = state.eisenhowerQuadrant,
-                tags = state.tags,
-                recurrenceRule = state.recurrenceRule,
-                reminderDate = reminderInstant
-            ) ?: Task(
-                title = state.title.trim(),
-                description = state.description.trim().ifBlank { null },
-                priority = state.priority,
-                projectId = state.projectId,
-                status = state.status,
-                deadline = deadline,
-                startTime = startTime,
-                durationMinutes = state.durationMinutes,
-                pomodoroEstimate = state.pomodoroEstimate,
-                eisenhowerQuadrant = state.eisenhowerQuadrant,
-                tags = state.tags,
-                recurrenceRule = state.recurrenceRule,
-                reminderDate = reminderInstant
-            ))
-            val savedId = if (existing != null) {
-                updateTaskUseCase(task)
-                task.id ?: 0L
-            } else {
-                createTaskUseCase(task)
+            try {
+                val (deadline, startTime) = combineDateTime(state)
+                val reminderInstant = state.reminderDateTime
+                    ?.atZone(ZoneId.of("UTC"))?.toInstant()
+                val existing = taskId?.let { getTaskByIdUseCase(it) }
+                val task = (existing?.copy(
+                    title = state.title.trim(),
+                    description = state.description.trim().ifBlank { null },
+                    priority = state.priority,
+                    projectId = state.projectId,
+                    status = state.status,
+                    deadline = deadline,
+                    startTime = startTime,
+                    durationMinutes = state.durationMinutes,
+                    pomodoroEstimate = state.pomodoroEstimate,
+                    eisenhowerQuadrant = state.eisenhowerQuadrant,
+                    tags = state.tags,
+                    recurrenceRule = state.recurrenceRule,
+                    reminderDate = reminderInstant
+                ) ?: Task(
+                    title = state.title.trim(),
+                    description = state.description.trim().ifBlank { null },
+                    priority = state.priority,
+                    projectId = state.projectId,
+                    status = state.status,
+                    deadline = deadline,
+                    startTime = startTime,
+                    durationMinutes = state.durationMinutes,
+                    pomodoroEstimate = state.pomodoroEstimate,
+                    eisenhowerQuadrant = state.eisenhowerQuadrant,
+                    tags = state.tags,
+                    recurrenceRule = state.recurrenceRule,
+                    reminderDate = reminderInstant
+                ))
+                val savedId = if (existing != null) {
+                    updateTaskUseCase(task)
+                    task.id ?: 0L
+                } else {
+                    createTaskUseCase(task)
+                }
+                reminderInstant?.let { inst ->
+                    alarmScheduler.scheduleReminder(savedId, task.title, inst.toEpochMilli())
+                } ?: alarmScheduler.cancelReminder(savedId)
+                onSaved()
+            } catch (e: Exception) {
+                Log.e("TaskEditViewModel", "Error in launch block", e)
             }
-            reminderInstant?.let { inst ->
-                alarmScheduler.scheduleReminder(savedId, task.title, inst.toEpochMilli())
-            } ?: alarmScheduler.cancelReminder(savedId)
-            onSaved()
         }
     }
 
-    /**
-     * Комбинирует дату дедлайна и время начала в Instant.
-     * Если есть время — deadline = date+time, startTime = date+time.
-     * Если только дата — deadline = date в полночь.
-     */
     private fun combineDateTime(state: TaskFormState): Pair<Instant?, Instant?> {
         val zone = ZoneId.of("UTC")
         if (state.deadlineDate == null) return null to null

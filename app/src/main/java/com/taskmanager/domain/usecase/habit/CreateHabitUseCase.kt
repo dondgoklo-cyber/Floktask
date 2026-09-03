@@ -9,9 +9,8 @@ class CreateHabitUseCase @Inject constructor(
     private val habitRepository: HabitRepository
 ) {
     suspend operator fun invoke(habit: Habit): Long = runCatching {
-        
+        habitRepository.createHabit(habit)
     }.onFailure { e ->
         Log.e("CreateHabitUseCase", "Error in invoke", e)
-    }
-        habitRepository.createHabit(habit)
+    }.getOrThrow()
 }

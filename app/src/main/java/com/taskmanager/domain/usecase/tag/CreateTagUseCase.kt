@@ -9,9 +9,8 @@ class CreateTagUseCase @Inject constructor(
     private val tagRepository: TagRepository
 ) {
     suspend operator fun invoke(tag: Tag): Long = runCatching {
-        
+        tagRepository.createTag(tag)
     }.onFailure { e ->
         Log.e("CreateTagUseCase", "Error in invoke", e)
-    }
-        tagRepository.createTag(tag)
+    }.getOrThrow()
 }
