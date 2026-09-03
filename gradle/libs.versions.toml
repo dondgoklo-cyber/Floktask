@@ -13,6 +13,7 @@ hilt = "2.48"
 hiltNavigationCompose = "1.0.0"
 timber = "5.0.1"
 work = "2.9.0"
+leakcanary = "2.12"
 kotlinxCoroutines = "1.7.3"
 kotlinxSerialization = "1.5.0"
 desugar = "2.0.4"
@@ -66,6 +67,9 @@ androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx"
 
 # Desugaring
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+
+# LeakCanary
+leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

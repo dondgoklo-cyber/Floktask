@@ -110,6 +110,9 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
 
+    // Leak detection (debug only) — issue 42
+    debugImplementation(libs.leakcanary)
+
     // Testing
     testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
