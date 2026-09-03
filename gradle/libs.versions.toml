@@ -11,6 +11,9 @@ navigation = "2.7.3"
 room = "2.6.1"
 hilt = "2.48"
 hiltNavigationCompose = "1.0.0"
+firebaseBom = "32.2.0"
+retrofit = "2.9.0"
+glance = "1.0.0"
 timber = "5.0.1"
 work = "2.9.0"
 leakcanary = "2.12"
@@ -60,6 +63,8 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 # Coil
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
+androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
+androidx-glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
 
 # Timber
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
