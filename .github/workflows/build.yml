@@ -26,7 +26,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 8.4
+          gradle-version: 8.7
           arguments: assembleDebug --stacktrace --no-daemon
           cache-disabled: true
         env:
