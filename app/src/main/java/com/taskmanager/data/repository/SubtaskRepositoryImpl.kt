@@ -80,7 +80,9 @@ class SubtaskRepositoryImpl @Inject constructor(
             subtasks.add(toIndex.coerceAtMost(subtasks.size), item)
             
             subtasks.forEachIndexed { index, subtask ->
-                subtaskDao.updateOrder(subtask.id, index)
+                subtask.id?.let { id ->
+                    subtaskDao.updateOrder(id, index)
+                } ?: throw IllegalStateException("Subtask ID cannot be null during reordering")
             }
         } catch (e: Exception) {
             Log.e("SubtaskRepositoryImpl", "Error in reorderSubtasks", e)
