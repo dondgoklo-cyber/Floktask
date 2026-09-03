@@ -196,6 +196,7 @@
     <string name="no_results">Ничего не найдено</string>
     <string name="search_empty_title">Ничего не найдено</string>
     <string name="search_empty_subtitle">Попробуйте изменить запрос</string>
+    <string name="clear_search">Очистить поиск</string>
     <string name="onboarding_welcome">Добро пожаловать в WOLFTASK</string>
     <string name="onboarding_welcome_subtitle">Планируйте задачи, фокусируйтесь и вырабатывайте привычки</string>
     <string name="onboarding_quickadd_title">Быстрый захват</string>
