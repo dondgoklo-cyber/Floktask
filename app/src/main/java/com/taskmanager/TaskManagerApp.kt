@@ -3,6 +3,8 @@ package com.taskmanager
 import android.app.Application
 import android.os.Build
 import com.taskmanager.data.repository.FinanceDataSeeder
+import com.taskmanager.startup.AppInitializer
+import com.taskmanager.startup.StartupTracker
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import java.io.File
@@ -15,21 +17,32 @@ class TaskManagerApp : Application() {
     @javax.inject.Inject
     lateinit var financeDataSeeder: FinanceDataSeeder
 
+    private val startupTracker = StartupTracker()
+
     override fun onCreate() {
         super.onCreate()
         financeDataSeeder.seedIfNeeded()
-        // Глобальный перехватчик крашей — записывает стек в файл
+        
+        startupTracker.begin()
+        val initializer = AppInitializer(this)
+        // Critical (blocking): logging tree.
+        initializer.initCritical(BuildConfig.DEBUG)
+        // Non-critical: deferred off the main thread
+        initializer.initNonCritical()
+        startupTracker.end("application")
+
+        // Глосальный перехватчики крашей — записывает стеки в файл
         val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
                 val sw = StringWriter()
                 throwable.printStackTrace(PrintWriter(sw))
                 val crashLog = """
-                    === КРАШ WOLFTASK ===
-                    Время: ${System.currentTimeMillis()}
-                    Поток: ${thread.name}
+                    === краш WOLFTASK ===
+                    время: ${System.currentTimeMillis()}
+                    поток: ${thread.name}
                     Android API: ${Build.VERSION.SDK_INT}
-                    Устройство: ${Build.MANUFACTURER} ${Build.MODEL}
+                    устройство: ${Build.MANUFACTURER} ${Build.MODEL}
 
                     Стек:
                     $sw
