@@ -39,7 +39,7 @@ class RecordTaskChangeUseCaseTest {
     }
 
     @Test
-    fun `title change emits an UPDATED event with old/new`() {
+    fun `title change emits an UPDATED event with old-new`() {
         val events = useCase(before = task(1, "old"), after = task(1, "new"), now = now)
         assertEquals(1, events.size)
         assertEquals("title", events[0].field)
