@@ -39,7 +39,7 @@ data class TaskPlacement(
  */
 class AutoScheduleTasksUseCase @Inject constructor() {
 
-    fun invoke(
+    suspend operator fun invoke(
         tasks: List<SchedulableTask>,
         date: LocalDate,
         busy: List<TimeInterval>,
