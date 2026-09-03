@@ -3,6 +3,7 @@ package com.taskmanager.domain.usecase.customfield
 import com.taskmanager.domain.model.CustomField
 import com.taskmanager.domain.model.CustomFieldType
 import com.taskmanager.domain.model.CustomFieldValue
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -17,29 +18,29 @@ class ValidateCustomFieldValueUseCaseTest {
 
     @Test
     fun `text field always valid`() {
-        assertTrue(useCase(field(CustomFieldType.TEXT), value("anything")) is ValidationResult.Valid)
+        assertTrue(useCase(field(CustomFieldType.TEXT), value("anything")) == ValidationResult.Valid)
     }
 
     @Test
     fun `number field valid for numeric`() {
-        assertTrue(useCase(field(CustomFieldType.NUMBER), value("42.5")) is ValidationResult.Valid)
+        assertTrue(useCase(field(CustomFieldType.NUMBER), value("42.5")) == ValidationResult.Valid)
     }
 
     @Test
     fun `number field invalid for non-numeric`() {
-        assertTrue(useCase(field(CustomFieldType.NUMBER), value("abc")) is ValidationResult.Invalid)
+        assertTrue(useCase(field(CustomFieldType.NUMBER), value("abc")) == ValidationResult.Invalid)
     }
 
     @Test
     fun `dropdown valid when in options`() {
         val f = field(CustomFieldType.DROPDOWN, options = listOf("Low", "High"))
-        assertTrue(useCase(f, value("High")) is ValidationResult.Valid)
+        assertTrue(useCase(f, value("High")) == ValidationResult.Valid)
     }
 
     @Test
     fun `dropdown invalid when not in options`() {
         val f = field(CustomFieldType.DROPDOWN, options = listOf("Low", "High"))
-        assertTrue(useCase(f, value("Medium")) is ValidationResult.Invalid)
+        assertTrue(useCase(f, value("Medium")) == ValidationResult.Invalid)
     }
 
     @Test
@@ -51,11 +52,11 @@ class ValidateCustomFieldValueUseCaseTest {
 
     @Test
     fun `date invalid for garbage`() {
-        assertTrue(useCase(field(CustomFieldType.DATE), value("yesterday")) is ValidationResult.Invalid)
+        assertTrue(useCase(field(CustomFieldType.DATE), value("yesterday")) == ValidationResult.Invalid)
     }
 
     @Test
     fun `empty value is valid (optional)`() {
-        assertTrue(useCase(field(CustomFieldType.NUMBER), value("   ")) is ValidationResult.Valid)
+        assertTrue(useCase(field(CustomFieldType.NUMBER), value("   ")) == ValidationResult.Valid)
     }
 }
