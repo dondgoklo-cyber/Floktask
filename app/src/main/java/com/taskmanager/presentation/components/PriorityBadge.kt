@@ -9,33 +9,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.taskmanager.domain.model.Priority
-import com.taskmanager.presentation.theme.AppTheme
-import com.taskmanager.presentation.theme.Radius
-import com.taskmanager.presentation.theme.Spacing
 
 @Composable
 fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
-    val color = priorityColor(priority)
-    val label = when (priority) {
-        Priority.HIGH -> "Высокий"
-        Priority.MEDIUM -> "Средний"
-        Priority.LOW -> "Низкий"
-        Priority.NONE -> "Без приоритета"
-    }
+    val style = PriorityStyles.forPriority(priority)
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(Radius.sm))
-            .background(color.copy(alpha = 0.12f))
-            .padding(horizontal = Spacing.sm, vertical = 3.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(style.accentColor)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
-            text = label,
+            text = PriorityStyles.priorityLabel(priority),
             style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Medium,
-            color = color
+            color = Color.White
         )
     }
 }
