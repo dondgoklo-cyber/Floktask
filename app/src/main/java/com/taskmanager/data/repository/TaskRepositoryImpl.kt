@@ -1,5 +1,6 @@
 package com.taskmanager.data.repository
 
+import androidx.room.Transaction
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.dao.TaskTagDao
 import com.taskmanager.data.local.dao.TagDao
@@ -111,6 +112,7 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getUpcomingTasks(fromEpoch: Long): Flow<List<Task>> =
         taskDao.getUpcomingTasks(fromEpoch).map { list -> list.map { it.toDomain() } }
 
+    @Transaction
     override suspend fun setTaskTags(taskId: Long, tagIds: List<Long>) {
         try {
             taskTagDao.deleteByTaskId(taskId)

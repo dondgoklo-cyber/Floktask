@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.taskmanager.data.local.entity.TaskTagEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -37,4 +38,10 @@ interface TaskTagDao {
         WHERE tt.tagId = :tagId
     """)
     fun getTasksForTag(tagId: Long): Flow<List<com.taskmanager.data.local.entity.TaskEntity>>
+
+    @Transaction
+    @Query("""
+        SELECT * FROM task_tags WHERE taskId = :taskId
+    """)
+    suspend fun getTaskTagsWithTransaction(taskId: Long): List<TaskTagEntity>
 }
