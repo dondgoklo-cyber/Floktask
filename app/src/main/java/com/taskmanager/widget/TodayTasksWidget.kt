@@ -13,7 +13,6 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
-import androidx.compose.ui.text.font.FontWeight
 import com.taskmanager.presentation.MainActivity
 
 /**
@@ -35,7 +34,7 @@ class TodayTasksWidget : GlanceAppWidget() {
             ) {
                 Text(
                     text = "Today's tasks",
-                    fontWeight = FontWeight.Bold
+                    
                 )
                 Text(
                     text = "Tap to add a task",

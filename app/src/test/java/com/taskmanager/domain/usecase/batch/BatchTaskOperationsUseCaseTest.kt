@@ -35,12 +35,21 @@ class BatchTaskOperationsUseCaseTest {
             // no-op for mock
         }
 
+        override suspend fun setCompleted(id: Long, completed: Boolean) {}
+        override suspend fun updateReminderDate(taskId: Long, reminderDate: Long?) {}
+        override suspend fun setTaskTags(taskId: Long, tagIds: List<Long>) {}
+
         override fun getAllTasks(): Flow<List<Task>> = flowOf(store.values.toList())
         override fun getTasksByProject(projectId: Long): Flow<List<Task>> = flowOf(emptyList())
         override fun getCompletedTasks(): Flow<List<Task>> = flowOf(emptyList())
         override fun getIncompleteTasks(): Flow<List<Task>> = flowOf(emptyList())
         override fun searchTasks(query: String): Flow<List<Task>> = flowOf(emptyList())
         override fun getInboxTasks(): Flow<List<Task>> = flowOf(emptyList())
+        override fun getTasksByEisenhowerQuadrant(quadrantName: String): Flow<List<Task>> = flowOf(emptyList())
+        override fun getTasksByTag(tagId: Long): Flow<List<Task>> = flowOf(emptyList())
+        override fun getTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>> = flowOf(emptyList())
+        override fun getTimedTasksForDay(dayStart: Long, dayEnd: Long): Flow<List<Task>> = flowOf(emptyList())
+        override fun getUpcomingTasks(fromEpoch: Long): Flow<List<Task>> = flowOf(emptyList())
         override suspend fun getTaskTags(taskId: Long): List<String> = emptyList()
     }
 

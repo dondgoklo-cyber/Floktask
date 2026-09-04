@@ -101,6 +101,8 @@ fun SearchScreen(
                     icon = Icons.Filled.Search,
                     title = stringResource(R.string.search),
                     message = stringResource(R.string.search_hint),
+                    actionLabel = stringResource(R.string.search),
+                    onAction = { },
                     modifier = Modifier.fillMaxSize()
                 )
             } else if (results.tasks.isEmpty() && results.projects.isEmpty() && results.habits.isEmpty() && results.notes.isEmpty()) {
@@ -108,6 +110,8 @@ fun SearchScreen(
                     icon = Icons.Filled.Search,
                     title = stringResource(R.string.search_empty_title),
                     message = stringResource(R.string.search_empty_subtitle),
+                    actionLabel = stringResource(R.string.clear_search),
+                    onAction = { viewModel.onQueryChange("") },
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
@@ -125,7 +129,7 @@ fun SearchScreen(
                                 icon = Icons.Filled.Bolt,
                                 iconColor = priorityColor(task.priority),
                                 title = task.title,
-                                message = task.description,
+                                subtitle = task.description,
                                 onClick = { task.id?.let(onTaskClick) }
                             )
                         }
@@ -139,7 +143,7 @@ fun SearchScreen(
                                 icon = Icons.Filled.Folder,
                                 iconColor = AppTheme.colors.info,
                                 title = project.title,
-                                message = project.description,
+                                subtitle = project.description,
                                 onClick = { project.id?.let { onProjectClick(it) } }
                             )
                         }
@@ -153,7 +157,7 @@ fun SearchScreen(
                                 icon = Icons.Filled.Spa,
                                 iconColor = AppTheme.colors.success,
                                 title = habit.name,
-                                message = habit.description,
+                                subtitle = habit.description,
                                 onClick = { onHabitClick() }
                             )
                         }
@@ -167,7 +171,7 @@ fun SearchScreen(
                                 icon = Icons.Filled.Description,
                                 iconColor = AppTheme.colors.info,
                                 title = note.title.ifBlank { "Без названия" },
-                                message = note.contentMarkdown.lines().firstOrNull { it.isNotBlank() },
+                                subtitle = note.contentMarkdown.lines().firstOrNull { it.isNotBlank() },
                                 onClick = { note.id?.let(onNoteClick) }
                             )
                         }
