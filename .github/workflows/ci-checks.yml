@@ -27,11 +27,13 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Run tests
-        uses: gradle/gradle-build-action@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.2
-          arguments: testDebugUnitTest --stacktrace --no-daemon
+
+      - name: Run tests
+        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx4g"
 
@@ -77,12 +79,14 @@ jobs:
           cache: 'gradle'
 
       - name: Build project
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.2
-          arguments: assembleDebug --dry-run --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx2g"
+
+      - name: Run assembleDebug
+        run: ./gradlew assembleDebug --dry-run --stacktrace --no-daemon
 
   dependency-check:
     name: Check Dependencies
