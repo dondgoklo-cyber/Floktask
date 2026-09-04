@@ -29,13 +29,6 @@ android {
             keyAlias = System.getenv("ANDROID_SIGNING_ALIAS") ?: "upload"
             keyPassword = System.getenv("ANDROID_SIGNING_PASSWORD") ?: "default_key_password"
         }
-        
-        create("debug") {
-            storeFile = file("../keystore/debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
     }
 
     buildTypes {
