@@ -48,13 +48,15 @@ android {
         release {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
-            shrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
+    // shrinkResources is automatically enabled when isMinifyEnabled = true in AGP 8.x
+    shrinkResources = true
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
