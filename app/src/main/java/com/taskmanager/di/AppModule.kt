@@ -6,6 +6,7 @@ import com.taskmanager.data.logger.AndroidLogger
 import com.taskmanager.domain.logger.Logger
 import com.taskmanager.haptic.HapticManager
 import com.taskmanager.image.ImageLoaderFactory
+import com.taskmanager.presentation.screens.focusmode.DndHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,4 +35,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideLogger(): Logger = AndroidLogger()
+
+    @Provides
+    @Singleton
+    fun provideDndHelper(@ApplicationContext context: Context): DndHelper =
+        DndHelper(context)
 }
