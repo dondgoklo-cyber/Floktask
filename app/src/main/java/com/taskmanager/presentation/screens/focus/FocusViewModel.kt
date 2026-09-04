@@ -1,6 +1,6 @@
-package com.taskmanager.presentation.screens.focus
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.focus
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.PomodoroType
@@ -57,7 +57,7 @@ class FocusViewModel @Inject constructor(
                     _state.value = _state.value.copy(stats = stats)
                 }
             } catch (e: Exception) {
-                Log.e("FocusViewModel", "Error in observeStats", e)
+                logger.error("FocusViewModel", "Error in observeStats", e)
             }
         }
     }
@@ -70,7 +70,7 @@ class FocusViewModel @Inject constructor(
                     val title = taskRepository.getTaskById(taskId)?.title
                     _state.value = _state.value.copy(taskTitle = title)
                 } catch (e: Exception) {
-                    Log.e("FocusViewModel", "Error in setTask", e)
+                    logger.error("FocusViewModel", "Error in setTask", e)
                 }
             }
         }
@@ -89,7 +89,7 @@ class FocusViewModel @Inject constructor(
                 }
                 onComplete()
             } catch (e: Exception) {
-                Log.e("FocusViewModel", "Error in timer loop", e)
+                logger.error("FocusViewModel", "Error in timer loop", e)
             }
         }
     }
@@ -156,7 +156,7 @@ class FocusViewModel @Inject constructor(
                     selectType(PomodoroType.WORK)
                 }
             } catch (e: Exception) {
-                Log.e("FocusViewModel", "Error in onComplete", e)
+                logger.error("FocusViewModel", "Error in onComplete", e)
             }
         }
     }

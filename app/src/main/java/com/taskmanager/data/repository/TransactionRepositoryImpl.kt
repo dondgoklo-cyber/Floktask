@@ -1,4 +1,5 @@
 package com.taskmanager.data.repository
+import com.taskmanager.domain.logger.Logger
 
 import com.taskmanager.data.local.dao.TransactionDao
 import com.taskmanager.domain.model.Transaction
@@ -6,16 +7,16 @@ import com.taskmanager.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import android.util.Log
 
 class TransactionRepositoryImpl @Inject constructor(
+    private val logger: Logger,
     private val transactionDao: TransactionDao
 ) : TransactionRepository {
 
     override suspend fun createTransaction(transaction: Transaction): Long = try {
         transactionDao.insert(transaction.toEntity())
     } catch (e: Exception) {
-        Log.e("TransactionRepositoryImpl", "Error in Long", e)
+        logger.error("TransactionRepositoryImpl", "Error in Long", e)
         throw e
     }
 
@@ -23,7 +24,7 @@ class TransactionRepositoryImpl @Inject constructor(
         try {
             transactionDao.update(transaction.toEntity())
         } catch (e: Exception) {
-            Log.e("TransactionRepositoryImpl", "Error in Transaction", e)
+            logger.error("TransactionRepositoryImpl", "Error in Transaction", e)
             throw e
         }
     }
@@ -32,7 +33,7 @@ class TransactionRepositoryImpl @Inject constructor(
         try {
             transactionDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("TransactionRepositoryImpl", "Error in Long", e)
+            logger.error("TransactionRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -40,7 +41,7 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getAllTransactions(): Flow<List<Transaction>> = try {
         transactionDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
-        Log.e("TransactionRepositoryImpl", "Error in Flow<List<Transaction>>", e)
+        logger.error("TransactionRepositoryImpl", "Error in Flow<List<Transaction>>", e)
         throw e
     }
 

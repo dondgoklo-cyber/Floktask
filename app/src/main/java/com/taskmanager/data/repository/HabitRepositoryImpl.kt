@@ -1,4 +1,5 @@
 package com.taskmanager.data.repository
+import com.taskmanager.domain.logger.Logger
 
 import com.taskmanager.data.local.dao.HabitDao
 import com.taskmanager.domain.model.Habit
@@ -7,23 +8,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
-import android.util.Log
 
 class HabitRepositoryImpl @Inject constructor(
+    private val logger: Logger,
     private val habitDao: HabitDao
 ) : HabitRepository {
 
     override suspend fun createHabit(habit: Habit): Long = try {
         habitDao.insert(habit.toEntity())
     } catch (e: Exception) {
-        Log.e("HabitRepositoryImpl", "Error in Long", e)
+        logger.error("HabitRepositoryImpl", "Error in Long", e)
         throw e
     }
 
     override suspend fun getHabitById(id: Long): Habit? = try {
         habitDao.getById(id)?.toDomain()
     } catch (e: Exception) {
-        Log.e("HabitRepositoryImpl", "Error in Habit?", e)
+        logger.error("HabitRepositoryImpl", "Error in Habit?", e)
         throw e
     }
 
@@ -31,7 +32,7 @@ class HabitRepositoryImpl @Inject constructor(
         try {
             habitDao.update(habit.copy(updatedAt = Instant.now()).toEntity())
         } catch (e: Exception) {
-            Log.e("HabitRepositoryImpl", "Error in Habit", e)
+            logger.error("HabitRepositoryImpl", "Error in Habit", e)
             throw e
         }
     }
@@ -40,7 +41,7 @@ class HabitRepositoryImpl @Inject constructor(
         try {
             habitDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("HabitRepositoryImpl", "Error in Long", e)
+            logger.error("HabitRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -49,7 +50,7 @@ class HabitRepositoryImpl @Inject constructor(
         try {
             habitDao.setArchived(id, archived, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("HabitRepositoryImpl", "Error in Boolean", e)
+            logger.error("HabitRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
@@ -57,7 +58,7 @@ class HabitRepositoryImpl @Inject constructor(
     override fun getActiveHabits(): Flow<List<Habit>> = try {
         habitDao.getActive().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
-        Log.e("HabitRepositoryImpl", "Error in Flow<List<Habit>>", e)
+        logger.error("HabitRepositoryImpl", "Error in Flow<List<Habit>>", e)
         throw e
     }
 

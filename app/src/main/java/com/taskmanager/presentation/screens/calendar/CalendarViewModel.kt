@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.calendar
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.calendar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +18,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 import javax.inject.Inject
-import android.util.Log
 
 enum class CalendarViewMode { DAY, THREE_DAYS, WEEK, MONTH, AGENDA }
 
@@ -104,7 +104,7 @@ class CalendarViewModel @Inject constructor(
                 )
             )
         } catch (e: Exception) {
-            Log.e("CalendarViewModel", "Error in launch block", e)
+            logger.error("CalendarViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -125,7 +125,7 @@ class CalendarViewModel @Inject constructor(
                 )
             )
         } catch (e: Exception) {
-            Log.e("CalendarViewModel", "Error in launch block", e)
+            logger.error("CalendarViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

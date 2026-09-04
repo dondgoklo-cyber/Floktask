@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.focusmode
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.focusmode
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class FocusModeUiState(
     val task: Task? = null,
@@ -36,7 +36,7 @@ class FocusModeViewModel @Inject constructor(
             val task = getTaskByIdUseCase(taskId)
             _state.value = _state.value.copy(task = task, isActive = true)
         } catch (e: Exception) {
-            Log.e("FocusModeViewModel", "Error in launch block", e)
+            logger.error("FocusModeViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

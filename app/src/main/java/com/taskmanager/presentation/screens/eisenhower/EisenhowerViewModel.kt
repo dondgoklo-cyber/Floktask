@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.eisenhower
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.eisenhower
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class EisenhowerUiState(
     val quadrants: Map<EisenhowerQuadrant, List<Task>> = emptyMap(),
@@ -35,7 +35,7 @@ class EisenhowerViewModel @Inject constructor(
         try {
             updateEisenhowerQuadrantUseCase(taskId, quadrant)
         } catch (e: Exception) {
-            Log.e("EisenhowerViewModel", "Error in launch block", e)
+            logger.error("EisenhowerViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -46,7 +46,7 @@ class EisenhowerViewModel @Inject constructor(
         try {
             updateEisenhowerQuadrantUseCase(taskId, null)
         } catch (e: Exception) {
-            Log.e("EisenhowerViewModel", "Error in launch block", e)
+            logger.error("EisenhowerViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

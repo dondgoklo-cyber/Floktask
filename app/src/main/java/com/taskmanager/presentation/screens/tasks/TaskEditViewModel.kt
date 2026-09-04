@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.tasks
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.tasks
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -31,7 +32,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import javax.inject.Inject
-import android.util.Log
 
 @HiltViewModel
 class TaskEditViewModel @Inject constructor(
@@ -94,7 +94,7 @@ class TaskEditViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                Log.e("TaskEditViewModel", "Error in launch block", e)
+                logger.error("TaskEditViewModel", "Error in launch block", e)
             }
         }
     }
@@ -154,7 +154,7 @@ class TaskEditViewModel @Inject constructor(
                         createTagUseCase(com.taskmanager.domain.model.Tag(name = trimmed))
                     }
                 } catch (e: Exception) {
-                    Log.e("TaskEditViewModel", "Error in launch block", e)
+                    logger.error("TaskEditViewModel", "Error in launch block", e)
                 }
             }
         }
@@ -224,7 +224,7 @@ class TaskEditViewModel @Inject constructor(
                 } ?: alarmScheduler.cancelReminder(savedId)
                 onSaved()
             } catch (e: Exception) {
-                Log.e("TaskEditViewModel", "Error in launch block", e)
+                logger.error("TaskEditViewModel", "Error in launch block", e)
             }
         }
     }

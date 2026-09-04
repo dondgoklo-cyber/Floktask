@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.habits
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.habits
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
-import android.util.Log
 
 data class HabitWithCompletion(
     val habit: Habit,
@@ -73,7 +73,7 @@ class HabitsViewModel @Inject constructor(
             createHabitUseCase(habit)
             closeCreateDialog()
         } catch (e: Exception) {
-            Log.e("HabitsViewModel", "Error in launch block", e)
+            logger.error("HabitsViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -84,7 +84,7 @@ class HabitsViewModel @Inject constructor(
         try {
             logHabitCompletionUseCase.toggleCompletion(habitId)
         } catch (e: Exception) {
-            Log.e("HabitsViewModel", "Error in launch block", e)
+            logger.error("HabitsViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

@@ -1,4 +1,5 @@
 package com.taskmanager.data.repository
+import com.taskmanager.domain.logger.Logger
 
 import com.taskmanager.data.local.dao.UserStatsDao
 import com.taskmanager.domain.model.Achievements
@@ -11,9 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
-import android.util.Log
 
 class UserStatsRepositoryImpl @Inject constructor(
+    private val logger: Logger,
     private val userStatsDao: UserStatsDao
 ) : UserStatsRepository {
 
@@ -23,7 +24,7 @@ class UserStatsRepositoryImpl @Inject constructor(
     override suspend fun getStats(): UserStats = try {
         userStatsDao.get()?.toDomain() ?: UserStats()
     } catch (e: Exception) {
-        Log.e("UserStatsRepositoryImpl", "Error in UserStats", e)
+        logger.error("UserStatsRepositoryImpl", "Error in UserStats", e)
         throw e
     }
 
@@ -31,7 +32,7 @@ class UserStatsRepositoryImpl @Inject constructor(
         try {
             userStatsDao.upsert(stats.toEntity())
         } catch (e: Exception) {
-            Log.e("UserStatsRepositoryImpl", "Error in UserStats", e)
+            logger.error("UserStatsRepositoryImpl", "Error in UserStats", e)
             throw e
         }
     }
@@ -40,7 +41,7 @@ class UserStatsRepositoryImpl @Inject constructor(
         val current = try {
             getStats()
         } catch (e: Exception) {
-            Log.e("UserStatsRepositoryImpl", "Error in current", e)
+            logger.error("UserStatsRepositoryImpl", "Error in current", e)
             throw e
         }
         if (achievement.id in current.unlockedAchievementIds) return current
@@ -56,7 +57,7 @@ class UserStatsRepositoryImpl @Inject constructor(
         val current = try {
             getStats()
         } catch (e: Exception) {
-            Log.e("UserStatsRepositoryImpl", "Error in current", e)
+            logger.error("UserStatsRepositoryImpl", "Error in current", e)
             throw e
         }
         return persist(current.copy(totalPoints = current.totalPoints + points))
@@ -66,7 +67,7 @@ class UserStatsRepositoryImpl @Inject constructor(
         val current = try {
             getStats()
         } catch (e: Exception) {
-            Log.e("UserStatsRepositoryImpl", "Error in current", e)
+            logger.error("UserStatsRepositoryImpl", "Error in current", e)
             throw e
         }
         val basePoints = when (priority) {

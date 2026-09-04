@@ -1,4 +1,5 @@
 package com.taskmanager.data.repository
+import com.taskmanager.domain.logger.Logger
 
 import com.taskmanager.data.local.dao.SubtaskDao
 import com.taskmanager.domain.model.Subtask
@@ -6,16 +7,16 @@ import com.taskmanager.domain.repository.SubtaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import android.util.Log
 
 class SubtaskRepositoryImpl @Inject constructor(
+    private val logger: Logger,
     private val subtaskDao: SubtaskDao
 ) : SubtaskRepository {
 
     override suspend fun createSubtask(subtask: Subtask): Long = try {
         subtaskDao.insert(subtask.toEntity())
     } catch (e: Exception) {
-        Log.e("SubtaskRepositoryImpl", "Error in Long", e)
+        logger.error("SubtaskRepositoryImpl", "Error in Long", e)
         throw e
     }
 
@@ -23,7 +24,7 @@ class SubtaskRepositoryImpl @Inject constructor(
         try {
             subtaskDao.update(subtask.toEntity())
         } catch (e: Exception) {
-            Log.e("SubtaskRepositoryImpl", "Error in Subtask", e)
+            logger.error("SubtaskRepositoryImpl", "Error in Subtask", e)
             throw e
         }
     }
@@ -32,7 +33,7 @@ class SubtaskRepositoryImpl @Inject constructor(
         try {
             subtaskDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("SubtaskRepositoryImpl", "Error in Long", e)
+            logger.error("SubtaskRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -41,7 +42,7 @@ class SubtaskRepositoryImpl @Inject constructor(
         try {
             subtaskDao.setCompleted(id, completed)
         } catch (e: Exception) {
-            Log.e("SubtaskRepositoryImpl", "Error in Boolean", e)
+            logger.error("SubtaskRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
@@ -49,14 +50,14 @@ class SubtaskRepositoryImpl @Inject constructor(
     override fun observeByTask(taskId: Long): Flow<List<Subtask>> = try {
         subtaskDao.getByTask(taskId).map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
-        Log.e("SubtaskRepositoryImpl", "Error in Flow<List<Subtask>>", e)
+        logger.error("SubtaskRepositoryImpl", "Error in Flow<List<Subtask>>", e)
         throw e
     }
 
     override suspend fun getByTask(taskId: Long): List<Subtask> = try {
         subtaskDao.getListByTask(taskId).map { it.toDomain() }
     } catch (e: Exception) {
-        Log.e("SubtaskRepositoryImpl", "Error in List<Subtask>", e)
+        logger.error("SubtaskRepositoryImpl", "Error in List<Subtask>", e)
         throw e
     }
 
@@ -64,7 +65,7 @@ class SubtaskRepositoryImpl @Inject constructor(
         val all = try {
             subtaskDao.getListByTask(taskId).map { it.toDomain() }
         } catch (e: Exception) {
-            Log.e("SubtaskRepositoryImpl", "Error in all", e)
+            logger.error("SubtaskRepositoryImpl", "Error in all", e)
             throw e
         }
         return all
@@ -85,7 +86,7 @@ class SubtaskRepositoryImpl @Inject constructor(
                 } ?: throw IllegalStateException("Subtask ID cannot be null during reordering")
             }
         } catch (e: Exception) {
-            Log.e("SubtaskRepositoryImpl", "Error in reorderSubtasks", e)
+            logger.error("SubtaskRepositoryImpl", "Error in reorderSubtasks", e)
             throw e
         }
     }

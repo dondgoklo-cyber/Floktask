@@ -1,4 +1,5 @@
 package com.taskmanager.data.repository
+import com.taskmanager.domain.logger.Logger
 
 import androidx.room.Transaction
 import com.taskmanager.data.local.dao.TaskDao
@@ -11,9 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
-import android.util.Log
 
 class TaskRepositoryImpl @Inject constructor(
+    private val logger: Logger,
     private val taskDao: TaskDao,
     private val taskTagDao: TaskTagDao,
     private val tagDao: TagDao
@@ -22,14 +23,14 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun createTask(task: Task): Long = try {
         taskDao.insert(task.toEntity())
     } catch (e: Exception) {
-        Log.e("TaskRepositoryImpl", "Error in Long", e)
+        logger.error("TaskRepositoryImpl", "Error in Long", e)
         throw e
     }
 
     override suspend fun getTaskById(id: Long): Task? = try {
         taskDao.getById(id)?.toDomain()
     } catch (e: Exception) {
-        Log.e("TaskRepositoryImpl", "Error in Task?", e)
+        logger.error("TaskRepositoryImpl", "Error in Task?", e)
         throw e
     }
 
@@ -37,7 +38,7 @@ class TaskRepositoryImpl @Inject constructor(
         try {
             taskDao.update(task.copy(updatedAt = Instant.now()).toEntity())
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in Task", e)
+            logger.error("TaskRepositoryImpl", "Error in Task", e)
             throw e
         }
     }
@@ -46,7 +47,7 @@ class TaskRepositoryImpl @Inject constructor(
         try {
             taskDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in Long", e)
+            logger.error("TaskRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -55,7 +56,7 @@ class TaskRepositoryImpl @Inject constructor(
         try {
             taskDao.setCompleted(id, completed, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in Boolean", e)
+            logger.error("TaskRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
@@ -64,7 +65,7 @@ class TaskRepositoryImpl @Inject constructor(
         try {
             taskDao.updateReminderDate(taskId, reminderDate, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in updateReminderDate", e)
+            logger.error("TaskRepositoryImpl", "Error in updateReminderDate", e)
             throw e
         }
     }
@@ -73,7 +74,7 @@ class TaskRepositoryImpl @Inject constructor(
         try {
             taskDao.cancelReminder(taskId, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in cancelReminder", e)
+            logger.error("TaskRepositoryImpl", "Error in cancelReminder", e)
             throw e
         }
     }
@@ -81,7 +82,7 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getAllTasks(): Flow<List<Task>> = try {
         taskDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
-        Log.e("TaskRepositoryImpl", "Error in Flow<List<Task>>", e)
+        logger.error("TaskRepositoryImpl", "Error in Flow<List<Task>>", e)
         throw e
     }
 
@@ -118,7 +119,7 @@ class TaskRepositoryImpl @Inject constructor(
             taskTagDao.deleteByTaskId(taskId)
             taskTagDao.insertAll(tagIds.map { TaskTagEntity(taskId = taskId, tagId = it) })
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in List<Long>", e)
+            logger.error("TaskRepositoryImpl", "Error in List<Long>", e)
             throw e
         }
     }
@@ -127,7 +128,7 @@ class TaskRepositoryImpl @Inject constructor(
         val tagIds = try {
             taskTagDao.getTagIdsForTask(taskId)
         } catch (e: Exception) {
-            Log.e("TaskRepositoryImpl", "Error in tagIds", e)
+            logger.error("TaskRepositoryImpl", "Error in tagIds", e)
             throw e
         }
         return tagIds.mapNotNull { id -> tagDao.getById(id)?.name }

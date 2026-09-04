@@ -13,8 +13,8 @@ android {
         applicationId = "com.taskmanager"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 10101  // major*10000 + minor*100 + patch = 1*10000 + 1*100 + 1 = 10101
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -22,14 +22,33 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../keystore/release.keystore")
+            storePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD") ?: "default_store_password"
+            keyAlias = System.getenv("ANDROID_SIGNING_ALIAS") ?: "upload"
+            keyPassword = System.getenv("ANDROID_SIGNING_PASSWORD") ?: "default_key_password"
+        }
+        
+        create("debug") {
+            storeFile = file("../keystore/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         debug {
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = false
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
+            shrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -47,9 +66,15 @@ android {
         jvmTarget = "17"
     }
 
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = true
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
+        viewBinding = false
     }
 
     composeOptions {
@@ -106,7 +131,6 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
-    implementation(libs.androidx.work.runtime.ktx)
 
     // Core library desugaring (java.time on minSdk 24)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -117,9 +141,11 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    testImplementation("io.mockk:mockk:1.13.9")
-    testImplementation("io.mockk:mockk-agent-jvm:1.13.9")
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.agent.jvm)
+    testImplementation(libs.turbine)
+    testImplementation(libs.room.testing)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

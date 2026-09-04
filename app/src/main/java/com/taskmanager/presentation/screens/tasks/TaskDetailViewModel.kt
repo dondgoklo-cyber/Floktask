@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.tasks
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class TaskDetailState(
     val task: Task? = null,
@@ -54,7 +54,7 @@ class TaskDetailViewModel @Inject constructor(
                     isLoading = false
                 )
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
                 _state.value = _state.value.copy(isLoading = false)
             }
         }
@@ -67,7 +67,7 @@ class TaskDetailViewModel @Inject constructor(
                 taskRepository.updateTask(updated)
                 _state.value = _state.value.copy(task = updated)
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
             }
         }
     }
@@ -78,7 +78,7 @@ class TaskDetailViewModel @Inject constructor(
                 subtaskRepository.setCompleted(subtask.id ?: 0, !subtask.isCompleted)
                 loadSubtasks(subtask.taskId)
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
             }
         }
     }
@@ -98,7 +98,7 @@ class TaskDetailViewModel @Inject constructor(
                 )
                 loadSubtasks(taskId)
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
             }
         }
     }
@@ -118,7 +118,7 @@ class TaskDetailViewModel @Inject constructor(
                 subtaskRepository.deleteSubtask(subtask.id ?: 0)
                 loadSubtasks(subtask.taskId)
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
             }
         }
     }
@@ -130,7 +130,7 @@ class TaskDetailViewModel @Inject constructor(
                 subtaskRepository.updateSubtask(subtask.copy(title = newTitle.trim()))
                 loadSubtasks(subtask.taskId)
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
             }
         }
     }
@@ -141,7 +141,7 @@ class TaskDetailViewModel @Inject constructor(
                 subtaskRepository.reorderSubtasks(taskId, fromIndex, toIndex)
                 loadSubtasks(taskId)
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
             }
         }
     }
@@ -152,7 +152,7 @@ class TaskDetailViewModel @Inject constructor(
                 val subtasks = subtaskRepository.getSubtaskTree(taskId)
                 _state.value = _state.value.copy(subtasks = subtasks)
             } catch (e: Exception) {
-                Log.e("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error in launch block", e)
             }
         }
     }

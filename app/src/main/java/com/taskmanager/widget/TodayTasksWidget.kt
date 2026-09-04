@@ -20,9 +20,9 @@ import com.taskmanager.presentation.MainActivity
  * Home-screen widget showing today's tasks + a quick-add entry point
  * (issue 32: had to open the app to see tasks). Uses Glance (Compose).
  *
- * NOTE: wiring real today-tasks data requires a WorkManager-backed state
- * updater + GlanceAppWidgetManager.updateAll; this ships the shell that
- * launches the app (where Quick Add lives).
+ * NOTE: wiring real today-tasks data requires a state updater + 
+ * GlanceAppWidgetManager.updateAll; this ships the shell that launches the app
+ * (where Quick Add lives).
  */
 class TodayTasksWidget : GlanceAppWidget() {
 

@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.projectdetail
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.projectdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
-import android.util.Log
 
 data class ProjectDetailUiState(
     val project: Project? = null,
@@ -83,7 +83,7 @@ class ProjectDetailViewModel @Inject constructor(
             ))
             onCreated(id)
         } catch (e: Exception) {
-            Log.e("ProjectDetailViewModel", "Error in launch block", e)
+            logger.error("ProjectDetailViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -95,7 +95,7 @@ class ProjectDetailViewModel @Inject constructor(
         try {
             taskRepository.updateTask(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
         } catch (e: Exception) {
-            Log.e("ProjectDetailViewModel", "Error in launch block", e)
+            logger.error("ProjectDetailViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.settings
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class SettingsUiState(
     val userName: String = "",
@@ -36,7 +36,7 @@ class SettingsViewModel @Inject constructor(
             _state.value = _state.value.copy(isExporting = false)
             if (ok) onSuccess() else onError()
         } catch (e: Exception) {
-            Log.e("SettingsViewModel", "Error in launch block", e)
+            logger.error("SettingsViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -50,7 +50,7 @@ class SettingsViewModel @Inject constructor(
             _state.value = _state.value.copy(isImporting = false)
             if (ok) onSuccess() else onError()
         } catch (e: Exception) {
-            Log.e("SettingsViewModel", "Error in launch block", e)
+            logger.error("SettingsViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

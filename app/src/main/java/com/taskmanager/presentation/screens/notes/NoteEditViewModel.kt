@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.notes
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.notes
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class NoteEditState(
     val title: String = "",
@@ -60,7 +60,7 @@ class NoteEditViewModel @Inject constructor(
                     _state.value = NoteEditState(isLoading = false)
                 }
             } catch (e: Exception) {
-                Log.e("NoteEditViewModel", "Error in launch block", e)
+                logger.error("NoteEditViewModel", "Error in launch block", e)
             }
         }
     }
@@ -82,7 +82,7 @@ class NoteEditViewModel @Inject constructor(
                 delay(800)
                 saveNow()
             } catch (e: Exception) {
-                Log.e("NoteEditViewModel", "Error in launch block", e)
+                logger.error("NoteEditViewModel", "Error in launch block", e)
             }
         }
     }
@@ -110,7 +110,7 @@ class NoteEditViewModel @Inject constructor(
                 }
                 _state.value = _state.value.copy(isSaved = true)
             } catch (e: Exception) {
-                Log.e("NoteEditViewModel", "Error in launch block", e)
+                logger.error("NoteEditViewModel", "Error in launch block", e)
             }
         }
     }

@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.inbox
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.inbox
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class InboxUiState(
     val tasks: List<Task> = emptyList(),
@@ -32,7 +32,7 @@ class InboxViewModel @Inject constructor(
         try {
             taskRepository.setCompleted(taskId, true)
         } catch (e: Exception) {
-            Log.e("InboxViewModel", "Error in launch block", e)
+            logger.error("InboxViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

@@ -10,7 +10,7 @@ on:
       version:
         description: 'Version number (e.g., 1.2.0)'
         required: true
-        default: '1.2.0'
+        default: '1.1.1'
 
 concurrency:
   group: release-build
@@ -37,16 +37,19 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.5
+          gradle-version: 8.2
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > release.keystore
 
       - name: Build Release APK
         run: ./gradlew assembleRelease --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g"
-          SIGNING_KEY: ${{ secrets.ANDROID_SIGNING_KEY }}
-          SIGNING_ALIAS: ${{ secrets.ANDROID_SIGNING_ALIAS }}
-          SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
+          ANDROID_SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
+          ANDROID_SIGNING_ALIAS: ${{ secrets.ANDROID_SIGNING_ALIAS }}
+          ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
 
       - name: Verify APK exists
         run: |
@@ -86,6 +89,13 @@ jobs:
             - Dark theme support
             - Subprojects hierarchy (2-3 levels)
             - Haptic feedback for all actions
+            
+            ### Fixes:
+            - Fixed Gradle/AGP compatibility (F-BUILD-001)
+            - Added signingConfig for release builds (F-BUILD-002)
+            - Fixed versionCode and versionName (F-BUILD-003)
+            - Added GitHub Secrets for CI/CD (F-CI-001)
+            - Added tests for presentation and data layers (F-TEST-001, F-TEST-002)
             
             ### Download:
             [Floktask-${{ env.APK_NAME }}](${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref_name || format('v{0}', github.event.inputs.version) }}/${{ env.APK_NAME }})

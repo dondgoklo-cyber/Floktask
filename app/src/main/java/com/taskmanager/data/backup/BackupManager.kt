@@ -2,6 +2,9 @@ package com.taskmanager.data.backup
 
 import android.content.Context
 import android.net.Uri
+import android.util.Base64
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.HabitDao
@@ -15,14 +18,13 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.security.MessageDigest
-import android.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Экспорт/импорт данных в JSON. Полностью оффлайн: чтение/запись через ContentResolver.
+ * Экспорт/импорт данных в JSON. Формат: { "tasks": [...], "projects": [...], "habits": [...] }
  * Формат: { "tasks": [...], "projects": [...], "habits": [...] }
  */
 @Singleton
@@ -34,7 +36,35 @@ class BackupManager @Inject constructor(
 ) {
     companion object {
         private const val BACKUP_VERSION = 2
-        private const val ENCRYPTION_KEY = "WOLFTASK_BACKUP_KEY_2026"
+        private const val PREFS_NAME = "floktask_backup_prefs"
+        private const val KEY_ENCRYPTION_KEY = "encryption_key"
+    }
+
+    private val masterKey by lazy {
+        MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+    }
+
+    private val securePrefs by lazy {
+        EncryptedSharedPreferences.create(
+            context,
+            PREFS_NAME,
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
+
+    private val encryptionKey: String
+        get() = securePrefs.getString(KEY_ENCRYPTION_KEY, null) ?: run {
+            val newKey = generateSecureKey()
+            securePrefs.edit().putString(KEY_ENCRYPTION_KEY, newKey).apply()
+            newKey
+        }
+
+    private fun generateSecureKey(): String {
+        return (1..32).map { ('a'..'z' + 'A'..'Z' + '0'..'9').random() }.joinToString("")
     }
 
     suspend fun exportToUri(uri: Uri): Boolean = withContext(Dispatchers.IO) {
@@ -193,7 +223,7 @@ class BackupManager @Inject constructor(
                 description = o.optString("description").ifBlank { null },
                 frequency = o.optString("frequency", "DAILY"),
                 targetCount = o.optInt("targetCount", 1),
-                reminderTime = if (o.isNull("reminderTime")) null else o.optLong("reminderTime"),
+                reminderTime = o.optString("reminderTime").ifBlank { null },
                 isArchived = o.optBoolean("isArchived", false)
             ))
         }

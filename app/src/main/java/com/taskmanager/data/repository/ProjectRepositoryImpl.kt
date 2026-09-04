@@ -1,4 +1,5 @@
 package com.taskmanager.data.repository
+import com.taskmanager.domain.logger.Logger
 
 import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.domain.model.Project
@@ -7,23 +8,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
-import android.util.Log
 
 class ProjectRepositoryImpl @Inject constructor(
+    private val logger: Logger,
     private val projectDao: ProjectDao
 ) : ProjectRepository {
 
     override suspend fun createProject(project: Project): Long = try {
         projectDao.insert(project.toEntity())
     } catch (e: Exception) {
-        Log.e("ProjectRepositoryImpl", "Error in Long", e)
+        logger.error("ProjectRepositoryImpl", "Error in Long", e)
         throw e
     }
 
     override suspend fun getProjectById(id: Long): Project? = try {
         projectDao.getById(id)?.toDomain()
     } catch (e: Exception) {
-        Log.e("ProjectRepositoryImpl", "Error in Project?", e)
+        logger.error("ProjectRepositoryImpl", "Error in Project?", e)
         throw e
     }
 
@@ -31,7 +32,7 @@ class ProjectRepositoryImpl @Inject constructor(
         try {
             projectDao.update(project.copy(updatedAt = Instant.now()).toEntity())
         } catch (e: Exception) {
-            Log.e("ProjectRepositoryImpl", "Error in Project", e)
+            logger.error("ProjectRepositoryImpl", "Error in Project", e)
             throw e
         }
     }
@@ -40,7 +41,7 @@ class ProjectRepositoryImpl @Inject constructor(
         try {
             projectDao.deleteById(id)
         } catch (e: Exception) {
-            Log.e("ProjectRepositoryImpl", "Error in Long", e)
+            logger.error("ProjectRepositoryImpl", "Error in Long", e)
             throw e
         }
     }
@@ -49,7 +50,7 @@ class ProjectRepositoryImpl @Inject constructor(
         try {
             projectDao.setArchived(id, archived, Instant.now().toEpochMilli())
         } catch (e: Exception) {
-            Log.e("ProjectRepositoryImpl", "Error in Boolean", e)
+            logger.error("ProjectRepositoryImpl", "Error in Boolean", e)
             throw e
         }
     }
@@ -57,7 +58,7 @@ class ProjectRepositoryImpl @Inject constructor(
     override fun getAllProjects(): Flow<List<Project>> = try {
         projectDao.getAll().map { list -> list.map { it.toDomain() } }
     } catch (e: Exception) {
-        Log.e("ProjectRepositoryImpl", "Error in Flow<List<Project>>", e)
+        logger.error("ProjectRepositoryImpl", "Error in Flow<List<Project>>", e)
         throw e
     }
 

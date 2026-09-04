@@ -1,8 +1,8 @@
 package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
@@ -34,9 +34,9 @@ class MainActivity : ComponentActivity() {
         // Reschedule all reminders on app startup to handle device reboots
         try {
             alarmScheduler.rescheduleAllReminders()
-            Log.d("MainActivity", "Reminders rescheduled successfully")
+            logger.debug("MainActivity", "Reminders rescheduled successfully")
         } catch (e: Exception) {
-            Log.e("MainActivity", "Error rescheduling reminders", e)
+            logger.error("MainActivity", "Error rescheduling reminders", e)
         }
         
         setContent {

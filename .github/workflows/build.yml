@@ -26,7 +26,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 8.5
+          gradle-version: 8.2
           arguments: assembleDebug --stacktrace --no-daemon
           cache-disabled: true
         env:
@@ -55,6 +55,11 @@ jobs:
             
             **What's new:**
             - Version bump: 1.1.0 -> 1.1.1
+            - Fixed Gradle/AGP compatibility (F-BUILD-001)
+            - Added signingConfig for release builds (F-BUILD-002)
+            - Fixed versionCode and versionName (F-BUILD-003)
+            - Added GitHub Secrets for CI/CD (F-CI-001)
+            - Added tests for presentation and data layers (F-TEST-001, F-TEST-002)
             - Removed dead code (parseFinance, WorkConstraints)
             - Security fixes in UserPrefs and AlarmScheduler
             - Replaced LocalHapticManager with DI injection

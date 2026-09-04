@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.notes
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class NotesUiState(
     val pinnedNotes: List<Note> = emptyList(),
@@ -60,7 +60,7 @@ class NotesViewModel @Inject constructor(
             noteFolderRepository.createFolder(NoteFolder(name = name.trim()))
             closeCreateFolderDialog()
         } catch (e: Exception) {
-            Log.e("NotesViewModel", "Error in launch block", e)
+            logger.error("NotesViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -72,7 +72,7 @@ class NotesViewModel @Inject constructor(
             val id = createNoteUseCase(Note(title = "", contentMarkdown = ""))
             onCreated(id)
         } catch (e: Exception) {
-            Log.e("NotesViewModel", "Error in launch block", e)
+            logger.error("NotesViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -84,7 +84,7 @@ class NotesViewModel @Inject constructor(
             val id = createNoteUseCase(Note(title = title, contentMarkdown = content))
             onCreated(id)
         } catch (e: Exception) {
-            Log.e("NotesViewModel", "Error in launch block", e)
+            logger.error("NotesViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -95,7 +95,7 @@ class NotesViewModel @Inject constructor(
         try {
             noteRepository.setPinned(note.id ?: 0, !note.pinned)
         } catch (e: Exception) {
-            Log.e("NotesViewModel", "Error in launch block", e)
+            logger.error("NotesViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }
@@ -106,7 +106,7 @@ class NotesViewModel @Inject constructor(
         try {
             deleteNoteUseCase(id)
         } catch (e: Exception) {
-            Log.e("NotesViewModel", "Error in launch block", e)
+            logger.error("NotesViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

@@ -1,6 +1,6 @@
 name: CI Checks
 
-# Проверяет код при каждом PR и коммите в main
+# Проверяет код при коммите PR и коммите в main
 on:
   push:
     branches: [ main, develop ]
@@ -30,17 +30,36 @@ jobs:
       - name: Run tests
         uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 8.5
+          gradle-version: 8.2
           arguments: testDebugUnitTest --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx4g"
 
-      - name: Check for android.util.Log in domain
+      - name: Check for android.util.Log in all layers
         run: |
-          if grep -r "import android.util.Log" app/src/main/java/com/taskmanager/domain/ --include="*.kt"; then
-            echo "Error: android.util.Log found in domain layer!"
+          echo "🔍 Checking for android.util.Log usage in all layers..."
+          
+          # Проверяем domain слой
+          DOMAIN_LOG=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
+          # Проверяем data слой
+          DATA_LOG=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/data --include="*.kt" | wc -l)
+          # Проверяем presentation слой
+          PRESENTATION_LOG=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
+          # Проверяем прямые вызовы Log
+          DIRECT_LOG=$(grep -r "Log\." app/src/main --include="*.kt" | grep -v "Timber\." | grep -v "logger\." | wc -l)
+          
+          TOTAL=$((DOMAIN_LOG + DATA_LOG + PRESENTATION_LOG + DIRECT_LOG))
+          
+          if [ "$TOTAL" -gt 0 ]; then
+            echo "❌ Found $TOTAL usages of android.util.Log or direct Log calls"
+            echo "Domain layer: $DOMAIN_LOG"
+            echo "Data layer: $DATA_LOG"
+            echo "Presentation layer: $PRESENTATION_LOG"
+            echo "Direct Log calls: $DIRECT_LOG"
             exit 1
           fi
+          
+          echo "✅ No android.util.Log usage found in any layer"
 
   build-check:
     name: Verify Build
@@ -60,7 +79,7 @@ jobs:
       - name: Build project
         uses: gradle/gradle-build-action@v3
         with:
-          gradle-version: 8.5
+          gradle-version: 8.2
           arguments: assembleDebug --dry-run --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx2g"
@@ -75,6 +94,6 @@ jobs:
 
       - name: Check for dependency updates
         run: |
-          # Можно добавить скрипт для проверки обновлений зависимостей в gradle файлах
+          # Можно доработать скрипт для проверки обновлений зависимостей
           echo "Checking for dependency updates..."
           # Например: ./gradlew dependencyUpdates

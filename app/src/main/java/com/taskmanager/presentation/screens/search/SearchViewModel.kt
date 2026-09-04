@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.search
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class SearchResults(
     val tasks: List<Task> = emptyList(),
@@ -57,14 +57,14 @@ class SearchViewModel @Inject constructor(
             try {
                 projectRepository.getAllProjects().collect { _allProjects.value = it }
             } catch (e: Exception) {
-                Log.e("SearchViewModel", "Error in launch block", e)
+                logger.error("SearchViewModel", "Error in launch block", e)
             }
         }
         viewModelScope.launch {
             try {
                 habitRepository.getAllHabits().collect { _allHabits.value = it }
             } catch (e: Exception) {
-                Log.e("SearchViewModel", "Error in launch block", e)
+                logger.error("SearchViewModel", "Error in launch block", e)
             }
         }
     }
@@ -112,7 +112,7 @@ class SearchViewModel @Inject constructor(
                         _taskResults.value = results
                     }
                 } catch (e: Exception) {
-                    Log.e("SearchViewModel", "Error in launch block", e)
+                    logger.error("SearchViewModel", "Error in launch block", e)
                 }
             }
             viewModelScope.launch {
@@ -121,7 +121,7 @@ class SearchViewModel @Inject constructor(
                         _noteResults.value = results
                     }
                 } catch (e: Exception) {
-                    Log.e("SearchViewModel", "Error in launch block", e)
+                    logger.error("SearchViewModel", "Error in launch block", e)
                 }
             }
         }

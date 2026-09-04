@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.kanban
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.kanban
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 data class KanbanUiState(
     val columns: Map<TaskStatus, List<Task>> = emptyMap(),
@@ -39,7 +39,7 @@ class KanbanViewModel @Inject constructor(
         try {
             taskRepository.updateTask(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
         } catch (e: Exception) {
-            Log.e("KanbanViewModel", "Error in launch block", e)
+            logger.error("KanbanViewModel", "Error in launch block", e)
             // Optionally update state to show error
         }
     }

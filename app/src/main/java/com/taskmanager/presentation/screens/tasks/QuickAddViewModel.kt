@@ -1,4 +1,5 @@
-package com.taskmanager.presentation.screens.tasks
+package com.taskmanager.presentation
+import com.taskmanager.domain.logger.Logger.screens.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,6 @@ import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import android.util.Log
 
 @HiltViewModel
 class QuickAddViewModel @Inject constructor(
@@ -39,7 +39,7 @@ class QuickAddViewModel @Inject constructor(
                 )
                 createTaskUseCase(task)
             } catch (e: Exception) {
-                Log.e("QuickAddViewModel", "Error in launch block", e)
+                logger.error("QuickAddViewModel", "Error in launch block", e)
             }
         }
     }
@@ -67,7 +67,7 @@ class QuickAddViewModel @Inject constructor(
                 val id = createTaskUseCase(task)
                 onCreated(id)
             } catch (e: Exception) {
-                Log.e("QuickAddViewModel", "Error in launch block", e)
+                logger.error("QuickAddViewModel", "Error in launch block", e)
             }
         }
     }
