@@ -1,11 +1,12 @@
 package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.focusmode
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
+import com.taskmanager.presentation.screens.focusmode.DndHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,8 @@ data class FocusModeUiState(
 class FocusModeViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
-    private val dndHelper: DndHelper
+    private val dndHelper: DndHelper,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FocusModeUiState())
@@ -32,14 +34,13 @@ class FocusModeViewModel @Inject constructor(
 
     fun startFocus(taskId: Long) {
         viewModelScope.launch {
-        try {
-            val task = getTaskByIdUseCase(taskId)
-            _state.value = _state.value.copy(task = task, isActive = true)
-        } catch (e: Exception) {
-            logger.error("FocusModeViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                val task = getTaskByIdUseCase(taskId)
+                _state.value = _state.value.copy(task = task, isActive = true)
+            } catch (e: Exception) {
+                logger.error("FocusModeViewModel", "Error in launch block", e)
+            }
         }
-    }
         // Enable DND if permission granted; UI surfaces the status.
         val applied = dndHelper.enableDnd()
         _state.value = _state.value.copy(dndEnabled = applied)

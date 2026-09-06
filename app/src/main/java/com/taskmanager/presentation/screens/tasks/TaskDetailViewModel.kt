@@ -10,7 +10,9 @@ import com.taskmanager.domain.usecase.note.GetNotesByProjectUseCase
 import com.taskmanager.domain.usecase.project.GetProjectNameByIdUseCase
 import com.taskmanager.domain.usecase.subtask.CreateSubtaskUseCase
 import com.taskmanager.domain.usecase.subtask.GetSubtaskTreeUseCase
+import com.taskmanager.domain.usecase.subtask.ReorderSubtasksUseCase
 import com.taskmanager.domain.usecase.subtask.SetSubtaskCompletedUseCase
+import com.taskmanager.domain.usecase.subtask.UpdateSubtaskUseCase
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -113,56 +115,50 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
-    private fun findAllById(tree: List<Subtask>, id: Long): Subtask? {
-        for (s in tree) {
-            if (s.id == id) return s
-            val found = findAllById(s.children, id)
-            if (found != null) return found
-        }
-        return null
+    private fun findAllById(list: List<Subtask>, id: Long): Subtask? {
+        return list.find { it.id == id } ?: list.flatMap { it.children }.let { findAllById(it, id) }.firstOrNull()
     }
 
-    fun deleteSubtask(subtask: Subtask) {
-        viewModelScope.launch {
-            try {
-                deleteSubtaskUseCase(subtask.id ?: 0)
-                loadSubtasks(subtask.taskId)
-            } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error deleting subtask", e)
-            }
-        }
-    }
-
-    fun renameSubtask(subtask: Subtask, newTitle: String) {
-        if (newTitle.isBlank()) return
-        viewModelScope.launch {
-            try {
-                updateSubtaskUseCase(subtask.copy(title = newTitle.trim()))
-                loadSubtasks(subtask.taskId)
-            } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error renaming subtask", e)
-            }
-        }
-    }
-
-    fun reorderSubtask(taskId: Long, fromIndex: Int, toIndex: Int) {
-        viewModelScope.launch {
-            try {
-                reorderSubtasksUseCase(taskId, fromIndex, toIndex)
-                loadSubtasks(taskId)
-            } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error reordering subtask", e)
-            }
-        }
-    }
-
-    private fun loadSubtasks(taskId: Long) {
+    fun loadSubtasks(taskId: Long) {
         viewModelScope.launch {
             try {
                 val subtasks = getSubtaskTreeUseCase(taskId)
                 _state.value = _state.value.copy(subtasks = subtasks)
             } catch (e: Exception) {
                 logger.error("TaskDetailViewModel", "Error loading subtasks", e)
+            }
+        }
+    }
+
+    fun deleteSubtask(subtaskId: Long) {
+        viewModelScope.launch {
+            try {
+                deleteSubtaskUseCase(subtaskId)
+                loadSubtasks(_state.value.task?.id ?: 0)
+            } catch (e: Exception) {
+                logger.error("TaskDetailViewModel", "Error deleting subtask", e)
+            }
+        }
+    }
+
+    fun reorderSubtasks(taskId: Long, newOrder: List<Long>) {
+        viewModelScope.launch {
+            try {
+                reorderSubtasksUseCase(taskId, newOrder)
+                loadSubtasks(taskId)
+            } catch (e: Exception) {
+                logger.error("TaskDetailViewModel", "Error reordering subtasks", e)
+            }
+        }
+    }
+
+    fun updateSubtask(subtask: Subtask) {
+        viewModelScope.launch {
+            try {
+                updateSubtaskUseCase(subtask)
+                loadSubtasks(subtask.taskId)
+            } catch (e: Exception) {
+                logger.error("TaskDetailViewModel", "Error updating subtask", e)
             }
         }
     }
