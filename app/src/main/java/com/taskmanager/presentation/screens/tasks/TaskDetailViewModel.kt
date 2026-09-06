@@ -38,6 +38,9 @@ class TaskDetailViewModel @Inject constructor(
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val setSubtaskCompletedUseCase: SetSubtaskCompletedUseCase,
     private val createSubtaskUseCase: CreateSubtaskUseCase,
+    private val deleteSubtaskUseCase: DeleteSubtaskUseCase,
+    private val updateSubtaskUseCase: UpdateSubtaskUseCase,
+    private val reorderSubtasksUseCase: ReorderSubtasksUseCase,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -122,10 +125,10 @@ class TaskDetailViewModel @Inject constructor(
     fun deleteSubtask(subtask: Subtask) {
         viewModelScope.launch {
             try {
-                subtaskRepository.deleteSubtask(subtask.id ?: 0)
+                deleteSubtaskUseCase(subtask.id ?: 0)
                 loadSubtasks(subtask.taskId)
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error deleting subtask", e)
             }
         }
     }
@@ -134,10 +137,10 @@ class TaskDetailViewModel @Inject constructor(
         if (newTitle.isBlank()) return
         viewModelScope.launch {
             try {
-                subtaskRepository.updateSubtask(subtask.copy(title = newTitle.trim()))
+                updateSubtaskUseCase(subtask.copy(title = newTitle.trim()))
                 loadSubtasks(subtask.taskId)
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error renaming subtask", e)
             }
         }
     }
@@ -145,10 +148,10 @@ class TaskDetailViewModel @Inject constructor(
     fun reorderSubtask(taskId: Long, fromIndex: Int, toIndex: Int) {
         viewModelScope.launch {
             try {
-                subtaskRepository.reorderSubtasks(taskId, fromIndex, toIndex)
+                reorderSubtasksUseCase(taskId, fromIndex, toIndex)
                 loadSubtasks(taskId)
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error reordering subtask", e)
             }
         }
     }
@@ -156,10 +159,10 @@ class TaskDetailViewModel @Inject constructor(
     private fun loadSubtasks(taskId: Long) {
         viewModelScope.launch {
             try {
-                val subtasks = subtaskRepository.getSubtaskTree(taskId)
+                val subtasks = getSubtaskTreeUseCase(taskId)
                 _state.value = _state.value.copy(subtasks = subtasks)
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error loading subtasks", e)
             }
         }
     }
