@@ -24,7 +24,7 @@ data class SettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val backupManager: BackupManager,
-    private val userPreferences: UserPreferences,
+    userPreferences: UserPreferences,
     private val logger: Logger
 ) : ViewModel() {
 
