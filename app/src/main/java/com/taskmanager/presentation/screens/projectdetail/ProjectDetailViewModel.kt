@@ -1,18 +1,20 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.projectdetail
+package com.taskmanager.presentation.screens.projectdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.taskmanager.domain.model.Project
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Note
+import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
-import com.taskmanager.domain.repository.NoteRepository
 import com.taskmanager.domain.usecase.note.CreateNoteUseCase
-import com.taskmanager.domain.repository.ProjectRepository
-import com.taskmanager.domain.repository.TagRepository
-import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.note.GetNotesByProjectUseCase
+import com.taskmanager.domain.usecase.project.GetProjectByIdUseCase
+import com.taskmanager.domain.usecase.tag.GetAllTagsUseCase
+import com.taskmanager.domain.usecase.task.GetTasksByProjectUseCase
+import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +25,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 data class ProjectDetailUiState(
@@ -37,11 +38,13 @@ data class ProjectDetailUiState(
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ProjectDetailViewModel @Inject constructor(
-    private val projectRepository: ProjectRepository,
-    private val taskRepository: TaskRepository,
-    private val tagRepository: TagRepository,
-    private val noteRepository: NoteRepository,
-    private val createNoteUseCase: CreateNoteUseCase
+    private val getProjectByIdUseCase: GetProjectByIdUseCase,
+    private val getTasksByProjectUseCase: GetTasksByProjectUseCase,
+    private val getAllTagsUseCase: GetAllTagsUseCase,
+    private val getNotesByProjectUseCase: GetNotesByProjectUseCase,
+    private val createNoteUseCase: CreateNoteUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _projectId = MutableStateFlow(0L)
@@ -52,11 +55,11 @@ class ProjectDetailViewModel @Inject constructor(
         .flatMapLatest { id ->
             combine(
                 flowOf(id),
-                taskRepository.getTasksByProject(id),
-                tagRepository.getAllTags(),
-                noteRepository.getNotesByProject(id)
+                getTasksByProjectUseCase(id),
+                getAllTagsUseCase(),
+                getNotesByProjectUseCase(id)
             ) { projectId, tasks, allTags, notes ->
-                val project = projectRepository.getProjectById(projectId)
+                val project = getProjectByIdUseCase(projectId)
                 val colors = allTags.associate { it.name to (it.color ?: "") }
                 ProjectDetailUiState(
                     project = project,
@@ -75,29 +78,27 @@ class ProjectDetailViewModel @Inject constructor(
 
     fun createNoteForProject(title: String, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
-        try {
-            val id = createNoteUseCase(Note(
-                title = title,
-                contentMarkdown = "",
-                projectId = _projectId.value
-            ))
-            onCreated(id)
-        } catch (e: Exception) {
-            logger.error("ProjectDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                val id = createNoteUseCase(Note(
+                    title = title,
+                    contentMarkdown = "",
+                    projectId = _projectId.value
+                ))
+                onCreated(id)
+            } catch (e: Exception) {
+                logger.error("ProjectDetailViewModel", "Error creating note for project", e)
+            }
         }
-    }
     }
 
     fun moveTask(task: Task, newStatus: TaskStatus) {
         if (task.status == newStatus) return
         viewModelScope.launch {
-        try {
-            taskRepository.updateTask(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
-        } catch (e: Exception) {
-            logger.error("ProjectDetailViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
+            try {
+                updateTaskUseCase(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
+            } catch (e: Exception) {
+                logger.error("ProjectDetailViewModel", "Error moving task", e)
+            }
     }
     }
 }

@@ -1,12 +1,13 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.notes
+package com.taskmanager.presentation.screens.notes
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Note
-import com.taskmanager.domain.repository.NoteRepository
 import com.taskmanager.domain.usecase.note.CreateNoteUseCase
+import com.taskmanager.domain.usecase.note.GetNoteByIdUseCase
+import com.taskmanager.domain.usecase.note.UpdateNoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,8 +27,10 @@ data class NoteEditState(
 @HiltViewModel
 class NoteEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val noteRepository: NoteRepository,
-    private val createNoteUseCase: CreateNoteUseCase
+    private val getNoteByIdUseCase: GetNoteByIdUseCase,
+    private val createNoteUseCase: CreateNoteUseCase,
+    private val updateNoteUseCase: UpdateNoteUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val noteId: Long = savedStateHandle.get<Long>("noteId") ?: 0L
@@ -47,7 +50,7 @@ class NoteEditViewModel @Inject constructor(
     private fun loadNote(id: Long) {
         viewModelScope.launch {
             try {
-                val note = noteRepository.getNoteById(id)
+                val note = getNoteByIdUseCase(id)
                 if (note != null) {
                     currentNote = note
                     _state.value = NoteEditState(
@@ -60,7 +63,7 @@ class NoteEditViewModel @Inject constructor(
                     _state.value = NoteEditState(isLoading = false)
                 }
             } catch (e: Exception) {
-                logger.error("NoteEditViewModel", "Error in launch block", e)
+                logger.error("NoteEditViewModel", "Error loading note", e)
             }
         }
     }
@@ -101,7 +104,7 @@ class NoteEditViewModel @Inject constructor(
                     hasCreated = true
                 } else {
                     currentNote?.let { note ->
-                        noteRepository.updateNote(note.copy(
+                        updateNoteUseCase(note.copy(
                             title = s.title,
                             contentMarkdown = s.content
                         ))
