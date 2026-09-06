@@ -110,10 +110,9 @@ fun TaskDetailSheet(
                     onAddSubtask = { title, parentId -> viewModel.addSubtask(task.id ?: 0, title, parentId) },
                     onToggleSubtask = { viewModel.toggleSubtask(it) },
                     onDeleteSubtask = { viewModel.deleteSubtask(it) },
-                    onRenameSubtask = { subtask, title -> viewModel.renameSubtask(subtask, title) },
                     onReorderSubtask = { from, to ->
-                        viewModel.reorderSubtask(task.id ?: 0, from, to)
-                    },
+                        viewModel.reorderSubtasks(task.id ?: 0, listOf(from, to))
+                    }
                     onNoteClick = onNoteClick
                 )
             }
@@ -132,8 +131,7 @@ private fun TaskDetailContent(
     onAddSubtask: (String, Long?) -> Unit,
     onToggleSubtask: (Subtask) -> Unit,
     onDeleteSubtask: (Subtask) -> Unit,
-    onRenameSubtask: (Subtask, String) -> Unit,
-    onReorderSubtask: (Int, Int) -> Unit,
+    onReorderSubtask: (Int, Int) -> Unit
     relatedNotes: List<com.taskmanager.domain.model.Note> = emptyList(),
     onNoteClick: (Long) -> Unit = {}
 ) {
@@ -275,8 +273,7 @@ private fun TaskDetailContent(
                 depth = 0,
                 onAdd = onAddSubtask,
                 onToggle = onToggleSubtask,
-                onDelete = onDeleteSubtask,
-                onRename = onRenameSubtask
+                onDelete = onDeleteSubtask
             )
         }
 
