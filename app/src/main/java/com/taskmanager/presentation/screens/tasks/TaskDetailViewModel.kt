@@ -57,7 +57,7 @@ class TaskDetailViewModel @Inject constructor(
                 val projectName = task?.projectId?.let { getProjectNameByIdUseCase(it) }
                 val subtasks = task?.let { getSubtaskTreeUseCase(it.id ?: 0) } ?: emptyList()
                 val relatedNotes = task?.projectId?.let { pid ->
-                    getNotesByProjectUseCase(pid).first() ?: emptyList()
+                    getNotesByProjectUseCase(pid).firstOrNull() ?: emptyList()
                 } ?: emptyList()
                 _state.value = TaskDetailState(
                     task = task,
