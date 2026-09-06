@@ -3,8 +3,6 @@ package com.taskmanager.data.backup
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.HabitDao
@@ -18,14 +16,12 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.security.MessageDigest
-import javax.crypto.Cipher
-import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * \u042d\u043a\u0441\u043f\u043e\u0440\u0442/\u0438\u043c\u043f\u043e\u0440\u0442 \u0434\u0430\u043d\u043d\u044b\u0445 \u0432 JSON. \u0424\u043e\u0440\u043c\u0430\u0442: { "tasks": [...], "projects": [...], "habits": [...] }
- * \u0424\u043e\u0440\u043c\u0430\u0442: { "tasks": [...], "projects": [...], "habits": [...] }
+ * Backup and restore manager for tasks, projects, and habits.
+ * Exports data to JSON format and imports from JSON.
  */
 @Singleton
 class BackupManager @Inject constructor(
@@ -36,31 +32,6 @@ class BackupManager @Inject constructor(
 ) {
     companion object {
         private const val BACKUP_VERSION = 2
-        private const val PREFS_NAME = "floktask_backup_prefs"
-        private const val KEY_ENCRYPTION_KEY = "encryption_key"
-        private const val MASTER_KEY_ALIAS = "floktask_master_key"
-    }
-
-    private val securePrefs by lazy {
-        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM)
-        EncryptedSharedPreferences.create(
-            context,
-            PREFS_NAME,
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
-
-    private val encryptionKey: String
-        get() = securePrefs.getString(KEY_ENCRYPTION_KEY, null) ?: run {
-            val newKey = generateSecureKey()
-            securePrefs.edit().putString(KEY_ENCRYPTION_KEY, newKey).apply()
-            newKey
-        }
-
-    private fun generateSecureKey(): String {
-        return (1..32).map { ('a'..'z' + 'A'..'Z' + '0'..'9').random() }.joinToString("")
     }
 
     suspend fun exportToUri(uri: Uri): Boolean = withContext(Dispatchers.IO) {
@@ -130,12 +101,19 @@ class BackupManager @Inject constructor(
                     put("description", task.description)
                     put("status", task.status)
                     put("priority", task.priority)
-                    put("dueDate", task.dueDate)
+                    put("deadline", task.deadline)
+                    put("startTime", task.startTime)
+                    put("durationMinutes", task.durationMinutes)
                     put("createdAt", task.createdAt)
                     put("updatedAt", task.updatedAt)
                     put("projectId", task.projectId)
                     put("eisenhowerQuadrant", task.eisenhowerQuadrant)
                     put("isCompleted", task.isCompleted)
+                    put("pomodoroEstimate", task.pomodoroEstimate)
+                    put("timeEstimateMinutes", task.timeEstimateMinutes)
+                    put("color", task.color)
+                    put("reminderDate", task.reminderDate)
+                    put("recurrenceRule", task.recurrenceRule)
                     put("tags", task.tags)
                 })
             }
@@ -148,10 +126,14 @@ class BackupManager @Inject constructor(
             projects.forEach { project ->
                 put(JSONObject().apply {
                     put("id", project.id)
-                    put("name", project.name)
+                    put("title", project.title)
                     put("description", project.description)
                     put("color", project.color)
+                    put("icon", project.icon)
+                    put("deadline", project.deadline)
+                    put("isArchived", project.isArchived)
                     put("createdAt", project.createdAt)
+                    put("updatedAt", project.updatedAt)
                 })
             }
         }
@@ -163,12 +145,17 @@ class BackupManager @Inject constructor(
             habits.forEach { habit ->
                 put(JSONObject().apply {
                     put("id", habit.id)
-                    put("title", habit.title)
+                    put("name", habit.name)
                     put("description", habit.description)
+                    put("icon", habit.icon)
+                    put("color", habit.color)
                     put("frequency", habit.frequency)
+                    put("daysOfWeek", habit.daysOfWeek)
+                    put("targetCount", habit.targetCount)
+                    put("reminderTime", habit.reminderTime)
+                    put("isArchived", habit.isArchived)
                     put("createdAt", habit.createdAt)
-                    put("lastCompletion", habit.lastCompletion)
-                    put("completionCount", habit.completionCount)
+                    put("updatedAt", habit.updatedAt)
                 })
             }
         }
@@ -185,17 +172,28 @@ class BackupManager @Inject constructor(
                 id = taskObj.optLong("id", 0),
                 title = taskObj.optString("title", ""),
                 description = taskObj.optString("description", null),
+                projectId = taskObj.optLong("projectId", null).takeIf { it != 0L },
+                priority = taskObj.optInt("priority", 4),
                 status = taskObj.optString("status", "TODO"),
-                priority = taskObj.optInt("priority", 3),
-                dueDate = taskObj.optLong("dueDate", 0),
+                deadline = taskObj.optLong("deadline", null).takeIf { it != 0L },
+                startTime = taskObj.optLong("startTime", null).takeIf { it != 0L },
+                durationMinutes = taskObj.optLong("durationMinutes", null).takeIf { it != 0L },
                 createdAt = taskObj.optLong("createdAt", System.currentTimeMillis()),
                 updatedAt = taskObj.optLong("updatedAt", System.currentTimeMillis()),
-                projectId = taskObj.optLong("projectId", null),
-                eisenhowerQuadrant = taskObj.optString("eisenhowerQuadrant", null),
                 isCompleted = taskObj.optBoolean("isCompleted", false),
-                tags = taskObj.optString("tags", null)
+                pomodoroEstimate = taskObj.optInt("pomodoroEstimate", null).takeIf { it != 0 },
+                timeEstimateMinutes = taskObj.optLong("timeEstimateMinutes", null).takeIf { it != 0L },
+                eisenhowerQuadrant = taskObj.optString("eisenhowerQuadrant", null).takeIf { it.isNotEmpty() },
+                color = taskObj.optString("color", null).takeIf { it.isNotEmpty() },
+                reminderDate = taskObj.optLong("reminderDate", null).takeIf { it != 0L },
+                recurrenceRule = taskObj.optString("recurrenceRule", null).takeIf { it.isNotEmpty() },
+                tags = taskObj.optString("tags", null).takeIf { it.isNotEmpty() }
             )
-            taskDao.upsert(entity)
+            if (entity.id == 0L) {
+                taskDao.insert(entity)
+            } else {
+                taskDao.update(entity)
+            }
         }
     }
 
@@ -205,12 +203,20 @@ class BackupManager @Inject constructor(
             val projectObj = projectsArray.getJSONObject(i)
             val entity = ProjectEntity(
                 id = projectObj.optLong("id", 0),
-                name = projectObj.optString("name", ""),
-                description = projectObj.optString("description", null),
-                color = projectObj.optInt("color", 0),
-                createdAt = projectObj.optLong("createdAt", System.currentTimeMillis())
+                title = projectObj.optString("title", ""),
+                description = projectObj.optString("description", null).takeIf { it.isNotEmpty() },
+                color = projectObj.optString("color", null).takeIf { it.isNotEmpty() },
+                icon = projectObj.optString("icon", null).takeIf { it.isNotEmpty() },
+                deadline = projectObj.optLong("deadline", null).takeIf { it != 0L },
+                isArchived = projectObj.optBoolean("isArchived", false),
+                createdAt = projectObj.optLong("createdAt", System.currentTimeMillis()),
+                updatedAt = projectObj.optLong("updatedAt", System.currentTimeMillis())
             )
-            projectDao.upsert(entity)
+            if (entity.id == 0L) {
+                projectDao.insert(entity)
+            } else {
+                projectDao.update(entity)
+            }
         }
     }
 
@@ -220,14 +226,23 @@ class BackupManager @Inject constructor(
             val habitObj = habitsArray.getJSONObject(i)
             val entity = HabitEntity(
                 id = habitObj.optLong("id", 0),
-                title = habitObj.optString("title", ""),
-                description = habitObj.optString("description", null),
+                name = habitObj.optString("name", ""),
+                description = habitObj.optString("description", null).takeIf { it.isNotEmpty() },
+                icon = habitObj.optString("icon", null).takeIf { it.isNotEmpty() },
+                color = habitObj.optString("color", null).takeIf { it.isNotEmpty() },
                 frequency = habitObj.optString("frequency", "DAILY"),
+                daysOfWeek = habitObj.optString("daysOfWeek", ""),
+                targetCount = habitObj.optInt("targetCount", 1),
+                reminderTime = habitObj.optLong("reminderTime", null).takeIf { it != 0L },
+                isArchived = habitObj.optBoolean("isArchived", false),
                 createdAt = habitObj.optLong("createdAt", System.currentTimeMillis()),
-                lastCompletion = habitObj.optLong("lastCompletion", 0),
-                completionCount = habitObj.optInt("completionCount", 0)
+                updatedAt = habitObj.optLong("updatedAt", System.currentTimeMillis())
             )
-            habitDao.upsert(entity)
+            if (entity.id == 0L) {
+                habitDao.insert(entity)
+            } else {
+                habitDao.update(entity)
+            }
         }
     }
 
@@ -236,30 +251,5 @@ class BackupManager @Inject constructor(
         val md = MessageDigest.getInstance("SHA-256")
         val digest = md.digest(bytes)
         return Base64.encodeToString(digest, Base64.NO_WRAP)
-    }
-
-    suspend fun encryptData(data: String): String = withContext(Dispatchers.IO) {
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        val keyBytes = encryptionKey.toByteArray(Charsets.UTF_8)
-        val key = SecretKeySpec(keyBytes.copyOf(32), "AES")
-        cipher.init(Cipher.ENCRYPT_MODE, key)
-        val iv = cipher.iv
-        val encrypted = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
-        val result = iv + encrypted
-        Base64.encodeToString(result, Base64.NO_WRAP)
-    }
-
-    suspend fun decryptData(encrypted: String): String? = withContext(Dispatchers.IO) {
-        try {
-            val data = Base64.decode(encrypted, Base64.NO_WRAP)
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            val keyBytes = encryptionKey.toByteArray(Charsets.UTF_8)
-            val key = SecretKeySpec(keyBytes.copyOf(32), "AES")
-            cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, data.copyOfRange(0, 12)))
-            val decrypted = cipher.doFinal(data.copyOfRange(12, data.size))
-            String(decrypted, Charsets.UTF_8)
-        } catch (e: Exception) {
-            null
-        }
     }
 }
