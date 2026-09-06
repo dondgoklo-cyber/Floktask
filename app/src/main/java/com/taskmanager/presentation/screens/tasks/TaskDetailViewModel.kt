@@ -9,6 +9,7 @@ import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.note.GetNotesByProjectUseCase
 import com.taskmanager.domain.usecase.project.GetProjectNameByIdUseCase
 import com.taskmanager.domain.usecase.subtask.CreateSubtaskUseCase
+import com.taskmanager.domain.usecase.subtask.DeleteSubtaskUseCase
 import com.taskmanager.domain.usecase.subtask.GetSubtaskTreeUseCase
 import com.taskmanager.domain.usecase.subtask.ReorderSubtasksUseCase
 import com.taskmanager.domain.usecase.subtask.SetSubtaskCompletedUseCase
