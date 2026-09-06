@@ -318,8 +318,8 @@ fun FinanceScreen(
                 editingTx = null
             },
             onCreate = { amount, type, currency, categoryId, accountId, date, note ->
-                if (editingTx != null) {
-                    viewModel.updateTransaction(editingTx!!.copy(
+                editingTx?.let { tx ->
+                    viewModel.updateTransaction(tx.copy(
                         amount = amount.toMoneyBigDecimal(),
                         type = type,
                         currency = currency,
@@ -328,7 +328,7 @@ fun FinanceScreen(
                         date = date,
                         note = note
                     ))
-                } else {
+                } ?: run {
                     viewModel.createTransaction(amount, type, currency, categoryId, accountId, date, note)
                 }
                 showAddSheet = false

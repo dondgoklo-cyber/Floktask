@@ -51,7 +51,7 @@ fun InboxScreen(
 
     if (detailTaskId != null) {
         TaskDetailSheet(
-            taskId = detailTaskId!!,
+            taskId = detailTaskId,
             onDismiss = { detailTaskId = null },
             onEdit = { id ->
                 detailTaskId = null
