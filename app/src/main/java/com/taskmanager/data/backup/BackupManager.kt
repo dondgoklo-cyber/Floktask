@@ -41,8 +41,8 @@ class BackupManager @Inject constructor(
     }
 
     private val masterKey by lazy {
-        MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        MasterKeys.Builder(context)
+            .setKeyScheme(MasterKeys.KeyScheme.AES256_GCM)
             .build()
     }
 

@@ -123,6 +123,9 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
+    // Security
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
     // Core library desugaring (java.time on minSdk 24)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
