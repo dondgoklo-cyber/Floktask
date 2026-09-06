@@ -1,10 +1,10 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.calendar
+package com.taskmanager.presentation.screens.calendar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Task
-import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.task.GetAllTasksUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,8 +31,9 @@ data class CalendarUiState(
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val taskRepository: TaskRepository,
-    private val updateTaskUseCase: UpdateTaskUseCase
+    private val getAllTasksUseCase: GetAllTasksUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _viewMode = MutableStateFlow(CalendarViewMode.DAY)
@@ -43,7 +44,7 @@ class CalendarViewModel @Inject constructor(
     val state: StateFlow<CalendarUiState> = combine(
         _viewMode,
         _selectedDate,
-        taskRepository.getAllTasks()
+        getAllTasksUseCase()
     ) { viewMode, selectedDate, allTasks ->
         // Группируем задачи по дате (deadline или startTime)
         val byDay = allTasks
@@ -95,19 +96,18 @@ class CalendarViewModel @Inject constructor(
      */
     fun updateTaskSchedule(task: Task, newStartTime: java.time.Instant, newDurationMinutes: Long?) {
         viewModelScope.launch {
-        try {
-            updateTaskUseCase(
-                task.copy(
-                    startTime = newStartTime,
-                    deadline = newStartTime,
-                    durationMinutes = newDurationMinutes ?: task.durationMinutes
+            try {
+                updateTaskUseCase(
+                    task.copy(
+                        startTime = newStartTime,
+                        deadline = newStartTime,
+                        durationMinutes = newDurationMinutes ?: task.durationMinutes
+                    )
                 )
-            )
-        } catch (e: Exception) {
-            logger.error("CalendarViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            } catch (e: Exception) {
+                logger.error("CalendarViewModel", "Error updating task schedule", e)
+            }
         }
-    }
     }
 
     /**
@@ -115,19 +115,18 @@ class CalendarViewModel @Inject constructor(
      */
     fun moveTaskToDate(task: Task, newDate: LocalDate) {
         viewModelScope.launch {
-        try {
-            val currentTime = task.startTime?.atZone(zone)?.toLocalTime() ?: java.time.LocalTime.NOON
-            val newInstant = newDate.atTime(currentTime).atZone(zone).toInstant()
-            updateTaskUseCase(
-                task.copy(
-                    startTime = newInstant,
-                    deadline = newInstant
+            try {
+                val currentTime = task.startTime?.atZone(zone)?.toLocalTime() ?: java.time.LocalTime.NOON
+                val newInstant = newDate.atTime(currentTime).atZone(zone).toInstant()
+                updateTaskUseCase(
+                    task.copy(
+                        startTime = newInstant,
+                        deadline = newInstant
+                    )
                 )
-            )
-        } catch (e: Exception) {
-            logger.error("CalendarViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            } catch (e: Exception) {
+                logger.error("CalendarViewModel", "Error moving task to date", e)
+            }
         }
-    }
     }
 }

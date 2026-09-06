@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Use case for retrieving all tasks.
+ * Use case for searching tasks.
  * Part of Clean Architecture - Presentation layer depends only on UseCases, not Repositories.
  */
-class GetAllTasksUseCase @Inject constructor(
+class SearchTasksUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
     private val logger: Logger
 ) {
-    operator fun invoke(): Flow<List<Task>> = taskRepository.getAllTasks()
+    operator fun invoke(query: String): Flow<List<Task>> = taskRepository.searchTasks(query)
 }

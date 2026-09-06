@@ -1,18 +1,18 @@
 package com.taskmanager.domain.usecase.task
 
 import com.taskmanager.domain.logger.Logger
-import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Use case for retrieving all tasks.
+ * Use case for setting task completion status.
  * Part of Clean Architecture - Presentation layer depends only on UseCases, not Repositories.
  */
-class GetAllTasksUseCase @Inject constructor(
+class SetTaskCompletedUseCase @Inject constructor(
     private val taskRepository: TaskRepository,
     private val logger: Logger
 ) {
-    operator fun invoke(): Flow<List<Task>> = taskRepository.getAllTasks()
+    suspend operator fun invoke(taskId: Long, completed: Boolean) {
+        taskRepository.setCompleted(taskId, completed)
+    }
 }

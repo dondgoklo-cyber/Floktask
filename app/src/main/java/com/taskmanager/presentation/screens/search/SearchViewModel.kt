@@ -1,16 +1,16 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.search
+package com.taskmanager.presentation.screens.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Habit
 import com.taskmanager.domain.model.Note
-import com.taskmanager.domain.usecase.note.SearchNotesUseCase
 import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.Task
-import com.taskmanager.domain.repository.HabitRepository
-import com.taskmanager.domain.repository.ProjectRepository
-import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.habit.GetAllHabitsUseCase
+import com.taskmanager.domain.usecase.note.SearchNotesUseCase
+import com.taskmanager.domain.usecase.project.GetAllProjectsFlowUseCase
+import com.taskmanager.domain.usecase.task.SearchTasksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,10 +36,11 @@ data class SearchUiState(
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val taskRepository: TaskRepository,
-    private val projectRepository: ProjectRepository,
-    private val habitRepository: HabitRepository,
-    private val searchNotesUseCase: SearchNotesUseCase
+    private val searchTasksUseCase: SearchTasksUseCase,
+    private val getAllProjectsFlowUseCase: GetAllProjectsFlowUseCase,
+    private val getAllHabitsUseCase: GetAllHabitsUseCase,
+    private val searchNotesUseCase: SearchNotesUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _query = MutableStateFlow("")
@@ -55,16 +56,16 @@ class SearchViewModel @Inject constructor(
     private fun observeCatalogs() {
         viewModelScope.launch {
             try {
-                projectRepository.getAllProjects().collect { _allProjects.value = it }
+                getAllProjectsFlowUseCase().collect { _allProjects.value = it }
             } catch (e: Exception) {
-                logger.error("SearchViewModel", "Error in launch block", e)
+                logger.error("SearchViewModel", "Error loading projects", e)
             }
         }
         viewModelScope.launch {
             try {
-                habitRepository.getAllHabits().collect { _allHabits.value = it }
+                getAllHabitsUseCase().collect { _allHabits.value = it }
             } catch (e: Exception) {
-                logger.error("SearchViewModel", "Error in launch block", e)
+                logger.error("SearchViewModel", "Error loading habits", e)
             }
         }
     }
@@ -108,11 +109,11 @@ class SearchViewModel @Inject constructor(
         } else {
             viewModelScope.launch {
                 try {
-                    taskRepository.searchTasks(q).collect { results ->
+                    searchTasksUseCase(q).collect { results ->
                         _taskResults.value = results
                     }
                 } catch (e: Exception) {
-                    logger.error("SearchViewModel", "Error in launch block", e)
+                    logger.error("SearchViewModel", "Error searching tasks", e)
                 }
             }
             viewModelScope.launch {
@@ -121,7 +122,7 @@ class SearchViewModel @Inject constructor(
                         _noteResults.value = results
                     }
                 } catch (e: Exception) {
-                    logger.error("SearchViewModel", "Error in launch block", e)
+                    logger.error("SearchViewModel", "Error searching notes", e)
                 }
             }
         }

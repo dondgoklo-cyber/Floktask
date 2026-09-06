@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Use case for retrieving all projects.
+ * Use case for retrieving all projects as Flow.
  * Part of Clean Architecture - Presentation layer depends only on UseCases, not Repositories.
  */
-class GetAllProjectsUseCase @Inject constructor(
+class GetAllProjectsFlowUseCase @Inject constructor(
     private val projectRepository: ProjectRepository,
     private val logger: Logger
 ) {
-    operator fun invoke(): Flow<List<Project>> = projectRepository.getActiveProjects()
+    operator fun invoke(): Flow<List<Project>> = projectRepository.getAllProjects()
 }

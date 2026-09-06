@@ -2,10 +2,11 @@ package com.taskmanager.presentation.screens.projects
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Project
-import com.taskmanager.domain.repository.TaskRepository
 import com.taskmanager.domain.usecase.project.CreateProjectUseCase
 import com.taskmanager.domain.usecase.project.GetAllProjectsUseCase
+import com.taskmanager.domain.usecase.task.GetAllTasksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,8 +29,9 @@ sealed class ProjectsState {
 @HiltViewModel
 class ProjectsViewModel @Inject constructor(
     getAllProjectsUseCase: GetAllProjectsUseCase,
-    private val taskRepository: TaskRepository,
-    private val createProjectUseCase: CreateProjectUseCase
+    private val getAllTasksUseCase: GetAllTasksUseCase,
+    private val createProjectUseCase: CreateProjectUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _projectsState = MutableStateFlow<ProjectsState>(ProjectsState.Loading)
@@ -40,7 +42,7 @@ class ProjectsViewModel @Inject constructor(
 
     init {
         getAllProjectsUseCase()
-            .combine(taskRepository.getAllTasks()) { projects, tasks ->
+            .combine(getAllTasksUseCase()) { projects, tasks ->
                 val stats = tasks.groupBy { it.projectId }
                     .mapValues { (_, list) ->
                         ProjectStats(
@@ -60,8 +62,12 @@ class ProjectsViewModel @Inject constructor(
 
     fun createProject(title: String, description: String?) {
         viewModelScope.launch {
-            createProjectUseCase(Project(title = title.trim(), description = description?.trim()))
-            closeCreateDialog()
+            try {
+                createProjectUseCase(Project(title = title.trim(), description = description?.trim()))
+                closeCreateDialog()
+            } catch (e: Exception) {
+                logger.error("ProjectsViewModel", "Error creating project", e)
+            }
         }
     }
 }
