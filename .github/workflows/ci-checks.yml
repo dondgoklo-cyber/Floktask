@@ -41,23 +41,23 @@ jobs:
         run: |
           echo "🔍 Checking for android.util.Log usage in all layers..."
           
-          # Проверяем domain слой
-          DOMAIN_LOG=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
-          # Проверяем data слой
-          DATA_LOG=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/data --include="*.kt" | wc -l)
-          # Проверяем presentation слой
-          PRESENTATION_LOG=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
-          # Проверяем прямые вызовы Log
-          DIRECT_LOG=$(grep -r "Log\." app/src/main --include="*.kt" | grep -v "Timber\." | grep -v "logger\." | wc -l)
+          # Проверяем импорты
+          DOMAIN_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
+          DATA_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/data --include="*.kt" | wc -l)
+          PRESENTATION_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
           
-          TOTAL=$((DOMAIN_LOG + DATA_LOG + PRESENTATION_LOG + DIRECT_LOG))
+          # Проверяем прямые вызовы Log.d, Log.e, Log.i, Log.w, Log.v
+          DOMAIN_DIRECT=$(grep -rE "Log\.(d|e|i|w|v|wtf)" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
+          DATA_DIRECT=$(grep -rE "Log\.(d|e|i|w|v|wtf)" app/src/main/java/com/taskmanager/data --include="*.kt" | wc -l)
+          PRESENTATION_DIRECT=$(grep -rE "Log\.(d|e|i|w|v|wtf)" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
+          
+          TOTAL=$((DOMAIN_IMPORT + DATA_IMPORT + PRESENTATION_IMPORT + DOMAIN_DIRECT + DATA_DIRECT + PRESENTATION_DIRECT))
           
           if [ "$TOTAL" -gt 0 ]; then
             echo "❌ Found $TOTAL usages of android.util.Log or direct Log calls"
-            echo "Domain layer: $DOMAIN_LOG"
-            echo "Data layer: $DATA_LOG"
-            echo "Presentation layer: $PRESENTATION_LOG"
-            echo "Direct Log calls: $DIRECT_LOG"
+            echo "Domain layer import: $DOMAIN_IMPORT, direct: $DOMAIN_DIRECT"
+            echo "Data layer import: $DATA_IMPORT, direct: $DATA_DIRECT"
+            echo "Presentation layer import: $PRESENTATION_IMPORT, direct: $PRESENTATION_DIRECT"
             exit 1
           fi
           
@@ -98,6 +98,5 @@ jobs:
 
       - name: Check for dependency updates
         run: |
-          # Можно доработать скрипт для проверки обновлений зависимостей
           echo "Checking for dependency updates..."
-          # Например: ./gradlew dependencyUpdates
+          # Напримере: ./gradlew dependencyUpdates
