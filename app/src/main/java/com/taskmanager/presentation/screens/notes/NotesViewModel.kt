@@ -97,7 +97,7 @@ class NotesViewModel @Inject constructor(
             } catch (e: Exception) {
                 logger.error("NotesViewModel", "Error toggling pin", e)
             }
-    }
+        }
     }
 
     fun deleteNote(id: Long) {

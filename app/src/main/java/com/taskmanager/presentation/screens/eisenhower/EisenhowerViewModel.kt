@@ -1,8 +1,8 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.eisenhower
+package com.taskmanager.presentation.screens.eisenhower
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.eisenhower.GetEisenhowerTasksUseCase
@@ -23,7 +23,8 @@ data class EisenhowerUiState(
 @HiltViewModel
 class EisenhowerViewModel @Inject constructor(
     getEisenhowerTasksUseCase: GetEisenhowerTasksUseCase,
-    private val updateEisenhowerQuadrantUseCase: UpdateEisenhowerQuadrantUseCase
+    private val updateEisenhowerQuadrantUseCase: UpdateEisenhowerQuadrantUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     val state: StateFlow<EisenhowerUiState> = getEisenhowerTasksUseCase()

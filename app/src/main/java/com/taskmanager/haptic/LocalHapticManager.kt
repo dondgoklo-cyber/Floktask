@@ -2,7 +2,6 @@ package com.taskmanager.haptic
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.staticCompositionLocalOf
 
@@ -20,9 +19,6 @@ val LocalHapticManager = staticCompositionLocalOf<HapticManager?> { null }
 fun rememberHaptic(): (HapticType) -> Unit {
     val hapticManager = hiltViewModel<HapticManager>()
     return remember(hapticManager) {
-        val lambda: (HapticType) -> Unit = { type ->
-            hapticManager.perform(type)
-        }
-        lambda
+        { type -> hapticManager.perform(type) }
     }
 }

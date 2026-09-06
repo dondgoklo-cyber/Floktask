@@ -26,6 +26,9 @@ private const val KEY_ONBOARDING_DONE = "onboarding_done"
 class MainActivity : ComponentActivity() {
 
     @Inject
+    lateinit var logger: Logger
+
+    @Inject
     lateinit var alarmScheduler: AlarmScheduler
 
     @Inject

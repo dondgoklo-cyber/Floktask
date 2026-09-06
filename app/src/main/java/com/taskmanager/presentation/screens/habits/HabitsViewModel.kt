@@ -1,7 +1,7 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.habits
+package com.taskmanager.presentation.screens.habits
 
 import androidx.lifecycle.ViewModel
+import com.taskmanager.domain.logger.Logger
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Habit
 import com.taskmanager.domain.usecase.habit.CreateHabitUseCase
@@ -37,7 +37,8 @@ class HabitsViewModel @Inject constructor(
     private val getActiveHabitsUseCase: GetActiveHabitsUseCase,
     private val createHabitUseCase: CreateHabitUseCase,
     private val logHabitCompletionUseCase: LogHabitCompletionUseCase,
-    private val getHabitStatsUseCase: GetHabitStatsUseCase
+    private val getHabitStatsUseCase: GetHabitStatsUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _showCreateDialog = MutableStateFlow(false)

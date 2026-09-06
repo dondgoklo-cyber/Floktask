@@ -1,7 +1,7 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.tasks
+package com.taskmanager.presentation.screens.tasks
 
 import androidx.lifecycle.SavedStateHandle
+import com.taskmanager.domain.logger.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.EisenhowerQuadrant
@@ -42,7 +42,8 @@ class TaskEditViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val createTagUseCase: CreateTagUseCase,
     getAllProjectsUseCase: GetAllProjectsUseCase,
-    getAllTagsUseCase: GetAllTagsUseCase
+    getAllTagsUseCase: GetAllTagsUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val taskId: Long? = savedStateHandle

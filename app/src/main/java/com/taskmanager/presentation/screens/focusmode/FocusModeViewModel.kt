@@ -1,6 +1,5 @@
-package com.taskmanager.presentation
+package com.taskmanager.presentation.screens.focusmode
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.logger.Logger
@@ -8,7 +7,6 @@ import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import com.taskmanager.presentation.screens.focusmode.DndHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +21,6 @@ data class FocusModeUiState(
 
 @HiltViewModel
 class FocusModeViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val dndHelper: DndHelper,
     private val logger: Logger
@@ -31,6 +28,14 @@ class FocusModeViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(FocusModeUiState())
     val state: StateFlow<FocusModeUiState> = _state.asStateFlow()
+
+    // Event for UI to handle DND settings navigation
+    sealed interface FocusModeEvent {
+        data object OpenDndSettings : FocusModeEvent
+    }
+
+    private val _events = MutableStateFlow<FocusModeEvent?>(null)
+    val events: StateFlow<FocusModeEvent?> = _events.asStateFlow()
 
     fun startFocus(taskId: Long) {
         viewModelScope.launch {
@@ -55,11 +60,8 @@ class FocusModeViewModel @Inject constructor(
         get() = dndHelper.isPolicyAccessGranted
 
     fun openDndSettings() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            val intent = android.content.Intent(
-                android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS
-            ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
+        viewModelScope.launch {
+            _events.emit(FocusModeEvent.OpenDndSettings)
         }
     }
 }

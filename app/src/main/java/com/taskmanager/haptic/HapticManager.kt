@@ -30,6 +30,7 @@ enum class HapticType {
  */
 @Singleton
 class HapticManager @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val userPreferences: UserPreferences
 ) {
     private val prefs = userPreferences

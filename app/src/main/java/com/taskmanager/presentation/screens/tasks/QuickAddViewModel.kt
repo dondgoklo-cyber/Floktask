@@ -1,7 +1,7 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.tasks
+package com.taskmanager.presentation.screens.tasks
 
 import androidx.lifecycle.ViewModel
+import com.taskmanager.domain.logger.Logger
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.RecurrenceRule
@@ -17,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuickAddViewModel @Inject constructor(
-    private val createTaskUseCase: CreateTaskUseCase
+    private val createTaskUseCase: CreateTaskUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     fun createTaskFromVoice(
