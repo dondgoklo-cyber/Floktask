@@ -32,9 +32,7 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Spacing
 
 /**
- * 
-
-Screen for PIN code entry. Modes:
+ * Screen for PIN code entry. Modes:
  * - CREATE: create new PIN (enter twice)
  * - ENTER: enter PIN to unlock app
  * - CHANGE: change existing PIN (old -> new -> confirm)
@@ -58,9 +56,7 @@ fun PinScreen(
     var hint by remember {
         mutableStateOf(
             when (mode) {
-                PinMode.CREATE -> "
-
-Enter PIN"
+                PinMode.CREATE -> "Enter PIN"
                 PinMode.ENTER -> if (userName.isNotBlank()) "Welcome, $userName!" else "Enter PIN"
                 PinMode.CHANGE -> "Enter old PIN"
             }
