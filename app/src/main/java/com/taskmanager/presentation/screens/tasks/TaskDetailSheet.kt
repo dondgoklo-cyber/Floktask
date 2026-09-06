@@ -131,7 +131,7 @@ private fun TaskDetailContent(
     onAddSubtask: (String, Long?) -> Unit,
     onToggleSubtask: (Subtask) -> Unit,
     onDeleteSubtask: (Subtask) -> Unit,
-    onReorderSubtask: (Int, Int) -> Unit
+    onReorderSubtask: (Int, Int) -> Unit,
     relatedNotes: List<com.taskmanager.domain.model.Note> = emptyList(),
     onNoteClick: (Long) -> Unit = {}
 ) {
