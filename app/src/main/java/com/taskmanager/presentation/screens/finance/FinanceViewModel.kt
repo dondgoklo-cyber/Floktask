@@ -2,27 +2,29 @@ package com.taskmanager.presentation.screens.finance
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Account
 import com.taskmanager.domain.model.Budget
-import com.taskmanager.domain.model.Goal
 import com.taskmanager.domain.model.Category
 import com.taskmanager.domain.model.CategoryType
+import com.taskmanager.domain.model.Goal
 import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.model.TransactionType
-import com.taskmanager.domain.repository.AccountRepository
-import com.taskmanager.domain.repository.BudgetRepository
-import com.taskmanager.domain.repository.GoalRepository
+import com.taskmanager.domain.finance.ExchangeRateProvider
+import com.taskmanager.domain.usecase.finance.CreateGoalUseCase
 import com.taskmanager.domain.usecase.finance.CreateTransactionUseCase
+import com.taskmanager.domain.usecase.finance.DeleteGoalUseCase
 import com.taskmanager.domain.usecase.finance.DeleteTransactionUseCase
 import com.taskmanager.domain.usecase.finance.GetAccountsUseCase
-import com.taskmanager.domain.usecase.finance.GetCategoriesUseCase
+import com.taskmanager.domain.usecase.finance.GetAllBudgetsUseCase
+import com.taskmanager.domain.usecase.finance.GetAllGoalsUseCase
 import com.taskmanager.domain.usecase.finance.GetAllTransactionsUseCase
-import com.taskmanager.domain.finance.ExchangeRateProvider
+import com.taskmanager.domain.usecase.finance.GetCategoriesUseCase
 import com.taskmanager.domain.usecase.finance.GetFinanceSummaryUseCase
-import com.taskmanager.data.local.dao.CurrencyTotal
-import android.app.Application
-import com.taskmanager.security.UserPrefs
 import com.taskmanager.domain.usecase.finance.UpdateTransactionUseCase
+import com.taskmanager.domain.usecase.finance.UpsertBudgetUseCase
+import com.taskmanager.domain.usecase.finance.DeleteBudgetUseCase
+import com.taskmanager.domain.usecase.settings.UserPreferences
 import com.taskmanager.utils.divideSafe
 import com.taskmanager.utils.sumOfBigDecimal
 import com.taskmanager.utils.toMoneyBigDecimal
@@ -91,15 +93,19 @@ class FinanceViewModel @Inject constructor(
     private val getAllTransactionsUseCase: GetAllTransactionsUseCase,
     private val getFinanceSummaryUseCase: GetFinanceSummaryUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
-    getAccountsUseCase: GetAccountsUseCase,
+    private val getAccountsUseCase: GetAccountsUseCase,
+    private val getAllGoalsUseCase: GetAllGoalsUseCase,
+    private val getAllBudgetsUseCase: GetAllBudgetsUseCase,
     private val createTransactionUseCase: CreateTransactionUseCase,
     private val updateTransactionUseCase: UpdateTransactionUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val accountRepository: AccountRepository,
-    private val budgetRepository: BudgetRepository,
-    private val goalRepository: GoalRepository,
+    private val createGoalUseCase: CreateGoalUseCase,
+    private val deleteGoalUseCase: DeleteGoalUseCase,
+    private val upsertBudgetUseCase: UpsertBudgetUseCase,
+    private val deleteBudgetUseCase: DeleteBudgetUseCase,
     private val exchangeRateProvider: ExchangeRateProvider,
-    private val app: Application
+    private val userPreferences: com.taskmanager.domain.usecase.settings.UserPreferences,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _selectedPeriod = MutableStateFlow(FinancePeriod.MONTH)
@@ -114,13 +120,55 @@ class FinanceViewModel @Inject constructor(
     private val _expenseByCurrency = MutableStateFlow<List<com.taskmanager.data.local.dao.CurrencyTotal>>(emptyList())
 
     init {
-        viewModelScope.launch { goalRepository.getAllGoals().collect { _goals.value = it } }
-        viewModelScope.launch { budgetRepository.getAllBudgets().collect { _budgets.value = it } }
-        viewModelScope.launch { getAllTransactionsUseCase().collect { _allTransactions.value = it } }
-        viewModelScope.launch { getFinanceSummaryUseCase.totalIncome().collect { _totalIncome.value = it } }
-        viewModelScope.launch { getFinanceSummaryUseCase.totalExpense().collect { _totalExpense.value = it } }
-        viewModelScope.launch { getFinanceSummaryUseCase.totalIncomeByCurrency().collect { _incomeByCurrency.value = it } }
-        viewModelScope.launch { getFinanceSummaryUseCase.totalExpenseByCurrency().collect { _expenseByCurrency.value = it } }
+        viewModelScope.launch {
+            try {
+                getAllGoalsUseCase().collect { _goals.value = it }
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error loading goals", e)
+            }
+        }
+        viewModelScope.launch {
+            try {
+                getAllBudgetsUseCase().collect { _budgets.value = it }
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error loading budgets", e)
+            }
+        }
+        viewModelScope.launch {
+            try {
+                getAllTransactionsUseCase().collect { _allTransactions.value = it }
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error loading transactions", e)
+            }
+        }
+        viewModelScope.launch {
+            try {
+                getFinanceSummaryUseCase.totalIncome().collect { _totalIncome.value = it }
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error loading total income", e)
+            }
+        }
+        viewModelScope.launch {
+            try {
+                getFinanceSummaryUseCase.totalExpense().collect { _totalExpense.value = it }
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error loading total expense", e)
+            }
+        }
+        viewModelScope.launch {
+            try {
+                getFinanceSummaryUseCase.totalIncomeByCurrency().collect { _incomeByCurrency.value = it }
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error loading income by currency", e)
+            }
+        }
+        viewModelScope.launch {
+            try {
+                getFinanceSummaryUseCase.totalExpenseByCurrency().collect { _expenseByCurrency.value = it }
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error loading expense by currency", e)
+            }
+        }
     }
 
     val state: StateFlow<FinanceUiState> = combine(
@@ -131,7 +179,7 @@ class FinanceViewModel @Inject constructor(
         val transactions = _allTransactions.value
         val totalIncome = _totalIncome.value
         val totalExpense = _totalExpense.value
-        val baseCurrency = UserPrefs(app).baseCurrency
+        val baseCurrency = userPreferences.baseCurrency
 
         val incomeByCur = _incomeByCurrency.value.associate { it.currency to it.total }
         val expenseByCur = _expenseByCurrency.value.associate { it.currency to it.total }
@@ -251,25 +299,41 @@ class FinanceViewModel @Inject constructor(
 
     fun createGoal(title: String, targetAmount: Double, currency: String) {
         viewModelScope.launch {
-            goalRepository.createGoal(Goal(title = title, targetAmount = targetAmount.toMoneyBigDecimal(), currency = currency))
+            try {
+                createGoalUseCase(Goal(title = title, targetAmount = targetAmount.toMoneyBigDecimal(), currency = currency))
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error creating goal", e)
+            }
         }
     }
 
     fun deleteGoal(id: Long) {
         viewModelScope.launch {
-            goalRepository.deleteGoal(id)
+            try {
+                deleteGoalUseCase(id)
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error deleting goal", e)
+            }
         }
     }
 
     fun setBudget(categoryId: Long, amount: Double, currency: String) {
         viewModelScope.launch {
-            budgetRepository.upsertBudget(Budget(categoryId = categoryId, amount = amount.toMoneyBigDecimal(), currency = currency))
+            try {
+                upsertBudgetUseCase(Budget(categoryId = categoryId, amount = amount.toMoneyBigDecimal(), currency = currency))
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error setting budget", e)
+            }
         }
     }
 
     fun deleteBudget(id: Long) {
         viewModelScope.launch {
-            budgetRepository.deleteBudget(id)
+            try {
+                deleteBudgetUseCase(id)
+            } catch (e: Exception) {
+                logger.error("FinanceViewModel", "Error deleting budget", e)
+            }
         }
     }
 

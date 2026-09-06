@@ -3,7 +3,9 @@ package com.taskmanager.di
 import android.content.Context
 import coil.ImageLoader
 import com.taskmanager.data.logger.AndroidLogger
+import com.taskmanager.data.repository.UserPreferencesImpl
 import com.taskmanager.domain.logger.Logger
+import com.taskmanager.domain.usecase.settings.UserPreferences
 import com.taskmanager.haptic.HapticManager
 import com.taskmanager.image.ImageLoaderFactory
 import com.taskmanager.presentation.screens.focusmode.DndHelper
@@ -40,4 +42,9 @@ object AppModule {
     @Singleton
     fun provideDndHelper(@ApplicationContext context: Context): DndHelper =
         DndHelper(context)
+
+    @Provides
+    @Singleton
+    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences =
+        UserPreferencesImpl(context)
 }
