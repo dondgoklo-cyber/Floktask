@@ -1,7 +1,7 @@
 package com.taskmanager.domain.usecase.schedule
 
 import com.taskmanager.domain.model.Task
-import com.taskmanager.domain.usecase.conflict.TimeInterval
+import com.taskmanager.domain.model.TimeInterval
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
