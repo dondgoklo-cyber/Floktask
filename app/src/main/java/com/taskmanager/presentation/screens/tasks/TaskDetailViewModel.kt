@@ -20,7 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
+
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -57,7 +57,7 @@ class TaskDetailViewModel @Inject constructor(
                 val projectName = task?.projectId?.let { getProjectNameByIdUseCase(it) }
                 val subtasks = task?.let { getSubtaskTreeUseCase(it.id ?: 0) } ?: emptyList()
                 val relatedNotes = task?.projectId?.let { pid ->
-                    getNotesByProjectUseCase(pid).firstOrNull() ?: emptyList()
+                    getNotesByProjectUseCase(pid).firstOrNull { true } ?: emptyList()
                 } ?: emptyList()
                 _state.value = TaskDetailState(
                     task = task,
@@ -117,7 +117,7 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     private fun findAllById(list: List<Subtask>, id: Long): Subtask? {
-        return list.find { it.id == id } ?: list.flatMap { it.children }.let { findAllById(it, id) }.firstOrNull()
+        return list.find { it.id == id } ?: list.flatMap { it.children }.let { findAllById(it, id) }.firstOrNull { true }
     }
 
     fun loadSubtasks(taskId: Long) {
