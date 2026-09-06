@@ -22,8 +22,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideHapticManager(@ApplicationContext context: Context): HapticManager =
-        HapticManager(context)
+    fun provideHapticManager(
+        @ApplicationContext context: Context,
+        userPreferences: UserPreferences
+    ): HapticManager =
+        HapticManager(context, userPreferences)
 
     @Provides
     @Singleton
