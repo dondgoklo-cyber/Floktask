@@ -113,6 +113,7 @@ fun TaskDetailSheet(
                     onReorderSubtask = { from, to ->
                         viewModel.reorderSubtasks(task.id ?: 0, listOf(from.toLong(), to.toLong()))
                     }
+                    ,
                     onNoteClick = onNoteClick
                 )
             }
@@ -447,9 +448,7 @@ private fun SubtaskSection(
                         modifier = Modifier.weight(1f),
                         trailingIcon = {
                             IconButton(
-                                onClick = {
-                                    editingSubtask = null
-                                }
+                                onClick = { editingSubtask = null }
                                 enabled = editingTitle.isNotBlank()
                             ) { Icon(Icons.Filled.Check, contentDescription = null) }
                         }
