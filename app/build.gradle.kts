@@ -25,9 +25,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("../keystore/release.keystore")
-            storePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD") ?: "default_store_password"
-            keyAlias = System.getenv("ANDROID_SIGNING_ALIAS") ?: "upload"
-            keyPassword = System.getenv("ANDROID_SIGNING_PASSWORD") ?: "default_key_password"
+            storePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD")
+            keyAlias = System.getenv("ANDROID_SIGNING_ALIAS")
+            keyPassword = System.getenv("ANDROID_SIGNING_PASSWORD")
         }
     }
 
@@ -44,6 +44,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            
+            // Validate that signing environment variables are set
+            if (System.getenv("ANDROID_SIGNING_STORE_PASSWORD") == null ||
+                System.getenv("ANDROID_SIGNING_ALIAS") == null ||
+                System.getenv("ANDROID_SIGNING_PASSWORD") == null) {
+                throw GradleException("Missing signing environment variables: ANDROID_SIGNING_STORE_PASSWORD, ANDROID_SIGNING_ALIAS, ANDROID_SIGNING_PASSWORD")
+            }
         }
     }
 
