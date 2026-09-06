@@ -44,13 +44,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            
-            // Validate that signing environment variables are set
-            if (System.getenv("ANDROID_SIGNING_STORE_PASSWORD") == null ||
-                System.getenv("ANDROID_SIGNING_ALIAS") == null ||
-                System.getenv("ANDROID_SIGNING_PASSWORD") == null) {
-                throw GradleException("Missing signing environment variables: ANDROID_SIGNING_STORE_PASSWORD, ANDROID_SIGNING_ALIAS, ANDROID_SIGNING_PASSWORD")
-            }
         }
     }
 
