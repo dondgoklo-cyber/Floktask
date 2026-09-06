@@ -447,7 +447,7 @@ private fun SubtaskSection(
                         modifier = Modifier.weight(1f),
                         trailingIcon = {
                             IconButton(
-                                onClick = { editingSubtask = null }
+                                onClick = { editingSubtask = null },
                                 enabled = editingTitle.isNotBlank()
                             ) { Icon(Icons.Filled.Check, contentDescription = null) }
                         }
