@@ -2,10 +2,20 @@ package com.taskmanager.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Label
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ViewKanban
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -24,7 +34,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.taskmanager.presentation.screens.focus.FocusScreen
 import com.taskmanager.presentation.screens.insights.InsightsScreen
-import com.taskmanager.presentation.screens.tasks.TasksScreen
+import com.taskmanager.presentation.screens.inbox.InboxScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
 
 @Composable
@@ -66,10 +76,7 @@ fun NavGraph() {
                 TodayScreen()
             }
             composable(Screen.Plan.route) {
-                TasksScreen(
-                    onTaskClick = { },
-                    onAddTaskClick = { }
-                )
+                InboxScreen(onEditTask = { })
             }
             composable(Screen.Focus.route) {
                 FocusScreen()
@@ -87,4 +94,17 @@ private val Screen.icon: ImageVector
         Screen.Plan -> Icons.Filled.CalendarMonth
         Screen.Focus -> Icons.Filled.Timer
         Screen.Insights -> Icons.Filled.BarChart
+        Screen.Projects -> Icons.Filled.Folder
+        Screen.Finance -> Icons.Filled.AccountBalanceWallet
+        Screen.Notes -> Icons.Filled.Description
+        Screen.Habits -> Icons.Filled.Repeat
+        Screen.Calendar -> Icons.Filled.CalendarMonth
+        Screen.Upcoming -> Icons.Filled.CalendarMonth
+        Screen.Inbox -> Icons.Filled.Inbox
+        Screen.Search -> Icons.Filled.Search
+        Screen.Kanban -> Icons.Filled.ViewKanban
+        Screen.Tags -> Icons.Filled.Label
+        Screen.Eisenhower -> Icons.Filled.ViewKanban
+        Screen.Profile -> Icons.Filled.Person
+        Screen.Settings -> Icons.Filled.Settings
     }
