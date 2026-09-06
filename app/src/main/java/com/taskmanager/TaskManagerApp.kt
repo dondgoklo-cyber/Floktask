@@ -4,6 +4,9 @@ import android.app.Application
 import android.os.Build
 import com.taskmanager.data.repository.FinanceDataSeeder
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.io.PrintWriter
@@ -17,12 +20,17 @@ class TaskManagerApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        financeDataSeeder.seedIfNeeded()
-        
-        // Глобальный перехватчик крашей — записывает стеки в файл
-        val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
 
-        // Глосальный перехватчики крашей — записывает стеки в файл
+        // Seed in background to avoid ANR
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                financeDataSeeder.seedIfNeeded()
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+        }
+
+        // Global exception handler
         val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
@@ -30,16 +38,17 @@ class TaskManagerApp : Application() {
                 throwable.printStackTrace(PrintWriter(sw))
                 val crashLog = """
                     === Crash Report ===
-                    время: ${System.currentTimeMillis()}
-                    поток: ${thread.name}
+                    time: ${System.currentTimeMillis()}
+                    thread: ${thread.name}
                     Android API: ${Build.VERSION.SDK_INT}
-                    устройство: ${Build.MANUFACTURER} ${Build.MODEL}
+                    device: ${Build.MANUFACTURER} ${Build.MODEL}
 
-                    Стек:
+                    Stack:
                     $sw
                 """.trimIndent()
-                val file = File(getExternalFilesDir(null), "crash_log.txt")
-                file.writeText(crashLog)
+                val dir = getExternalFilesDir(null) ?: filesDir
+                val file = File(dir, "crash_log.txt")
+                file.appendText("\n\n$crashLog")
             } catch (_: Throwable) {}
             oldHandler?.uncaughtException(thread, throwable)
         }

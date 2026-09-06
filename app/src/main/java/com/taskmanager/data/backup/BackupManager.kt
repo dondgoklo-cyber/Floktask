@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import androidx.security.crypto.MasterKeys
 import com.taskmanager.data.local.dao.TaskDao
 import com.taskmanager.data.local.dao.ProjectDao
 import com.taskmanager.data.local.dao.HabitDao
