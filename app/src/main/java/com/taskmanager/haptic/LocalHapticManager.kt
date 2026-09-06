@@ -7,7 +7,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 /**
  * Provides [HapticManager] via CompositionLocal for easy access in Composables.
- * Inject through a composable entry point.
  */
 val LocalHapticManager = staticCompositionLocalOf<HapticManager?> { null }
 
@@ -16,8 +15,7 @@ val LocalHapticManager = staticCompositionLocalOf<HapticManager?> { null }
  * Usage: val haptic = rememberHaptic(); haptic(HapticType.LIGHT)
  */
 @Composable
-inline fun <reified T : HapticManager> rememberHaptic(): (HapticType) -> Unit {
-    val hapticManager: T = hiltViewModel()
+fun rememberHaptic(hapticManager: HapticManager = LocalHapticManager.current ?: error("No HapticManager provided")): (HapticType) -> Unit {
     return remember(hapticManager) {
         { type -> hapticManager.perform(type) }
     }
