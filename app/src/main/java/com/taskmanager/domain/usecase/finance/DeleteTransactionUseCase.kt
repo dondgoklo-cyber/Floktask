@@ -1,12 +1,12 @@
 package com.taskmanager.domain.usecase.finance
 
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.repository.TransactionRepository
 import javax.inject.Inject
-import com.taskmanager.domain.logger.Logger
 
-class DeleteTransactionUseCase @Inject constructor( 
-    private val logger: Logger,
-    private val repository: TransactionRepository
+class DeleteTransactionUseCase @Inject constructor(
+    private val repository: TransactionRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(id: Long) = runCatching {
         repository.deleteTransaction(id)

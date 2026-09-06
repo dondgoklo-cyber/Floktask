@@ -1,10 +1,10 @@
 package com.taskmanager.domain.usecase.habit
 
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.HabitLog
 import com.taskmanager.domain.repository.HabitLogRepository
 import java.time.LocalDate
 import javax.inject.Inject
-import com.taskmanager.domain.logger.Logger
 
 data class HabitStats(
     val currentStreak: Int,
@@ -14,9 +14,9 @@ data class HabitStats(
     val last30Days: Map<LocalDate, Int>
 )
 
-class GetHabitStatsUseCase @Inject constructor( 
-    private val logger: Logger,
-    private val habitLogRepository: HabitLogRepository
+class GetHabitStatsUseCase @Inject constructor(
+    private val habitLogRepository: HabitLogRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(habitId: Long): HabitStats {
         val logs = runCatching {

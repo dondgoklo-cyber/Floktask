@@ -5,9 +5,9 @@ import com.taskmanager.domain.model.Transaction
 import com.taskmanager.domain.repository.TransactionRepository
 import javax.inject.Inject
 
-class CreateTransactionUseCase @Inject constructor( 
-    private val logger: Logger,
-    private val repository: TransactionRepository
+class CreateTransactionUseCase @Inject constructor(
+    private val repository: TransactionRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(transaction: Transaction): Result<Long> = runCatching {
         repository.createTransaction(transaction)

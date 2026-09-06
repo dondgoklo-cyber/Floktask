@@ -1,13 +1,13 @@
 package com.taskmanager.domain.usecase.habit
 
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.repository.HabitLogRepository
 import java.time.LocalDate
 import javax.inject.Inject
-import com.taskmanager.domain.logger.Logger
 
-class LogHabitCompletionUseCase @Inject constructor( 
-    private val logger: Logger,
-    private val habitLogRepository: HabitLogRepository
+class LogHabitCompletionUseCase @Inject constructor(
+    private val habitLogRepository: HabitLogRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(habitId: Long, date: LocalDate = LocalDate.now(), count: Int = 1): Long =
         runCatching {

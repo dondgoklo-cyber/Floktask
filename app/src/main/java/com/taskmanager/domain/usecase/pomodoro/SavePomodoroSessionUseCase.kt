@@ -7,9 +7,9 @@ import com.taskmanager.domain.repository.PomodoroSessionRepository
 import java.time.Instant
 import javax.inject.Inject
 
-class SavePomodoroSessionUseCase @Inject constructor( 
-    private val logger: Logger,
-    private val pomodoroSessionRepository: PomodoroSessionRepository
+class SavePomodoroSessionUseCase @Inject constructor(
+    private val pomodoroSessionRepository: PomodoroSessionRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(
         taskId: Long?,

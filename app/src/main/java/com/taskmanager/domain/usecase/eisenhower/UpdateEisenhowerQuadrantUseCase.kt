@@ -1,13 +1,13 @@
 package com.taskmanager.domain.usecase.eisenhower
 
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.repository.TaskRepository
 import javax.inject.Inject
-import com.taskmanager.domain.logger.Logger
 
-class UpdateEisenhowerQuadrantUseCase @Inject constructor( 
-    private val logger: Logger,
-    private val taskRepository: TaskRepository
+class UpdateEisenhowerQuadrantUseCase @Inject constructor(
+    private val taskRepository: TaskRepository,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(taskId: Long, quadrant: EisenhowerQuadrant?): Result<Unit> {
         return try {
