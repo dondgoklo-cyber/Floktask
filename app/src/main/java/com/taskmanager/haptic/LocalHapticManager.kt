@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.taskmanager.security.UserPrefs
 import androidx.compose.runtime.staticCompositionLocalOf
 
 /**
@@ -19,12 +18,10 @@ val LocalHapticManager = staticCompositionLocalOf<HapticManager?> { null }
  */
 @Composable
 fun rememberHaptic(): (HapticType) -> Unit {
-    val context = LocalContext.current
-    return remember(context) {
-        val prefs = UserPrefs(context)
-        val manager = HapticManager(context)
+    val hapticManager = hiltViewModel<HapticManager>()
+    return remember(hapticManager) {
         val lambda: (HapticType) -> Unit = { type ->
-            if (prefs.hapticEnabled) manager.perform(type)
+            hapticManager.perform(type)
         }
         lambda
     }

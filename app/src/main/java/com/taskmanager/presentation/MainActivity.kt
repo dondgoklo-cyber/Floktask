@@ -1,5 +1,4 @@
 package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger
 
 import android.content.Context
 import android.os.Bundle
@@ -9,13 +8,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.taskmanager.domain.logger.Logger
+import com.taskmanager.domain.usecase.settings.UserPreferences
 import com.taskmanager.notification.AlarmScheduler
 import com.taskmanager.presentation.navigation.NavGraph
 import com.taskmanager.presentation.screens.onboarding.OnboardingScreen
 import com.taskmanager.presentation.theme.TaskManagerTheme
 import com.taskmanager.security.PinMode
 import com.taskmanager.security.PinScreen
-import com.taskmanager.security.UserPrefs
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,6 +27,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var alarmScheduler: AlarmScheduler
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +45,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             TaskManagerTheme {
                 val prefs = remember { getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
-                val userPrefs = remember { UserPrefs(this@MainActivity) }
                 var onboardingDone by remember {
                     mutableStateOf(prefs.getBoolean(KEY_ONBOARDING_DONE, false))
                 }
-                var pinUnlocked by remember { mutableStateOf(!userPrefs.hasPin) }
+                var pinUnlocked by remember { mutableStateOf(!userPreferences.hasPin) }
 
                 when {
                     !onboardingDone -> {
@@ -57,11 +59,11 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    userPrefs.hasPin && !pinUnlocked -> {
+                    userPreferences.hasPin && !pinUnlocked -> {
                         PinScreen(
                             mode = PinMode.ENTER,
-                            userName = userPrefs.userName,
-                            userPrefs = userPrefs,
+                            userName = userPreferences.userName,
+                            userPrefs = userPreferences,
                             onSuccess = { pinUnlocked = true }
                         )
                     }

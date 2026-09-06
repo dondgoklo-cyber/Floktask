@@ -46,13 +46,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
+import com.taskmanager.domain.usecase.settings.UserPreferences
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.components.AppTextButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
 import com.taskmanager.security.PinMode
-import com.taskmanager.security.UserPrefs
 import com.taskmanager.security.PinScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,21 +62,20 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
-    val userPrefs = remember { UserPrefs(context) }
-    var userName by remember { mutableStateOf(userPrefs.userName) }
-    var hasPin by remember { mutableStateOf(userPrefs.hasPin) }
-    var nameInput by remember { mutableStateOf(userPrefs.userName) }
+    val userPreferences = viewModel.userPreferences
+    var userName by remember { mutableStateOf(userPreferences.userName) }
+    var hasPin by remember { mutableStateOf(userPreferences.hasPin) }
+    var nameInput by remember { mutableStateOf(userPreferences.userName) }
     var showPinScreen by remember { mutableStateOf<PinMode?>(null) }
     var showRemovePinDialog by remember { mutableStateOf(false) }
-    var hapticEnabled by remember { mutableStateOf(userPrefs.hapticEnabled) }
-    var baseCurrency by remember { mutableStateOf(userPrefs.baseCurrency) }
+    var hapticEnabled by remember { mutableStateOf(userPreferences.hapticEnabled) }
+    var baseCurrency by remember { mutableStateOf(userPreferences.baseCurrency) }
 
     if (showPinScreen != null) {
         PinScreen(
             mode = showPinScreen!!,
             userName = userName,
-            userPrefs = userPrefs,
+            userPrefs = userPreferences,
             onSuccess = {
                 if (showPinScreen == PinMode.CREATE || showPinScreen == PinMode.CHANGE) {
                     hasPin = true
@@ -111,7 +110,7 @@ fun SettingsScreen(
             text = { Text(stringResource(R.string.pin_remove_confirm)) },
             confirmButton = {
                 TextButton(onClick = {
-                    userPrefs.removePin()
+                    userPreferences.removePin()
                     hasPin = false
                     showRemovePinDialog = false
                 }) { Text(stringResource(R.string.delete)) }
@@ -159,7 +158,7 @@ fun SettingsScreen(
                     AppTextButton(
                         text = stringResource(R.string.save),
                         onClick = {
-                            userPrefs.userName = nameInput.trim()
+                            userPreferences.userName = nameInput.trim()
                             userName = nameInput.trim()
                         },
                         enabled = nameInput.trim().isNotEmpty() && nameInput.trim() != userName
@@ -231,7 +230,7 @@ fun SettingsScreen(
                         checked = hapticEnabled,
                         onCheckedChange = { value ->
                             hapticEnabled = value
-                            userPrefs.hapticEnabled = value
+                            userPreferences.hapticEnabled = value
                         }
                     )
                 }
@@ -253,7 +252,7 @@ fun SettingsScreen(
                         selected = baseCurrency == curr,
                         onClick = {
                             baseCurrency = curr
-                            userPrefs.baseCurrency = curr
+                            userPreferences.baseCurrency = curr
                         },
                         label = { Text(curr) }
                     )

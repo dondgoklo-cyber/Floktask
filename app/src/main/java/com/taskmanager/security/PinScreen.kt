@@ -27,14 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.taskmanager.domain.usecase.settings.UserPreferences
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Spacing
 
 /**
- * Экран PIN-кода. Режимы:
- * - CREATE: создание нового PIN (дважды ввод)
- * - ENTER: вход в приложение
- * - CHANGE: смена PIN (старый → новый дважды)
+ * 
+
+Screen for PIN code entry. Modes:
+ * - CREATE: create new PIN (enter twice)
+ * - ENTER: enter PIN to unlock app
+ * - CHANGE: change existing PIN (old -> new -> confirm)
  */
 enum class PinMode { CREATE, ENTER, CHANGE }
 
@@ -42,7 +45,7 @@ enum class PinMode { CREATE, ENTER, CHANGE }
 fun PinScreen(
     mode: PinMode,
     userName: String,
-    userPrefs: UserPrefs,
+    userPrefs: UserPreferences,
     onSuccess: () -> Unit,
     onCancel: () -> Unit = {}
 ) {
@@ -55,9 +58,11 @@ fun PinScreen(
     var hint by remember {
         mutableStateOf(
             when (mode) {
-                PinMode.CREATE -> "Придумайте PIN"
-                PinMode.ENTER -> if (userName.isNotBlank()) "Привет, $userName!" else "Введите PIN"
-                PinMode.CHANGE -> "Введите старый PIN"
+                PinMode.CREATE -> "
+
+Enter PIN"
+                PinMode.ENTER -> if (userName.isNotBlank()) "Welcome, $userName!" else "Enter PIN"
+                PinMode.CHANGE -> "Enter old PIN"
             }
         )
     }
@@ -78,7 +83,7 @@ fun PinScreen(
         )
         Spacer(Modifier.padding(Spacing.lg))
 
-        // Индикатор точек
+        // PIN indicator dots
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -99,7 +104,7 @@ fun PinScreen(
         if (error) {
             Spacer(Modifier.padding(Spacing.sm))
             Text(
-                "Неверный PIN",
+                "Wrong PIN",
                 style = MaterialTheme.typography.bodySmall,
                 color = AppTheme.colors.danger
             )
@@ -107,7 +112,7 @@ fun PinScreen(
 
         Spacer(Modifier.padding(Spacing.xl))
 
-        // Цифровая клавиатура
+        // Numeric keypad
         val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del")
         keys.chunked(3).forEach { rowKeys ->
             Row(
@@ -142,8 +147,8 @@ fun PinScreen(
                                                     firstPin = firstPin,
                                                     userPrefs = userPrefs,
                                                     onClear = { input = ""; error = false },
-                                                    onSetFirst = { firstPin = input; input = ""; stage = "second"; hint = "Повторите PIN" },
-                                                    onStageOld = { input = ""; stage = "new"; hint = "Придумайте новый PIN" },
+                                                    onSetFirst = { firstPin = input; input = ""; stage = "second"; hint = "Confirm PIN" },
+                                                    onStageOld = { input = ""; stage = "new"; hint = "Enter new PIN" },
                                                     onSuccess = onSuccess,
                                                     onError = { input = ""; error = true }
                                                 )
@@ -154,7 +159,7 @@ fun PinScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             if (key == "del") {
-                                Icon(Icons.Filled.Backspace, contentDescription = "Удалить", tint = AppTheme.colors.onSurface)
+                                Icon(Icons.Filled.Backspace, contentDescription = "Delete", tint = AppTheme.colors.onSurface)
                             } else {
                                 Text(
                                     key,
@@ -171,7 +176,7 @@ fun PinScreen(
 
         if (mode != PinMode.ENTER) {
             Text(
-                "Отмена",
+                "Cancel",
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppTheme.colors.onSurfaceVariant,
                 modifier = Modifier
@@ -187,7 +192,7 @@ private fun handleComplete(
     mode: PinMode,
     stage: String,
     firstPin: String?,
-    userPrefs: UserPrefs,
+    userPrefs: UserPreferences,
     onClear: () -> Unit,
     onSetFirst: () -> Unit,
     onStageOld: () -> Unit,
@@ -195,11 +200,11 @@ private fun handleComplete(
     onError: () -> Unit
 ) {
     when {
-        // Создание: первый ввод
+        // Create: first entry
         (mode == PinMode.CREATE && stage == "first") || (mode == PinMode.CHANGE && stage == "new" && firstPin == null) -> {
             onSetFirst()
         }
-        // Создание: повтор ввода
+        // Create: confirm first entry
         (mode == PinMode.CREATE && stage == "second") || (mode == PinMode.CHANGE && stage == "new" && firstPin != null) -> {
             if (input == firstPin) {
                 userPrefs.setPin(input)
@@ -208,7 +213,7 @@ private fun handleComplete(
                 onError()
             }
         }
-        // Смена: проверка старого PIN
+        // Change: check old PIN
         mode == PinMode.CHANGE && stage == "old" -> {
             if (userPrefs.checkPin(input)) {
                 onStageOld()
@@ -216,7 +221,7 @@ private fun handleComplete(
                 onError()
             }
         }
-        // Вход: проверка PIN
+        // Enter: check PIN
         mode == PinMode.ENTER -> {
             if (userPrefs.checkPin(input)) {
                 onSuccess()

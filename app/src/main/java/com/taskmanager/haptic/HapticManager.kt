@@ -5,7 +5,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import com.taskmanager.security.UserPrefs
+import com.taskmanager.domain.usecase.settings.UserPreferences
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,9 +30,9 @@ enum class HapticType {
  */
 @Singleton
 class HapticManager @Inject constructor(
-    private val context: Context
+    private val userPreferences: UserPreferences
 ) {
-    private val prefs = UserPrefs(context)
+    private val prefs = userPreferences
 
     private val vibrator: Vibrator? by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
