@@ -111,8 +111,8 @@ fun TaskDetailSheet(
                     onToggleSubtask = { viewModel.toggleSubtask(it) },
                     onDeleteSubtask = { viewModel.deleteSubtask(it) },
                     onReorderSubtask = { from, to ->
-                        viewModel.reorderSubtasks(task.id ?: 0, listOf(from, to))
-                    },
+                        viewModel.reorderSubtasks(task.id ?: 0, listOf(from.toLong(), to.toLong()))
+                    }
                     onNoteClick = onNoteClick
                 )
             }
@@ -419,8 +419,7 @@ private fun SubtaskSection(
     depth: Int,
     onAdd: (String, Long?) -> Unit,
     onToggle: (Subtask) -> Unit,
-    onDelete: (Subtask) -> Unit,
-    onRename: (Subtask, String) -> Unit
+    onDelete: (Subtask) -> Unit
 ) {
     var newSubtaskTitle by remember { mutableStateOf("") }
     var editingSubtask by remember { mutableStateOf<Subtask?>(null) }
@@ -449,9 +448,8 @@ private fun SubtaskSection(
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    onRename(subtask, editingTitle)
                                     editingSubtask = null
-                                },
+                                }
                                 enabled = editingTitle.isNotBlank()
                             ) { Icon(Icons.Filled.Check, contentDescription = null) }
                         }
@@ -481,8 +479,7 @@ private fun SubtaskSection(
                         depth = depth + 1,
                         onAdd = onAdd,
                         onToggle = onToggle,
-                        onDelete = onDelete,
-                        onRename = onRename
+                        onDelete = onDelete
                     )
                 }
             }
