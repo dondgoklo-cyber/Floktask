@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.domain.logger.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,14 +22,15 @@ import javax.inject.Singleton
 @Singleton
 class AlarmScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val taskDao: TaskDao
+    private val taskDao: TaskDao,
+    private val logger: Logger
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun scheduleReminder(taskId: Long, title: String, triggerAtMillis: Long) {
         // Validate that we're not scheduling a reminder in the past
         if (triggerAtMillis <= System.currentTimeMillis()) {
-            android.util.Log.w("AlarmScheduler", "Cannot schedule reminder in the past: $triggerAtMillis")
+            logger.warn("AlarmScheduler", "Cannot schedule reminder in the past: $triggerAtMillis")
             return
         }
         
