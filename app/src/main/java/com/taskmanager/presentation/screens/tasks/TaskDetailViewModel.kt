@@ -1,15 +1,18 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.tasks
+package com.taskmanager.presentation.screens.tasks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Note
 import com.taskmanager.domain.model.Subtask
 import com.taskmanager.domain.model.Task
-import com.taskmanager.domain.repository.ProjectRepository
-import com.taskmanager.domain.repository.NoteRepository
-import com.taskmanager.domain.repository.SubtaskRepository
-import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.note.GetNotesByProjectUseCase
+import com.taskmanager.domain.usecase.project.GetProjectNameByIdUseCase
+import com.taskmanager.domain.usecase.subtask.CreateSubtaskUseCase
+import com.taskmanager.domain.usecase.subtask.GetSubtaskTreeUseCase
+import com.taskmanager.domain.usecase.subtask.SetSubtaskCompletedUseCase
+import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
+import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,10 +31,14 @@ data class TaskDetailState(
 
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
-    private val taskRepository: TaskRepository,
-    private val projectRepository: ProjectRepository,
-    private val subtaskRepository: SubtaskRepository,
-    private val noteRepository: NoteRepository
+    private val getTaskByIdUseCase: GetTaskByIdUseCase,
+    private val getProjectNameByIdUseCase: GetProjectNameByIdUseCase,
+    private val getSubtaskTreeUseCase: GetSubtaskTreeUseCase,
+    private val getNotesByProjectUseCase: GetNotesByProjectUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val setSubtaskCompletedUseCase: SetSubtaskCompletedUseCase,
+    private val createSubtaskUseCase: CreateSubtaskUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskDetailState())
@@ -40,11 +47,11 @@ class TaskDetailViewModel @Inject constructor(
     fun loadTask(taskId: Long) {
         viewModelScope.launch {
             try {
-                val task = taskRepository.getTaskById(taskId)
-                val projectName = task?.projectId?.let { projectRepository.getProjectById(it)?.title }
-                val subtasks = task?.let { subtaskRepository.getSubtaskTree(it.id ?: 0) } ?: emptyList()
+                val task = getTaskByIdUseCase(taskId)
+                val projectName = task?.projectId?.let { getProjectNameByIdUseCase(it) }
+                val subtasks = task?.let { getSubtaskTreeUseCase(it.id ?: 0) } ?: emptyList()
                 val relatedNotes = task?.projectId?.let { pid ->
-                    noteRepository.getNotesByProject(pid).firstOrNull() ?: emptyList()
+                    getNotesByProjectUseCase(pid).firstOrNull() ?: emptyList()
                 } ?: emptyList()
                 _state.value = TaskDetailState(
                     task = task,
@@ -54,7 +61,7 @@ class TaskDetailViewModel @Inject constructor(
                     isLoading = false
                 )
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error loading task", e)
                 _state.value = _state.value.copy(isLoading = false)
             }
         }
@@ -64,10 +71,10 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val updated = task.copy(isCompleted = !task.isCompleted)
-                taskRepository.updateTask(updated)
+                updateTaskUseCase(updated)
                 _state.value = _state.value.copy(task = updated)
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error toggling task complete", e)
             }
         }
     }
@@ -75,10 +82,10 @@ class TaskDetailViewModel @Inject constructor(
     fun toggleSubtask(subtask: Subtask) {
         viewModelScope.launch {
             try {
-                subtaskRepository.setCompleted(subtask.id ?: 0, !subtask.isCompleted)
+                setSubtaskCompletedUseCase(subtask.id ?: 0, !subtask.isCompleted)
                 loadSubtasks(subtask.taskId)
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error toggling subtask", e)
             }
         }
     }
@@ -93,12 +100,12 @@ class TaskDetailViewModel @Inject constructor(
                     _state.value.subtasks
                 }
                 val orderIndex = (siblings.maxOfOrNull { it.orderIndex } ?: -1) + 1
-                subtaskRepository.createSubtask(
+                createSubtaskUseCase(
                     Subtask(taskId = taskId, title = title.trim(), orderIndex = orderIndex, parentSubtaskId = parentSubtaskId)
                 )
                 loadSubtasks(taskId)
             } catch (e: Exception) {
-                logger.error("TaskDetailViewModel", "Error in launch block", e)
+                logger.error("TaskDetailViewModel", "Error adding subtask", e)
             }
         }
     }
