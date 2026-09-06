@@ -24,8 +24,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Экспорт/импорт данных в JSON. Формат: { "tasks": [...], "projects": [...], "habits": [...] }
- * Формат: { "tasks": [...], "projects": [...], "habits": [...] }
+ * \u042d\u043a\u0441\u043f\u043e\u0440\u0442/\u0438\u043c\u043f\u043e\u0440\u0442 \u0434\u0430\u043d\u043d\u044b\u0445 \u0432 JSON. \u0424\u043e\u0440\u043c\u0430\u0442: { "tasks": [...], "projects": [...], "habits": [...] }
+ * \u0424\u043e\u0440\u043c\u0430\u0442: { "tasks": [...], "projects": [...], "habits": [...] }
  */
 @Singleton
 class BackupManager @Inject constructor(
@@ -38,15 +38,11 @@ class BackupManager @Inject constructor(
         private const val BACKUP_VERSION = 2
         private const val PREFS_NAME = "floktask_backup_prefs"
         private const val KEY_ENCRYPTION_KEY = "encryption_key"
-    }
-
-    private val masterKey by lazy {
-        MasterKeys.getOrCreate(
-            MasterKeys.AES256_GCM
-        )
+        private const val MASTER_KEY_ALIAS = "floktask_master_key"
     }
 
     private val securePrefs by lazy {
+        val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM)
         EncryptedSharedPreferences.create(
             context,
             PREFS_NAME,
@@ -98,7 +94,7 @@ class BackupManager @Inject constructor(
             val dataStr = backup.optString("data", backupStr)
             val expectedChecksum = backup.optString("checksum", "")
             
-            // Проверка целостности
+            // Verify checksum
             if (expectedChecksum.isNotEmpty()) {
                 val actualChecksum = sha256(dataStr)
                 if (actualChecksum != expectedChecksum) {
@@ -106,126 +102,164 @@ class BackupManager @Inject constructor(
                 }
             }
             
-            val root = JSONObject(dataStr)
-            importProjects(root.optJSONArray("projects"))
-            importTasks(root.optJSONArray("tasks"))
-            importHabits(root.optJSONArray("habits"))
+            val data = JSONObject(dataStr)
+            
+            // Import tasks
+            importTasks(data)
+            // Import projects
+            importProjects(data)
+            // Import habits
+            importHabits(data)
+            
             true
         } catch (e: Exception) {
             false
         }
     }
-    
-    private fun sha256(input: String): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        val hash = digest.digest(input.toByteArray(Charsets.UTF_8))
-        return hash.joinToString("") { "%02x".format(it) }
-    }
 
-    private suspend fun buildExportJson(): JSONObject {
+    private suspend fun buildExportJson(): JSONObject = withContext(Dispatchers.IO) {
         val json = JSONObject()
+        
+        // Export tasks
         val tasks = taskDao.getAll().first()
+        val tasksArray = JSONArray().apply {
+            tasks.forEach { task ->
+                put(JSONObject().apply {
+                    put("id", task.id)
+                    put("title", task.title)
+                    put("description", task.description)
+                    put("status", task.status)
+                    put("priority", task.priority)
+                    put("dueDate", task.dueDate)
+                    put("createdAt", task.createdAt)
+                    put("updatedAt", task.updatedAt)
+                    put("projectId", task.projectId)
+                    put("eisenhowerQuadrant", task.eisenhowerQuadrant)
+                    put("isCompleted", task.isCompleted)
+                    put("tags", task.tags)
+                })
+            }
+        }
+        json.put("tasks", tasksArray)
+        
+        // Export projects
         val projects = projectDao.getAll().first()
+        val projectsArray = JSONArray().apply {
+            projects.forEach { project ->
+                put(JSONObject().apply {
+                    put("id", project.id)
+                    put("name", project.name)
+                    put("description", project.description)
+                    put("color", project.color)
+                    put("createdAt", project.createdAt)
+                })
+            }
+        }
+        json.put("projects", projectsArray)
+        
+        // Export habits
         val habits = habitDao.getAll().first()
-
-        val tasksArr = JSONArray()
-        tasks.forEach { tasksArr.put(taskToJson(it)) }
-        json.put("tasks", tasksArr)
-
-        val projectsArr = JSONArray()
-        projects.forEach { projectsArr.put(projectToJson(it)) }
-        json.put("projects", projectsArr)
-
-        val habitsArr = JSONArray()
-        habits.forEach { habitsArr.put(habitToJson(it)) }
-        json.put("habits", habitsArr)
-
-        return json
+        val habitsArray = JSONArray().apply {
+            habits.forEach { habit ->
+                put(JSONObject().apply {
+                    put("id", habit.id)
+                    put("title", habit.title)
+                    put("description", habit.description)
+                    put("frequency", habit.frequency)
+                    put("createdAt", habit.createdAt)
+                    put("lastCompletion", habit.lastCompletion)
+                    put("completionCount", habit.completionCount)
+                })
+            }
+        }
+        json.put("habits", habitsArray)
+        
+        json
     }
 
-    private fun taskToJson(t: TaskEntity): JSONObject = JSONObject().apply {
-        put("title", t.title)
-        put("description", t.description)
-        put("projectId", t.projectId)
-        put("priority", t.priority)
-        put("status", t.status)
-        put("deadline", t.deadline)
-        put("startTime", t.startTime)
-        put("durationMinutes", t.durationMinutes)
-        put("isCompleted", t.isCompleted)
-        put("pomodoroEstimate", t.pomodoroEstimate)
-        put("eisenhowerQuadrant", t.eisenhowerQuadrant)
-        put("reminderDate", t.reminderDate)
-        put("recurrenceRule", t.recurrenceRule)
-        put("tags", t.tags)
-    }
-
-    private fun projectToJson(p: ProjectEntity): JSONObject = JSONObject().apply {
-        put("title", p.title)
-        put("description", p.description)
-        put("color", p.color)
-        put("deadline", p.deadline)
-        put("isArchived", p.isArchived)
-    }
-
-    private fun habitToJson(h: HabitEntity): JSONObject = JSONObject().apply {
-        put("name", h.name)
-        put("description", h.description)
-        put("frequency", h.frequency)
-        put("targetCount", h.targetCount)
-        put("reminderTime", h.reminderTime)
-        put("isArchived", h.isArchived)
-    }
-
-    private suspend fun importTasks(arr: JSONArray?) {
-        if (arr == null) return
-        for (i in 0 until arr.length()) {
-            val o = arr.getJSONObject(i)
-            taskDao.insert(TaskEntity(
-                title = o.getString("title"),
-                description = o.optString("description").ifBlank { null },
-                projectId = if (o.isNull("projectId")) null else o.optLong("projectId"),
-                priority = o.optInt("priority", 4),
-                status = o.optString("status", "TODO"),
-                deadline = if (o.isNull("deadline")) null else o.optLong("deadline"),
-                startTime = if (o.isNull("startTime")) null else o.optLong("startTime"),
-                durationMinutes = if (o.isNull("durationMinutes")) null else o.optLong("durationMinutes"),
-                isCompleted = o.optBoolean("isCompleted", false),
-                pomodoroEstimate = if (o.isNull("pomodoroEstimate")) null else o.optInt("pomodoroEstimate"),
-                eisenhowerQuadrant = o.optString("eisenhowerQuadrant").ifBlank { null },
-                reminderDate = if (o.isNull("reminderDate")) null else o.optLong("reminderDate"),
-                recurrenceRule = o.optString("recurrenceRule").ifBlank { null },
-                tags = o.optString("tags").ifBlank { null }
-            ))
+    private suspend fun importTasks(data: JSONObject) = withContext(Dispatchers.IO) {
+        val tasksArray = data.optJSONArray("tasks") ?: return@withContext
+        for (i in 0 until tasksArray.length()) {
+            val taskObj = tasksArray.getJSONObject(i)
+            val entity = TaskEntity(
+                id = taskObj.optLong("id", 0),
+                title = taskObj.optString("title", ""),
+                description = taskObj.optString("description", null),
+                status = taskObj.optString("status", "TODO"),
+                priority = taskObj.optInt("priority", 3),
+                dueDate = taskObj.optLong("dueDate", 0),
+                createdAt = taskObj.optLong("createdAt", System.currentTimeMillis()),
+                updatedAt = taskObj.optLong("updatedAt", System.currentTimeMillis()),
+                projectId = taskObj.optLong("projectId", null),
+                eisenhowerQuadrant = taskObj.optString("eisenhowerQuadrant", null),
+                isCompleted = taskObj.optBoolean("isCompleted", false),
+                tags = taskObj.optString("tags", null)
+            )
+            taskDao.upsert(entity)
         }
     }
 
-    private suspend fun importProjects(arr: JSONArray?) {
-        if (arr == null) return
-        for (i in 0 until arr.length()) {
-            val o = arr.getJSONObject(i)
-            projectDao.insert(ProjectEntity(
-                title = o.getString("title"),
-                description = o.optString("description").ifBlank { null },
-                color = o.optString("color", "#FF6D00"),
-                deadline = if (o.isNull("deadline")) null else o.optLong("deadline"),
-                isArchived = o.optBoolean("isArchived", false)
-            ))
+    private suspend fun importProjects(data: JSONObject) = withContext(Dispatchers.IO) {
+        val projectsArray = data.optJSONArray("projects") ?: return@withContext
+        for (i in 0 until projectsArray.length()) {
+            val projectObj = projectsArray.getJSONObject(i)
+            val entity = ProjectEntity(
+                id = projectObj.optLong("id", 0),
+                name = projectObj.optString("name", ""),
+                description = projectObj.optString("description", null),
+                color = projectObj.optInt("color", 0),
+                createdAt = projectObj.optLong("createdAt", System.currentTimeMillis())
+            )
+            projectDao.upsert(entity)
         }
     }
 
-    private suspend fun importHabits(arr: JSONArray?) {
-        if (arr == null) return
-        for (i in 0 until arr.length()) {
-            val o = arr.getJSONObject(i)
-            habitDao.insert(HabitEntity(
-                name = o.getString("name"),
-                description = o.optString("description").ifBlank { null },
-                frequency = o.optString("frequency", "DAILY"),
-                targetCount = o.optInt("targetCount", 1),
-                reminderTime = o.optString("reminderTime").ifBlank { null },
-                isArchived = o.optBoolean("isArchived", false)
-            ))
+    private suspend fun importHabits(data: JSONObject) = withContext(Dispatchers.IO) {
+        val habitsArray = data.optJSONArray("habits") ?: return@withContext
+        for (i in 0 until habitsArray.length()) {
+            val habitObj = habitsArray.getJSONObject(i)
+            val entity = HabitEntity(
+                id = habitObj.optLong("id", 0),
+                title = habitObj.optString("title", ""),
+                description = habitObj.optString("description", null),
+                frequency = habitObj.optString("frequency", "DAILY"),
+                createdAt = habitObj.optLong("createdAt", System.currentTimeMillis()),
+                lastCompletion = habitObj.optLong("lastCompletion", 0),
+                completionCount = habitObj.optInt("completionCount", 0)
+            )
+            habitDao.upsert(entity)
+        }
+    }
+
+    private fun sha256(input: String): String {
+        val bytes = input.toByteArray(Charsets.UTF_8)
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return Base64.encodeToString(digest, Base64.NO_WRAP)
+    }
+
+    suspend fun encryptData(data: String): String = withContext(Dispatchers.IO) {
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        val keyBytes = encryptionKey.toByteArray(Charsets.UTF_8)
+        val key = SecretKeySpec(keyBytes.copyOf(32), "AES")
+        cipher.init(Cipher.ENCRYPT_MODE, key)
+        val iv = cipher.iv
+        val encrypted = cipher.doFinal(data.toByteArray(Charsets.UTF_8))
+        val result = iv + encrypted
+        Base64.encodeToString(result, Base64.NO_WRAP)
+    }
+
+    suspend fun decryptData(encrypted: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val data = Base64.decode(encrypted, Base64.NO_WRAP)
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            val keyBytes = encryptionKey.toByteArray(Charsets.UTF_8)
+            val key = SecretKeySpec(keyBytes.copyOf(32), "AES")
+            cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, data.copyOfRange(0, 12)))
+            val decrypted = cipher.doFinal(data.copyOfRange(12, data.size))
+            String(decrypted, Charsets.UTF_8)
+        } catch (e: Exception) {
+            null
         }
     }
 }
