@@ -1,15 +1,16 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.notes
+package com.taskmanager.presentation.screens.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Note
 import com.taskmanager.domain.model.NoteFolder
-import com.taskmanager.domain.repository.NoteFolderRepository
-import com.taskmanager.domain.repository.NoteRepository
+import com.taskmanager.domain.usecase.note.CreateFolderUseCase
 import com.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.taskmanager.domain.usecase.note.DeleteNoteUseCase
+import com.taskmanager.domain.usecase.note.GetAllFoldersUseCase
 import com.taskmanager.domain.usecase.note.GetAllNotesUseCase
+import com.taskmanager.domain.usecase.note.SetPinnedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,15 +31,17 @@ data class NotesUiState(
 @HiltViewModel
 class NotesViewModel @Inject constructor(
     getAllNotesUseCase: GetAllNotesUseCase,
-    private val noteRepository: NoteRepository,
-    private val noteFolderRepository: NoteFolderRepository,
+    private val getAllFoldersUseCase: GetAllFoldersUseCase,
     private val createNoteUseCase: CreateNoteUseCase,
-    private val deleteNoteUseCase: DeleteNoteUseCase
+    private val deleteNoteUseCase: DeleteNoteUseCase,
+    private val createFolderUseCase: CreateFolderUseCase,
+    private val setPinnedUseCase: SetPinnedUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     val state: StateFlow<NotesUiState> = combine(
         getAllNotesUseCase(),
-        noteFolderRepository.getAllFolders()
+        getAllFoldersUseCase()
     ) { notes, folders ->
         NotesUiState(
             pinnedNotes = notes.filter { it.pinned },
@@ -56,59 +59,54 @@ class NotesViewModel @Inject constructor(
 
     fun createFolder(name: String) {
         viewModelScope.launch {
-        try {
-            noteFolderRepository.createFolder(NoteFolder(name = name.trim()))
-            closeCreateFolderDialog()
-        } catch (e: Exception) {
-            logger.error("NotesViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                createFolderUseCase(NoteFolder(name = name.trim()))
+                closeCreateFolderDialog()
+            } catch (e: Exception) {
+                logger.error("NotesViewModel", "Error creating folder", e)
+            }
         }
-    }
     }
 
     fun createNote(onCreated: (Long) -> Unit) {
         viewModelScope.launch {
-        try {
-            val id = createNoteUseCase(Note(title = "", contentMarkdown = ""))
-            onCreated(id)
-        } catch (e: Exception) {
-            logger.error("NotesViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                val id = createNoteUseCase(Note(title = "", contentMarkdown = ""))
+                onCreated(id)
+            } catch (e: Exception) {
+                logger.error("NotesViewModel", "Error creating note", e)
+            }
         }
-    }
     }
 
     fun createNoteWithContent(title: String, content: String, onCreated: (Long) -> Unit) {
         viewModelScope.launch {
-        try {
-            val id = createNoteUseCase(Note(title = title, contentMarkdown = content))
-            onCreated(id)
-        } catch (e: Exception) {
-            logger.error("NotesViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                val id = createNoteUseCase(Note(title = title, contentMarkdown = content))
+                onCreated(id)
+            } catch (e: Exception) {
+                logger.error("NotesViewModel", "Error creating note with content", e)
+            }
         }
-    }
     }
 
     fun togglePin(note: Note) {
         viewModelScope.launch {
-        try {
-            noteRepository.setPinned(note.id ?: 0, !note.pinned)
-        } catch (e: Exception) {
-            logger.error("NotesViewModel", "Error in launch block", e)
-            // Optionally update state to show error
-        }
+            try {
+                setPinnedUseCase(note.id ?: 0, !note.pinned)
+            } catch (e: Exception) {
+                logger.error("NotesViewModel", "Error toggling pin", e)
+            }
     }
     }
 
     fun deleteNote(id: Long) {
         viewModelScope.launch {
-        try {
-            deleteNoteUseCase(id)
-        } catch (e: Exception) {
-            logger.error("NotesViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                deleteNoteUseCase(id)
+            } catch (e: Exception) {
+                logger.error("NotesViewModel", "Error deleting note", e)
+            }
         }
-    }
     }
 }

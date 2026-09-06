@@ -1,13 +1,13 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.focus
+package com.taskmanager.presentation.screens.focus
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.PomodoroType
-import com.taskmanager.domain.repository.TaskRepository
 import com.taskmanager.domain.usecase.pomodoro.GetPomodoroStatsUseCase
 import com.taskmanager.domain.usecase.pomodoro.PomodoroStats
 import com.taskmanager.domain.usecase.pomodoro.SavePomodoroSessionUseCase
+import com.taskmanager.domain.usecase.task.GetTaskByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,7 +33,8 @@ data class FocusUiState(
 class FocusViewModel @Inject constructor(
     private val savePomodoroSessionUseCase: SavePomodoroSessionUseCase,
     private val getPomodoroStatsUseCase: GetPomodoroStatsUseCase,
-    private val taskRepository: TaskRepository
+    private val getTaskByIdUseCase: GetTaskByIdUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FocusUiState())
@@ -67,10 +68,10 @@ class FocusViewModel @Inject constructor(
         if (taskId != null) {
             viewModelScope.launch {
                 try {
-                    val title = taskRepository.getTaskById(taskId)?.title
+                    val title = getTaskByIdUseCase(taskId)?.title
                     _state.value = _state.value.copy(taskTitle = title)
                 } catch (e: Exception) {
-                    logger.error("FocusViewModel", "Error in setTask", e)
+                    logger.error("FocusViewModel", "Error setting task", e)
                 }
             }
         }

@@ -1,11 +1,12 @@
-package com.taskmanager.presentation
-import com.taskmanager.domain.logger.Logger.screens.kanban
+package com.taskmanager.presentation.screens.kanban
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
-import com.taskmanager.domain.repository.TaskRepository
+import com.taskmanager.domain.usecase.task.GetAllTasksUseCase
+import com.taskmanager.domain.usecase.task.UpdateTaskStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,10 +22,12 @@ data class KanbanUiState(
 
 @HiltViewModel
 class KanbanViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val getAllTasksUseCase: GetAllTasksUseCase,
+    private val updateTaskStatusUseCase: UpdateTaskStatusUseCase,
+    private val logger: Logger
 ) : ViewModel() {
 
-    val state: StateFlow<KanbanUiState> = taskRepository.getAllTasks()
+    val state: StateFlow<KanbanUiState> = getAllTasksUseCase()
         .map { tasks ->
             val columns = TaskStatus.entries.associateWith { status ->
                 tasks.filter { it.status == status }
@@ -36,12 +39,11 @@ class KanbanViewModel @Inject constructor(
     fun moveTask(task: Task, newStatus: TaskStatus) {
         if (task.status == newStatus) return
         viewModelScope.launch {
-        try {
-            taskRepository.updateTask(task.copy(status = newStatus, isCompleted = newStatus == TaskStatus.DONE))
-        } catch (e: Exception) {
-            logger.error("KanbanViewModel", "Error in launch block", e)
-            // Optionally update state to show error
+            try {
+                updateTaskStatusUseCase(task, newStatus)
+            } catch (e: Exception) {
+                logger.error("KanbanViewModel", "Error moving task", e)
+            }
         }
-    }
     }
 }
