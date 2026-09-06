@@ -1,4 +1,4 @@
-package com.taskmanager.presentation
+package com.taskmanager.presentation.screens.settings
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -30,6 +30,8 @@ class SettingsViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(SettingsUiState())
     val state: StateFlow<SettingsUiState> = _state.asStateFlow()
+
+    val userPreferences: UserPreferences = userPreferences
 
     fun exportToUri(uri: Uri, onSuccess: () -> Unit, onError: () -> Unit) {
         _state.value = _state.value.copy(isExporting = true)
