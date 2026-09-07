@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -73,7 +74,7 @@ fun SettingsScreen(
     var showRemovePinDialog by remember { mutableStateOf(false) }
     var hapticEnabled by remember { mutableStateOf(userPreferences.hapticEnabled) }
     var baseCurrency by remember { mutableStateOf(userPreferences.baseCurrency) }
-    val themeController = androidx.compose.ui.platform.LocalContext.current.let { LocalThemeController.current }
+    val themeController = LocalThemeController.current
 
     if (showPinScreen != null) {
         PinScreen(
@@ -305,7 +306,7 @@ fun SettingsScreen(
                 subtitle = stringResource(R.string.export_data),
                 icon = Icons.Filled.Upload,
                 enabled = !state.isExporting,
-                onClick = { exportLauncher.launch("taskmanager_backup_${System.currentTimeMillis()}.json") }
+                onClick = { exportLauncher.launch("taskmanager_backup_" + System.currentTimeMillis() + ".json") }
             )
             SettingsCard(
                 title = stringResource(R.string.import_json),
