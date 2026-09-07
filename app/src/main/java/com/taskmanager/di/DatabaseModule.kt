@@ -25,6 +25,7 @@ import com.taskmanager.data.local.database.migration.MIGRATION_12_13
 import com.taskmanager.data.local.database.migration.MIGRATION_13_14
 import com.taskmanager.data.local.database.migration.MIGRATION_14_15
 import com.taskmanager.data.local.database.migration.MIGRATION_15_16
+import com.taskmanager.data.local.database.migration.MIGRATION_16_17
 import com.taskmanager.data.local.database.migration.MIGRATION_1_2
 import com.taskmanager.data.local.database.migration.MIGRATION_2_3
 import com.taskmanager.data.local.database.migration.MIGRATION_3_4
@@ -68,7 +69,8 @@ object DatabaseModule {
         MIGRATION_12_13,
         MIGRATION_13_14,
         MIGRATION_14_15,
-        MIGRATION_15_16
+        MIGRATION_15_16,
+        MIGRATION_16_17
     ).build()
 
     @Provides
