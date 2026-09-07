@@ -30,6 +30,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,7 +40,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextB
+utton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,7 +92,8 @@ fun FocusScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Фокус", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text("
+Фокус", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 IconButton(onClick = viewModel::showSettingsDialog) {
                     Icon(Icons.Filled.Settings, contentDescription = "Настройки")
                 }
@@ -141,7 +144,8 @@ fun FocusScreen(
                     color = animatedColor
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    val mins = state.remainingSeconds / 60
+          
+          val mins = state.remainingSeconds / 60
                     val secs = state.remainingSeconds % 60
                     Text(
                         text = String.format("%02d:%02d", mins, secs),
@@ -184,7 +188,8 @@ fun FocusScreen(
                         if (state.isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                         contentDescription = null
                     )
-                    Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.wi
+dth(4.dp))
                     Text(if (state.isRunning) "Пауза" else "Старт")
                 }
                 OutlinedButton(onClick = { viewModel.skip() }) {
@@ -246,7 +251,8 @@ private fun CycleIndicator(current: Int, total: Int, color: Color) {
 private fun StatsCard(stats: com.taskmanager.domain.usecase.pomodoro.PomodoroStats, dailyGoal: Int) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface),
+        colors = CardDefaults.cardColors(con
+tainerColor = AppTheme.colors.surface),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -280,7 +286,8 @@ private fun StatsCard(stats: com.taskmanager.domain.usecase.pomodoro.PomodoroSta
 
 @Composable
 private fun PomodoroSettingsDialog(state: FocusUiState, viewModel: FocusViewModel) {
-    var workDuration by remember { mutableStateOf(state.workDuration.toFloat()) }
+    var workDuration by remember { mutableStateOf(state.workDuration.toFloat(
+)) }
     var shortBreak by remember { mutableStateOf(state.shortBreakDuration.toFloat()) }
     var longBreak by remember { mutableStateOf(state.longBreakDuration.toFloat()) }
     var beforeLong by remember { mutableStateOf(state.pomodorosBeforeLongBreak.toFloat()) }
@@ -295,11 +302,11 @@ private fun PomodoroSettingsDialog(state: FocusUiState, viewModel: FocusViewMode
         title = { Text("Настройки Pomodoro") },
         text = {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { SettingSlider("Работа (мин)", workDuration, 1f..90f, workDuration.toFloat()) { workDuration = it } }
-                item { SettingSlider("Короткий перерыв (мин)", shortBreak, 1f..30f, shortBreak.toFloat()) { shortBreak = it } }
-                item { SettingSlider("Длинный перерыв (мин)", longBreak, 1f..60f, longBreak.toFloat()) { longBreak = it } }
-                item { SettingSlider("Помодоро до длинного перерыва", beforeLong, 2f..10f, beforeLong.toFloat()) { beforeLong = it } }
-                item { SettingSlider("Дневная цель (помодоро)", dailyGoal, 1f..30f, dailyGoal.toFloat()) { dailyGoal = it } }
+                item { SettingSlider("Работа (мин)", workDuration, 1f..90f) { workDuration = it } }
+                item { SettingSlider("Короткий перерыв (мин)", shortBreak, 1f..30f) { shortBreak = it } }
+                item { SettingSlider("Длинный перерыв (мин)", longBreak, 1f..60f) { longBreak = it } }
+                item { SettingSlider("Помодоро до длинного перерыва", beforeLong, 2f..10f) { beforeLong = it } }
+                item { SettingSlider("Дневная цель (помодоро)", dailyGoal, 1f..30f) { dailyGoal = it } }
                 item { SettingSwitch("Авто-старт перерывов", autoStartBreaks) { autoStartBreaks = it } }
                 item { SettingSwitch("Авто-старт работы", autoStartPomodoros) { autoStartPomodoros = it } }
                 item { SettingSwitch("Звук уведомления", sound) { sound = it } }
@@ -309,7 +316,8 @@ private fun PomodoroSettingsDialog(state: FocusUiState, viewModel: FocusViewMode
         confirmButton = {
             TextButton(onClick = {
                 viewModel.updateSettings(
-                    workDuration = workDuration.toInt(),
+ 
+                   workDuration = workDuration.toInt(),
                     shortBreakDuration = shortBreak.toInt(),
                     longBreakDuration = longBreak.toInt(),
                     pomodorosBeforeLongBreak = beforeLong.toInt(),
@@ -326,11 +334,11 @@ private fun PomodoroSettingsDialog(state: FocusUiState, viewModel: FocusViewMode
 }
 
 @Composable
-private fun SettingSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, displayValue: Float, onChange: (Float) -> Unit) {
+private fun SettingSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, onChange: (Float) -> Unit) {
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(label, style = MaterialTheme.typography.bodyMedium)
-            Text("${displayValue.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Text("${value.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
         }
         Slider(value = value, onValueChange = onChange, valueRange = range, modifier = Modifier.fillMaxWidth())
     }
@@ -351,7 +359,8 @@ private fun TaskPickerDialog(state: FocusUiState, viewModel: FocusViewModel) {
 
     AlertDialog(
         onDismissRequest = viewModel::hideTaskPicker,
-        title = { Text("Выбрать задачу") },
+        title =
+ { Text("Выбрать задачу") },
         text = {
             Column {
                 OutlinedTextField(
