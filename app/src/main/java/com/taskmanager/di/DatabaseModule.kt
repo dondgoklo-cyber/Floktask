@@ -71,7 +71,11 @@ object DatabaseModule {
         MIGRATION_14_15,
         MIGRATION_15_16,
         MIGRATION_16_17
-    ).build()
+    )
+     // Safety net: if schema mismatch is detected (old DB at v17 with wrong columns),
+     // recreate the database instead of crashing. Acceptable during active development.
+     .fallbackToDestructiveMigration()
+     .build()
 
     @Provides
     fun provideTaskDao(db: AppDatabase): TaskDao = db.taskDao()
