@@ -111,7 +111,7 @@ fun TaskDetailSheet(
                     onToggleSubtask = { subtask -> viewModel.toggleSubtask(subtask) },
                     onDeleteSubtask = { subtask -> viewModel.deleteSubtask(subtask.id ?: 0) },
                     onReorderSubtask = { from, to ->
-                        viewModel.reorderSubtasks(task.id ?: 0, listOf(from.toLong(), to.toLong()))
+                        viewModel.reorderSubtasks(task.id ?: 0, from, to)
                     },
                     onNoteClick = onNoteClick
                 )

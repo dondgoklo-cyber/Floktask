@@ -20,8 +20,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 data class TaskDetailState(
@@ -54,10 +56,12 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val task = getTaskByIdUseCase(taskId)
-                val projectName = task?.projectId?.let { getProjectNameByIdUseCase(it) }
+                val projectName = task?.projectId?.let { pid -> getProjectNameByIdUseCase(pid) }
                 val subtasks = task?.let { getSubtaskTreeUseCase(it.id ?: 0) } ?: emptyList()
                 val relatedNotes = task?.projectId?.let { pid ->
-                    getNotesByProjectUseCase(pid).first()
+                    var notes: List<Note> = emptyList()
+                    runBlocking { getNotesByProjectUseCase(pid).collect { notes = it } }
+                    notes
                 } ?: emptyList()
                 _state.value = TaskDetailState(
                     task = task,
@@ -117,7 +121,7 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     private fun findAllById(list: List<Subtask>, id: Long): Subtask? {
-        return list.find { it.id == id } ?: list.flatMap { it.children }.let { findAllById(it, id) }.firstOrNull()
+        return list.find { it.id == id } ?: list.flatMap { it.children }.let { findAllById(it, id) }?.firstOrNull()
     }
 
     fun loadSubtasks(taskId: Long) {
@@ -142,10 +146,10 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
-    fun reorderSubtasks(taskId: Long, newOrder: List<Long>) {
+    fun reorderSubtasks(taskId: Long, fromIndex: Int, toIndex: Int) {
         viewModelScope.launch {
             try {
-                reorderSubtasksUseCase(taskId, newOrder)
+                reorderSubtasksUseCase(taskId, fromIndex, toIndex)
                 loadSubtasks(taskId)
             } catch (e: Exception) {
                 logger.error("TaskDetailViewModel", "Error reordering subtasks", e)
