@@ -121,7 +121,7 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     private fun findAllById(list: List<Subtask>, id: Long): Subtask? {
-        return list.find { it.id == id } ?: list.flatMap { it.children }.let { findAllById(it, id) }?.firstOrNull()
+        return list.find { it.id == id } ?: list.flatMap { it.children }.let { findAllById(it, id) }
     }
 
     fun loadSubtasks(taskId: Long) {
