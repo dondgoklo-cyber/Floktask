@@ -20,8 +20,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Label
@@ -72,12 +76,16 @@ fun MoreScreen(
     val sections = listOf(
         MoreSection("Обзор", listOf(
             MoreItem(Icons.Filled.Search, R.string.search, Screen.Search.route),
+            MoreItem(Icons.Filled.BarChart, R.string.insights, Screen.Insights.route),
             MoreItem(Icons.Filled.Bolt, R.string.focus, Screen.Focus.route),
             MoreItem(Icons.Filled.Inbox, R.string.inbox, Screen.Inbox.route),
             MoreItem(Icons.Filled.CalendarMonth, R.string.calendar, Screen.Calendar.route),
             MoreItem(Icons.Filled.CalendarMonth, R.string.upcoming, Screen.Upcoming.route)
         )),
         MoreSection("Рабочее пространство", listOf(
+            MoreItem(Icons.Filled.Folder, R.string.projects, Screen.Projects.route),
+            MoreItem(Icons.Filled.AccountBalanceWallet, R.string.finance, Screen.Finance.route),
+            MoreItem(Icons.Filled.Description, R.string.notes, Screen.Notes.route),
             MoreItem(Icons.Filled.ViewKanban, R.string.kanban, Screen.Kanban.route),
             MoreItem(Icons.Filled.Label, R.string.tags, Screen.Tags.route),
             MoreItem(Icons.Filled.GridView, R.string.eisenhower_matrix, Screen.Eisenhower.route)
@@ -115,7 +123,7 @@ fun MoreScreen(
             verticalArrangement = Arrangement.spacedBy(Spacing.sm)
         ) {
             sections.forEach { section ->
-                item(key = "header-${section.title}") {
+                item(key = "header-" + section.title) {
                     Text(
                         text = section.title,
                         style = MaterialTheme.typography.labelLarge,
@@ -170,7 +178,6 @@ private fun MoreCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.lg)
         ) {
-            // Иконка в скруглённом контейнере 40dp с лёгким оттенком
             Box(
                 modifier = Modifier
                     .size(40.dp)
