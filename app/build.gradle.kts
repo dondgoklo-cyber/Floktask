@@ -127,7 +127,7 @@ dependencies {
     // Core library desugaring (java.time on minSdk 24)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    // Leak detection (debug only) — issue 42
+    // Leak detection (debug only)
     debugImplementation(libs.leakcanary)
 
     // Testing
