@@ -47,9 +47,7 @@ data class FocusUiState(
     val autoStartBreaks: Boolean = false,
     val autoStartPomodoros: Boolean = false,
     val soundEnabled: Boolean = true,
-// 
-    
-val vibrationEnabled: Boolean = true,
+    val vibrationEnabled: Boolean = true,
     val dailyGoal: Int = 8,
 )
 
@@ -102,9 +100,7 @@ class FocusViewModel @Inject constructor(
                 getPomodoroStatsUseCase().collect { stats ->
                     _state.value = _state.value.copy(
                         stats = stats,
-//
-       
-                 completedPomodoros = stats.todayCount
+                        completedPomodoros = stats.todayCount
                     )
                 }
             } catch (e: Exception) {
@@ -165,7 +161,6 @@ class FocusViewModel @Inject constructor(
     fun reset() {
         timerJob?.cancel()
         applyDurationForType(_state.value.type)
-//                                        
         _state.value = _state.value.copy(isRunning = false)
     }
 
@@ -224,7 +219,6 @@ class FocusViewModel @Inject constructor(
         val newCyclePos: Int
         val newType: PomodoroType
 
-//   
         when (currentType) {
             PomodoroType.WORK -> {
                 newCyclePos = (_state.value.cyclePosition + 1) % beforeLong
@@ -271,7 +265,6 @@ class FocusViewModel @Inject constructor(
                     vibrator?.vibrate(500)
                 }
             } catch (e: Exception) {
-//                                                            
                 logger.error("FocusViewModel", "Vibration error", e)
             }
         }
