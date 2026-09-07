@@ -31,7 +31,7 @@ class GlobalSearchUseCaseTest {
             "buy",
             tasks = listOf(task(1, "Buy milk"), task(2, "Email")),
             projects = listOf(project(3, "Buying guide")),
-            tags = listOf(tag(4, "bought"))
+            tags = listOf(tag(4, "buying"))
         )
         assertEquals(3, results.size)
         assertEquals(SearchResultType.TASK, results[0].type)
