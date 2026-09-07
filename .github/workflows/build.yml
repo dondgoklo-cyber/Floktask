@@ -40,12 +40,10 @@ jobs:
       - name: Report build errors
         if: always()
         run: |
-          echo "=== KOTLIN ERRORS (e:) ==="
-          grep -E "^e: " /tmp/build-output.log | head -50 | while IFS= read -r line; do echo "::error::${line}"; done
           echo "=== ALL ERROR LINES ==="
-          grep -iE "error|fail|exception|could not|cannot|unresolved|what went wrong|execution failed" /tmp/build-output.log | head -50 | while IFS= read -r line; do echo "::error::${line}"; done
-          echo "=== LAST 100 LINES ==="
-          tail -100 /tmp/build-output.log | while IFS= read -r line; do echo "${line}"; done
+          grep -iE "error|fail|exception|could not|cannot|unresolved|what went wrong|caused by|requires|compileSdk|compile against|aar metadata" /tmp/build-output.log | head -80 | while IFS= read -r line; do echo "::error::${line}"; done
+          echo "=== FULL LOG (last 150 lines) ==="
+          tail -150 /tmp/build-output.log | while IFS= read -r line; do echo "${line}"; done
 
       - name: Upload build log
         if: always()
