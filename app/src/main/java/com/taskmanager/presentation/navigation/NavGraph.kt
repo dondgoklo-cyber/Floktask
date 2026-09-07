@@ -10,11 +10,12 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Label
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.ViewKanban
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -24,18 +25,34 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavType
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.taskmanager.presentation.screens.calendar.CalendarScreen
+import com.taskmanager.presentation.screens.eisenhower.EisenhowerScreen
+import com.taskmanager.presentation.screens.finance.FinanceScreen
 import com.taskmanager.presentation.screens.focus.FocusScreen
-import com.taskmanager.presentation.screens.insights.InsightsScreen
+import com.taskmanager.presentation.screens.habits.HabitsScreen
 import com.taskmanager.presentation.screens.inbox.InboxScreen
+import com.taskmanager.presentation.screens.insights.InsightsScreen
+import com.taskmanager.presentation.screens.kanban.KanbanScreen
+import com.taskmanager.presentation.screens.more.MoreScreen
+import com.taskmanager.presentation.screens.notes.NotesScreen
+import com.taskmanager.presentation.screens.profile.ProfileScreen
+import com.taskmanager.presentation.screens.projectdetail.ProjectDetailScreen
+import com.taskmanager.presentation.screens.projects.ProjectsScreen
+import com.taskmanager.presentation.screens.search.SearchScreen
+import com.taskmanager.presentation.screens.settings.SettingsScreen
+import com.taskmanager.presentation.screens.tags.TagsScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
+import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
 
 @Composable
 fun NavGraph() {
@@ -72,17 +89,36 @@ fun NavGraph() {
             startDestination = Screen.Today.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Today.route) {
-                TodayScreen()
+            composable(Screen.Today.route) { TodayScreen() }
+            composable(Screen.Inbox.route) { InboxScreen(onEditTask = { }) }
+            composable(Screen.Calendar.route) { CalendarScreen() }
+            composable(Screen.Habits.route) { HabitsScreen() }
+            composable(Screen.More.route) { MoreScreen(onNavigate = { route -> navController.navigate(route) }) }
+            composable(Screen.Focus.route) { FocusScreen() }
+            composable(Screen.Insights.route) { InsightsScreen() }
+            composable(Screen.Projects.route) {
+                ProjectsScreen(onProjectClick = { projectId -> navController.navigate("projectDetail/" + projectId) })
             }
-            composable(Screen.Plan.route) {
-                InboxScreen(onEditTask = { })
-            }
-            composable(Screen.Focus.route) {
-                FocusScreen()
-            }
-            composable(Screen.Insights.route) {
-                InsightsScreen()
+            composable(Screen.Finance.route) { FinanceScreen() }
+            composable(Screen.Notes.route) { NotesScreen(onNoteClick = { }, onFolderClick = { }) }
+            composable(Screen.Kanban.route) { KanbanScreen(onTaskClick = { }) }
+            composable(Screen.Eisenhower.route) { EisenhowerScreen() }
+            composable(Screen.Search.route) { SearchScreen(onBack = { navController.popBackStack() }, onTaskClick = { }) }
+            composable(Screen.Upcoming.route) { UpcomingScreen(onEditTask = { }) }
+            composable(Screen.Tags.route) { TagsScreen(onBack = { navController.popBackStack() }) }
+            composable(Screen.Profile.route) { ProfileScreen(onBack = { navController.popBackStack() }) }
+            composable(Screen.Settings.route) { SettingsScreen(onBack = { navController.popBackStack() }) }
+            composable(
+                route = Screen.ProjectDetail.route,
+                arguments = listOf(navArgument("projectId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val projectId = backStackEntry.arguments?.getLong("projectId") ?: 0L
+                ProjectDetailScreen(
+                    projectId = projectId,
+                    onBack = { navController.popBackStack() },
+                    onAddTask = { },
+                    onTaskClick = { }
+                )
             }
         }
     }
@@ -91,20 +127,22 @@ fun NavGraph() {
 private val Screen.icon: ImageVector
     get() = when (this) {
         Screen.Today -> Icons.Filled.CheckCircle
+        Screen.Inbox -> Icons.Filled.Inbox
+        Screen.Calendar -> Icons.Filled.CalendarMonth
+        Screen.Habits -> Icons.Filled.Repeat
+        Screen.More -> Icons.Filled.MoreHoriz
         Screen.Plan -> Icons.Filled.CalendarMonth
         Screen.Focus -> Icons.Filled.Timer
         Screen.Insights -> Icons.Filled.BarChart
         Screen.Projects -> Icons.Filled.Folder
         Screen.Finance -> Icons.Filled.AccountBalanceWallet
         Screen.Notes -> Icons.Filled.Description
-        Screen.Habits -> Icons.Filled.Repeat
-        Screen.Calendar -> Icons.Filled.CalendarMonth
         Screen.Upcoming -> Icons.Filled.CalendarMonth
-        Screen.Inbox -> Icons.Filled.Inbox
         Screen.Search -> Icons.Filled.Search
         Screen.Kanban -> Icons.Filled.ViewKanban
         Screen.Tags -> Icons.Filled.Label
         Screen.Eisenhower -> Icons.Filled.ViewKanban
         Screen.Profile -> Icons.Filled.Person
         Screen.Settings -> Icons.Filled.Settings
+        Screen.ProjectDetail -> Icons.Filled.Folder
     }
