@@ -30,7 +30,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,9 +38,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
-//                 
-import androidx.comp
-ose.material3.Text
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -82,7 +79,7 @@ fun FocusScreen(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Spacing.lg, vertical = Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.md)
     ) {
@@ -90,10 +87,8 @@ fun FocusScreen(
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-//                                                  
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignm
-ent.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Фокус", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 IconButton(onClick = viewModel::showSettingsDialog) {
@@ -141,15 +136,12 @@ ent.CenterVertically
             Box(modifier = Modifier.size(240.dp), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(
                     progress = { progress },
-//                                      
                     modifier = Modifier.fillMaxSize(),
                     strokeWidth = 10.dp,
                     color = animatedColor
                 )
-                Column(hori
-zontalAlignment = Alignment.CenterHorizontally) {
-          
-          val mins = state.remainingSeconds / 60
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    val mins = state.remainingSeconds / 60
                     val secs = state.remainingSeconds % 60
                     Text(
                         text = String.format("%02d:%02d", mins, secs),
@@ -186,13 +178,11 @@ zontalAlignment = Alignment.CenterHorizontally) {
                 }
                 Button(
                     onClick = { if (state.isRunning) viewModel.pause() else viewModel.start() },
-//                                                                                 
                     colors = ButtonDefaults.buttonColors(containerColor = animatedColor),
                 ) {
                     Icon(
                         if (state.isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                         contentDescription = null
-
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(if (state.isRunning) "Пауза" else "Старт")
@@ -244,7 +234,6 @@ private fun CycleIndicator(current: Int, total: Int, color: Color) {
             val isActive = i < current
             Box(
                 modifier = Modifier
-//                              
                     .size(if (isActive) 16.dp else 12.dp)
                     .clip(CircleShape)
                     .background(if (isActive) color else color.copy(alpha = 0.2f))
@@ -256,8 +245,7 @@ private fun CycleIndicator(current: Int, total: Int, color: Color) {
 @Composable
 private fun StatsCard(stats: com.taskmanager.domain.usecase.pomodoro.PomodoroStats, dailyGoal: Int) {
     Card(
-        modifier = Modifie
-r.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -280,7 +268,6 @@ r.fillMaxWidth(),
             // Daily goal progress
             val goalProgress = if (dailyGoal > 0) (stats.todayCount.toFloat() / dailyGoal).coerceIn(0f, 1f) else 0f
             Spacer(Modifier.height(4.dp))
-//                                                                                                           
             Text("Цель: $dailyGoal помодоро в день", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
             LinearProgressIndicator(
                 progress = { goalProgress },
@@ -293,9 +280,7 @@ r.fillMaxWidth(),
 
 @Composable
 private fun PomodoroSettingsDialog(state: FocusUiState, viewModel: FocusViewModel) {
-    var workDu
-ration by remember { mutableStateOf(state.workDuration.toFloat(
-)) }
+    var workDuration by remember { mutableStateOf(state.workDuration.toFloat()) }
     var shortBreak by remember { mutableStateOf(state.shortBreakDuration.toFloat()) }
     var longBreak by remember { mutableStateOf(state.longBreakDuration.toFloat()) }
     var beforeLong by remember { mutableStateOf(state.pomodorosBeforeLongBreak.toFloat()) }
@@ -310,12 +295,11 @@ ration by remember { mutableStateOf(state.workDuration.toFloat(
         title = { Text("Настройки Pomodoro") },
         text = {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { SettingSlider("Работа (мин)", workDuration, 1f..90f) { workDuration = it } }
-                item { SettingSlider("Короткий перерыв (мин)", shortBreak, 1f..30f) { shortBreak = it } }
-                item { SettingSlider("Длинный перерыв (мин)", longBreak, 1f..60f) { longBreak = it } }
-                item { SettingSlider("Помодоро до длинного перерыва", beforeLong, 2f..10f) { beforeLong = it } }
-//                                                 
-                item { SettingSlider("Дневная цель (помодоро)", dailyGoal, 1f..30f) { dailyGoal = it } }
+                item { SettingSlider("Работа (мин)", workDuration, 1f..90f, workDuration.toFloat()) { workDuration = it } }
+                item { SettingSlider("Короткий перерыв (мин)", shortBreak, 1f..30f, shortBreak.toFloat()) { shortBreak = it } }
+                item { SettingSlider("Длинный перерыв (мин)", longBreak, 1f..60f, longBreak.toFloat()) { longBreak = it } }
+                item { SettingSlider("Помодоро до длинного перерыва", beforeLong, 2f..10f, beforeLong.toFloat()) { beforeLong = it } }
+                item { SettingSlider("Дневная цель (помодоро)", dailyGoal, 1f..30f, dailyGoal.toFloat()) { dailyGoal = it } }
                 item { SettingSwitch("Авто-старт перерывов", autoStartBreaks) { autoStartBreaks = it } }
                 item { SettingSwitch("Авто-старт работы", autoStartPomodoros) { autoStartPomodoros = it } }
                 item { SettingSwitch("Звук уведомления", sound) { sound = it } }
@@ -325,9 +309,7 @@ ration by remember { mutableStateOf(state.workDuration.toFloat(
         confirmButton = {
             TextButton(onClick = {
                 viewModel.updateSettings(
- 
-                   workDuration = workDuratio
-n.toInt(),
+                    workDuration = workDuration.toInt(),
                     shortBreakDuration = shortBreak.toInt(),
                     longBreakDuration = longBreak.toInt(),
                     pomodorosBeforeLongBreak = beforeLong.toInt(),
@@ -344,18 +326,17 @@ n.toInt(),
 }
 
 @Composable
-private fun SettingSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, onChange: (Float) -> Unit) {
+private fun SettingSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, displayValue: Float, onChange: (Float) -> Unit) {
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(label, style = MaterialTheme.typography.bodyMedium)
-            Text("${value.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Text("${displayValue.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
         }
         Slider(value = value, onValueChange = onChange, valueRange = range, modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-//                                                
 private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         Text(label, style = MaterialTheme.typography.bodyMedium)
@@ -370,12 +351,10 @@ private fun TaskPickerDialog(state: FocusUiState, viewModel: FocusViewModel) {
 
     AlertDialog(
         onDismissRequest = viewModel::hideTaskPicker,
-        title =
- { Text("Выбрать задачу") },
+        title = { Text("Выбрать задачу") },
         text = {
             Column {
-     
-           OutlinedTextField(
+                OutlinedTextField(
                     value = search,
                     onValueChange = { search = it },
                     placeholder = { Text("Поиск...") },
@@ -401,5 +380,4 @@ private fun TaskPickerDialog(state: FocusUiState, viewModel: FocusViewModel) {
             }
         },
         confirmButton = { TextButton(onClick = viewModel::hideTaskPicker) { Text("Закрыть") } }
-    )
-}
+    )��
