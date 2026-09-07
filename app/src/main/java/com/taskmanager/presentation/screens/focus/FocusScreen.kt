@@ -30,7 +30,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,8 +39,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextB
-utton
+//                                    
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,10 +89,10 @@ fun FocusScreen(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
+//                        
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("
-Фокус", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text("Фокус", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 IconButton(onClick = viewModel::showSettingsDialog) {
                     Icon(Icons.Filled.Settings, contentDescription = "Настройки")
                 }
@@ -141,6 +140,7 @@ fun FocusScreen(
                     progress = { progress },
                     modifier = Modifier.fillMaxSize(),
                     strokeWidth = 10.dp,
+//         
                     color = animatedColor
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -185,11 +185,11 @@ fun FocusScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = animatedColor),
                 ) {
                     Icon(
+//                                          
                         if (state.isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                         contentDescription = null
                     )
-                    Spacer(Modifier.wi
-dth(4.dp))
+                    Spacer(Modifier.width(4.dp))
                     Text(if (state.isRunning) "Пауза" else "Старт")
                 }
                 OutlinedButton(onClick = { viewModel.skip() }) {
@@ -241,6 +241,7 @@ private fun CycleIndicator(current: Int, total: Int, color: Color) {
                 modifier = Modifier
                     .size(if (isActive) 16.dp else 12.dp)
                     .clip(CircleShape)
+//                                                                      
                     .background(if (isActive) color else color.copy(alpha = 0.2f))
             )
         }
@@ -251,8 +252,7 @@ private fun CycleIndicator(current: Int, total: Int, color: Color) {
 private fun StatsCard(stats: com.taskmanager.domain.usecase.pomodoro.PomodoroStats, dailyGoal: Int) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(con
-tainerColor = AppTheme.colors.surface),
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -276,6 +276,7 @@ tainerColor = AppTheme.colors.surface),
             Spacer(Modifier.height(4.dp))
             Text("Цель: $dailyGoal помодоро в день", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
             LinearProgressIndicator(
+//          
                 progress = { goalProgress },
                 modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
                 color = Color(0xFFE85D04),
@@ -302,11 +303,12 @@ private fun PomodoroSettingsDialog(state: FocusUiState, viewModel: FocusViewMode
         title = { Text("Настройки Pomodoro") },
         text = {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { SettingSlider("Работа (мин)", workDuration, 1f..90f) { workDuration = it } }
-                item { SettingSlider("Короткий перерыв (мин)", shortBreak, 1f..30f) { shortBreak = it } }
-                item { SettingSlider("Длинный перерыв (мин)", longBreak, 1f..60f) { longBreak = it } }
-                item { SettingSlider("Помодоро до длинного перерыва", beforeLong, 2f..10f) { beforeLong = it } }
-                item { SettingSlider("Дневная цель (помодоро)", dailyGoal, 1f..30f) { dailyGoal = it } }
+                item { SettingSlider("Работа (мин)", workDuration, 1f..90f, workDuration.toFloat()) { workDuration = it } }
+                item { SettingSlider("Короткий перерыв (мин)", shortBreak, 1f..30f, shortBreak.toFloat()) { shortBreak = it } }
+                item { SettingSlider("Длинный перерыв (мин)", longBreak, 1f..60f, longBreak.toFloat()) { longBreak = it } }
+                item { SettingSlider("Помодоро до длинного перерыва", beforeLong, 2f..10f, beforeLong.toFloat()) { beforeLong = it } }
+                item { SettingSlider("Дневная цель (помодоро)", dailyGoal, 1f..30f, dailyGoal.toFloat()) { dailyGoal = it } }
+//           
                 item { SettingSwitch("Авто-старт перерывов", autoStartBreaks) { autoStartBreaks = it } }
                 item { SettingSwitch("Авто-старт работы", autoStartPomodoros) { autoStartPomodoros = it } }
                 item { SettingSwitch("Звук уведомления", sound) { sound = it } }
@@ -334,11 +336,11 @@ private fun PomodoroSettingsDialog(state: FocusUiState, viewModel: FocusViewMode
 }
 
 @Composable
-private fun SettingSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, onChange: (Float) -> Unit) {
+private fun SettingSlider(label: String, value: Float, range: ClosedFloatingPointRange<Float>, displayValue: Float, onChange: (Float) -> Unit) {
     Column {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(label, style = MaterialTheme.typography.bodyMedium)
-            Text("${value.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Text("${displayValue.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
         }
         Slider(value = value, onValueChange = onChange, valueRange = range, modifier = Modifier.fillMaxWidth())
     }
@@ -346,6 +348,7 @@ private fun SettingSlider(label: String, value: Float, range: ClosedFloatingPoin
 
 @Composable
 private fun SettingSwitch(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+//                                                       
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         Text(label, style = MaterialTheme.typography.bodyMedium)
         Switch(checked = checked, onCheckedChange = onChange)
