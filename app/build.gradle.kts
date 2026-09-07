@@ -75,8 +75,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
- 
-       }
+        }
     }
 }
 
@@ -113,8 +112,6 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-
-
     // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
@@ -130,7 +127,6 @@ dependencies {
     // Core library desugaring (java.time on minSdk 24)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-
     // Leak detection (debug only) — issue 42
     debugImplementation(libs.leakcanary)
 
@@ -140,8 +136,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.agent.jvm)
     testImplementation(libs.turbine)
-    testImplementation(l
-ibs.room.testing)
+    testImplementation(libs.room.testing)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -41,10 +41,12 @@ jobs:
       - name: Report test errors
         if: always()
         run: |
-          echo "=== ALL ERROR LINES ==="
-          grep -iE "error|fail|exception|could not|cannot|unresolved|what went wrong|caused by|requires|compileSdk|compile against|aar metadata" /tmp/test-output.log | head -80 | while IFS= read -r line; do echo "::error::${line}"; done
-          echo "=== FULL LOG (last 150 lines) ==="
-          tail -150 /tmp/test-output.log | while IFS= read -r line; do echo "${line}"; done
+          echo "=== COMPILE ERRORS ==="
+          grep -iE "^e: |error:|Caused by:|ScriptCompilation|requires|compileSdk" /tmp/test-output.log | head -40 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== FAILED TESTS ==="
+          grep -iE "FAILED|FAILURE|BUILD FAILED" /tmp/test-output.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== LAST 150 LINES ==="
+          tail -150 /tmp/test-output.log
 
       - name: Upload test log
         if: always()
@@ -59,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -81,10 +83,14 @@ jobs:
       - name: Report build errors
         if: always()
         run: |
-          echo "=== ALL ERROR LINES ==="
-          grep -iE "error|fail|exception|could not|cannot|unresolved|what went wrong|caused by|requires|compileSdk|compile against|aar metadata" /tmp/build-output.log | head -80 | while IFS= read -r line; do echo "::error::${line}"; done
-          echo "=== FULL LOG (last 150 lines) ==="
-          tail -150 /tmp/build-output.log | while IFS= read -r line; do echo "${line}"; done
+          echo "=== COMPILE ERRORS ==="
+          grep -iE "^e: |error:|Caused by:|ScriptCompilation|requires|compileSdk" /tmp/build-output.log | head -40 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== KAPT ERRORS ==="
+          grep -iE "kapt|annotation processor|warning.*schema" /tmp/build-output.log | head -20 | while IFS= read -r line; do echo "::warning::$line"; done
+          echo "=== BUILD FAILED ==="
+          grep -iE "FAILED|FAILURE|BUILD FAILED|error:" /tmp/build-output.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== LAST 150 LINES ==="
+          tail -150 /tmp/build-output.log
 
       - name: Upload build log
         if: always()
@@ -110,7 +116,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
@@ -120,3 +126,5 @@ jobs:
       - name: Check for dependency updates
         run: |
           echo "Checking for dependency updates..."
+          # TODO: uncomment when dependencyUpdates plugin is configured
+          # ./gradlew dependencyUpdates
