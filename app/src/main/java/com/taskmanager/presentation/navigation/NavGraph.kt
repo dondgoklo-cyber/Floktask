@@ -1,6 +1,7 @@
 package com.taskmanager.presentation.navigation
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.BarChart
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.ViewKanban
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -53,6 +56,9 @@ import com.taskmanager.presentation.screens.settings.SettingsScreen
 import com.taskmanager.presentation.screens.tags.TagsScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
 import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
+import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.presentation.theme.Spacing
 
 @Composable
 fun NavGraph() {
@@ -62,7 +68,11 @@ fun NavGraph() {
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = AppTheme.colors.surface,
+                tonalElevation = 0.dp,
+                modifier = Modifier
+            ) {
                 Screen.bottomNavItems.forEach { screen ->
                     val selected =
                         currentDestination?.hierarchy?.any { it.route == screen.route } == true
@@ -77,8 +87,26 @@ fun NavGraph() {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(screen.icon, contentDescription = null) },
-                        label = { Text(stringResource(screen.labelRes)) }
+                        icon = {
+                            Icon(
+                                screen.icon,
+                                contentDescription = null,
+                                modifier = Modifier
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(screen.labelRes),
+                                style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = AppTheme.colors.primary,
+                            selectedTextColor = AppTheme.colors.primary,
+                            indicatorColor = AppTheme.colors.primaryContainer.copy(alpha = 0.3f),
+                            unselectedIconColor = AppTheme.colors.onSurfaceVariant,
+                            unselectedTextColor = AppTheme.colors.onSurfaceVariant
+                        )
                     )
                 }
             }
