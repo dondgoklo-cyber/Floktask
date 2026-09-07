@@ -67,26 +67,25 @@ jobs:
           fi
           echo "Found APK: $APK"
           ls -lh "$APK"
-          cp "$APK" release/WOLFTASK-v1.2.0.apk
+          cp "$APK" release/WOLFTASK-v1.2.1.apk
 
       - name: Upload APK Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: WOLFTASK-release-apk
-          path: release/WOLFTASK-v1.2.0.apk
+          path: release/WOLFTASK-v1.2.1.apk
           retention-days: 30
 
       - name: Delete old releases
         if: success()
         run: |
-          # Delete all old prerelease releases
           gh release list --json tagName,isPrerelease --limit 50 --jq '.[] | select(.isPrerelease == true) | .tagName' 2>/dev/null | while read -r tag; do
             echo "Deleting prerelease: $tag"
             gh release delete "$tag" --yes --cleanup-tag 2>/dev/null || true
           done
-          # Delete existing v1.2.0 release (to recreate fresh)
           gh release delete v1.2.0 --yes --cleanup-tag 2>/dev/null || true
+          gh release delete v1.2.1 --yes --cleanup-tag 2>/dev/null || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -94,21 +93,20 @@ jobs:
         if: success()
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2.0
-          name: WOLFTASK v1.2.0
+          tag_name: v1.2.1
+          name: WOLFTASK v1.2.1
           body: |
-            # WOLFTASK v1.2.0
+            # WOLFTASK v1.2.1
 
             Свежая сборка из ветки main.
 
             ## Что нового
-            - Переподключены все экраны к навигации (18 маршрутов)
-            - Pomodoro-таймер, Календарь, Привычки, Канбан, Эйзенхауэр, Проекты, Финансы, Заметки
-            - Release-сборка без LeakCanary
-            - Версия 1.2.0
+            - Исправлен crash экранов Финансы и Заметки
+            - Миграция БД 16->17: пересоздание таблиц с правильной схемой
+            - Все экраны работают: Сегодня, Входящие, Календарь, Привычки, Финансы, Заметки, Канбан, Эйзенхауэр, Фокус, Поиск, Проекты, Предстоящие
 
             ## Скачать
-            Скачайте WOLFTASK-v1.2.0.apk ниже
+            Скачайте WOLFTASK-v1.2.1.apk ниже
 
             ## Установка
             1. Скачайте APK-файл
@@ -117,7 +115,7 @@ jobs:
             4. Готово!
 
             ---
-            Прямая ссылка: https://github.com/dondgoklo-cyber/Floktask/releases/download/v1.2.0/WOLFTASK-v1.2.0.apk
+            Прямая ссылка: https://github.com/dondgoklo-cyber/Floktask/releases/download/v1.2.1/WOLFTASK-v1.2.1.apk
           prerelease: false
-          files: release/WOLFTASK-v1.2.0.apk
+          files: release/WOLFTASK-v1.2.1.apk
           fail_on_unmatched_files: true

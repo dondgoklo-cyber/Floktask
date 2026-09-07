@@ -14,8 +14,8 @@ android {
         applicationId = "com.taskmanager"
         minSdk = 24
         targetSdk = 34
-        versionCode = 10200
-        versionName = "1.2.0"
+        versionCode = 10201
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -39,10 +39,6 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
-            // Используем debug-подпись, если keystore secrets не настроены.
-            // Это позволяет собирать release-APK без LeakCanary для sideloading.
-            // При настройке secrets (ANDROID_SIGNING_*) переключите на:
-            //   signingConfig = signingConfigs.getByName("release")
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = false
             proguardFiles(
@@ -81,19 +77,14 @@ android {
 }
 
 dependencies {
-    // Kotlin / Coroutines
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-
-    // AndroidX Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
-
-    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -102,36 +93,20 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
-    // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-
-    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-
-    // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
-
-    // Timber
     implementation(libs.timber)
-
-    // Security
     implementation("androidx.security:security-crypto:1.0.0")
-
-    // Core library desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-
-    // Leak detection (debug only)
     debugImplementation(libs.leakcanary)
-
-    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
