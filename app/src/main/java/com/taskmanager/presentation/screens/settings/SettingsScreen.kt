@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Person
@@ -48,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.usecase.settings.UserPreferences
 import com.taskmanager.presentation.theme.AppTheme
+import com.taskmanager.presentation.theme.LocalThemeController
 import com.taskmanager.presentation.components.AppTextButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.Radius
@@ -70,6 +74,7 @@ fun SettingsScreen(
     var showRemovePinDialog by remember { mutableStateOf(false) }
     var hapticEnabled by remember { mutableStateOf(userPreferences.hapticEnabled) }
     var baseCurrency by remember { mutableStateOf(userPreferences.baseCurrency) }
+    val themeController = LocalThemeController.current
 
     if (showPinScreen != null) {
         PinScreen(
@@ -165,6 +170,36 @@ fun SettingsScreen(
                     )
                 }
             )
+
+            // Тема приложения
+            Text(
+                "Тема приложения",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = Spacing.sm)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+            ) {
+                FilterChip(
+                    selected = themeController.mode == "SYSTEM",
+                    onClick = { themeController.onChange("SYSTEM") },
+                    label = { Text("Системная") }
+                )
+                FilterChip(
+                    selected = themeController.mode == "LIGHT",
+                    onClick = { themeController.onChange("LIGHT") },
+                    leadingIcon = { Icon(Icons.Filled.LightMode, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                    label = { Text("Светлая") }
+                )
+                FilterChip(
+                    selected = themeController.mode == "DARK",
+                    onClick = { themeController.onChange("DARK") },
+                    leadingIcon = { Icon(Icons.Filled.DarkMode, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                    label = { Text("Тёмная") }
+                )
+            }
 
             // Безопасность
             Text(
@@ -271,7 +306,7 @@ fun SettingsScreen(
                 subtitle = stringResource(R.string.export_data),
                 icon = Icons.Filled.Upload,
                 enabled = !state.isExporting,
-                onClick = { exportLauncher.launch("taskmanager_backup_${System.currentTimeMillis()}.json") }
+                onClick = { exportLauncher.launch("taskmanager_backup_" + System.currentTimeMillis() + ".json") }
             )
             SettingsCard(
                 title = stringResource(R.string.import_json),

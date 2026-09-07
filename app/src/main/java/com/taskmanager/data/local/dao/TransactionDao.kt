@@ -36,23 +36,24 @@ interface TransactionDao {
     suspend fun deleteById(id: Long)
 
     // TRANSFER excluded from income/expense calculations
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'INCOME' AND date BETWEEN :from AND :to")
+    // CAST(amount AS REAL) ensures correct numeric SUM even though amount is stored as TEXT (BigDecimal)
+    @Query("SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) FROM transactions WHERE type = 'INCOME' AND date BETWEEN :from AND :to")
     fun getIncomeForPeriod(from: Long, to: Long): Flow<Double>
 
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'EXPENSE' AND date BETWEEN :from AND :to")
+    @Query("SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) FROM transactions WHERE type = 'EXPENSE' AND date BETWEEN :from AND :to")
     fun getExpenseForPeriod(from: Long, to: Long): Flow<Double>
 
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'INCOME'")
+    @Query("SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) FROM transactions WHERE type = 'INCOME'")
     fun getTotalIncome(): Flow<Double>
 
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'EXPENSE'")
+    @Query("SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) FROM transactions WHERE type = 'EXPENSE'")
     fun getTotalExpense(): Flow<Double>
 
     // Per-currency queries for multi-currency dashboard
-    @Query("SELECT currency, COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'INCOME' GROUP BY currency")
+    @Query("SELECT currency, COALESCE(SUM(CAST(amount AS REAL)), 0) as total FROM transactions WHERE type = 'INCOME' GROUP BY currency")
     fun getTotalIncomeByCurrency(): Flow<List<CurrencyTotal>>
 
-    @Query("SELECT currency, COALESCE(SUM(amount), 0) as total FROM transactions WHERE type = 'EXPENSE' GROUP BY currency")
+    @Query("SELECT currency, COALESCE(SUM(CAST(amount AS REAL)), 0) as total FROM transactions WHERE type = 'EXPENSE' GROUP BY currency")
     fun getTotalExpenseByCurrency(): Flow<List<CurrencyTotal>>
 
     @Query("SELECT DISTINCT currency FROM transactions")
