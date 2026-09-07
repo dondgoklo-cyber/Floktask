@@ -43,8 +43,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         UserStatsEntity::class,
         SubtaskEntity::class,
         HabitEntity::class,
-        HabitLogEnt
-ity::class,
+        HabitLogEntity::class,
         PomodoroSessionEntity::class,
         TransactionEntity::class,
         CategoryEntity::class,
