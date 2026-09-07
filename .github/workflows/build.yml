@@ -5,17 +5,16 @@ on:
   push:
     branches: [ main ]
 
-permissions:
-  contents: write
-
 concurrency:
-  group: build-apk-${{ github.ref }}
+  group: build-release-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     name: Build Debug APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -28,35 +27,25 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.2
-
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: ./gradlew assembleDebug --stacktrace --no-daemon --console=plain
         env:
-          GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g"
+          GRADLE_OPTS: "-Xmx4g"
 
       - name: Find and copy APK
-        id: find_apk
         run: |
-          echo "=== Searching for APK files ==="
-          find . -name "*.apk" -type f 2>/dev/null || true
-          echo "=== Searching in build/outputs ==="
-          find app/build/outputs -type f 2>/dev/null || echo "No outputs directory"
-          APK_PATH=$(find app/build/outputs -name "*.apk" -type f | head -1)
-          if [ -z "$APK_PATH" ]; then
-            echo "::error::No APK found after assembleDebug"
+          mkdir -p release
+          APK=$(find app/build/outputs -name "*.apk" -type f | head -1)
+          if [ -z "$APK" ]; then
+            echo "::error::No APK found!"
             exit 1
           fi
-          echo "Found APK: $APK_PATH"
-          mkdir -p release
-          cp "$APK_PATH" release/TaskManager-v1.1.1-debug.apk
-          echo "APK size: $(du -h release/TaskManager-v1.1.1-debug.apk | cut -f1)"
+          echo "Found APK: $APK"
+          ls -lh "$APK"
+          cp "$APK" release/TaskManager-v1.1.1-debug.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
@@ -68,15 +57,15 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1.1-ci
-          name: TaskManager v1.1.1 (Debug)
+          tag_name: v1.1.1-ci-${{ github.run_number }}
+          name: TaskManager v1.1.1 Debug (CI #${{ github.run_number }})
           body: |
-            ## Floktask v1.1.1 - Smart Task Manager
+            ## Floktask v1.1.1 Debug Build
 
-            **Build:** #${{ github.run_number }}
+            **Build:** CI run #${{ github.run_number }}
             **Commit:** ${{ github.sha }}
 
-            ### How to install
+            **How to install:**
             1. Download TaskManager-v1.1.1-debug.apk
             2. Open on Android device (7.0+)
             3. Allow installation from unknown sources
