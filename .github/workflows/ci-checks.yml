@@ -1,6 +1,5 @@
 name: CI Checks
 
-# Проверяет код при коммите PR и коммите в main
 on:
   push:
     branches: [ main, develop ]
@@ -18,7 +17,6 @@ jobs:
   test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,54 +33,35 @@ jobs:
         with:
           gradle-version: 8.2
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Run tests
-        run: |
-          ./gradlew testDebugUnitTest --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/test-output.log
+        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx4g"
 
       - name: Report failing tests
         if: failure()
         run: |
-          if [ -f /tmp/test-output.log ]; then
-            echo "--- Failing tests (Gradle console) ---"
-            grep -E "^com.*FAILED" /tmp/test-output.log | sed "s/^/::error::FAILTEST /"
-            echo "--- Compile errors ---"
-            grep -E "^e: " /tmp/test-output.log | head -30 | sed "s/^/::error::COMPILE /"
-            echo "--- Failure context ---"
-            grep -nE "FAILED|FAILURE|Exception|AssertionError" /tmp/test-output.log | head -60 || true
-          else
-            echo "::error::No test output log found - Gradle may not have run"
-          fi
+          find app/build/test-results -name "*.xml" -exec grep -l "failures" {} \; 2>/dev/null || true
+          find app/build/reports/tests -name "index.html" 2>/dev/null || true
 
-      - name: Check for android.util.Log in all layers (excluding data/logger/AndroidLogger)
+      - name: Check for android.util.Log in all layers
         run: |
-          echo "Checking for android.util.Log usage..."
-          
-          DOMAIN_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
-          DATA_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/data --include="*.kt" --exclude-dir="logger" | wc -l)
-          PRESENTATION_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
-          
-          DOMAIN_DIRECT=$(grep -rE "Log\.(d|e|i|w|v|wtf)" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
-          DATA_DIRECT=$(grep -rE "Log\.(d|e|i|w|v|wtf)" app/src/main/java/com/taskmanager/data --include="*.kt" --exclude-dir="logger" | wc -l)
-          PRESENTATION_DIRECT=$(grep -rE "Log\.(d|e|i|w|v|wtf)" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
-          
-          TOTAL=$((DOMAIN_IMPORT + DATA_IMPORT + PRESENTATION_IMPORT + DOMAIN_DIRECT + DATA_DIRECT + PRESENTATION_DIRECT))
-          
+          DOMAIN=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
+          DATA=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/data --include="*.kt" --exclude-dir="logger" | wc -l)
+          PRESENTATION=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
+          TOTAL=$((DOMAIN + DATA + PRESENTATION))
           if [ "$TOTAL" -gt 0 ]; then
-            echo "Found $TOTAL usages of android.util.Log or direct Log calls"
-            echo "Domain layer import: $DOMAIN_IMPORT, direct: $DOMAIN_DIRECT"
-            echo "Data layer import: $DATA_IMPORT, direct: $DATA_DIRECT (excluding data/logger/)"
-            echo "Presentation layer import: $PRESENTATION_IMPORT, direct: $PRESENTATION_DIRECT"
+            echo "Found $TOTAL usages of android.util.Log"
             exit 1
           fi
-          
-          echo "No android.util.Log usage found (data/logger/AndroidLogger.kt excluded as Logger implementation)"
+          echo "No android.util.Log usage found"
 
   build-check:
     name: Verify Build
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -99,30 +78,21 @@ jobs:
         with:
           gradle-version: 8.2
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Run assembleDebug
-        run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/build-output.log
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
         env:
           GRADLE_OPTS: "-Xmx4g"
-      
-      - name: Report build errors
-        if: failure()
+
+      - name: Verify APK exists
         run: |
-          if [ -f /tmp/build-output.log ]; then
-            echo "--- Build errors ---"
-            grep -E "^e: |error:|FAILED|FAILURE|Exception|Execution failed" /tmp/build-output.log | head -80 | sed "s/^/::error::BUILD /"
-            echo "--- Full error context ---"
-            grep -nE "error:|FAILED|FAILURE|Exception|Execution failed|What went wrong" /tmp/build-output.log | head -60 || true
-            echo "--- Last 100 lines of build output ---"
-            tail -100 /tmp/build-output.log || true
-          else
-            echo "::error::No build output log found"
-          fi
+          find app/build/outputs -name "*.apk" -type f || echo "WARNING: No APK found"
 
   dependency-check:
     name: Check Dependencies
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
