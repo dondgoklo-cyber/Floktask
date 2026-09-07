@@ -108,8 +108,8 @@ fun TaskDetailSheet(
                     onEdit = { onEdit(task.id ?: 0) },
                     onStartFocus = { onStartFocus(task.id ?: 0) },
                     onAddSubtask = { title, parentId -> viewModel.addSubtask(task.id ?: 0, title, parentId) },
-                    onToggleSubtask = { viewModel.toggleSubtask(it) },
-                    onDeleteSubtask = { viewModel.deleteSubtask(it) },
+                    onToggleSubtask = { subtask -> viewModel.toggleSubtask(subtask) },
+                    onDeleteSubtask = { subtask -> viewModel.deleteSubtask(subtask.id ?: 0) },
                     onReorderSubtask = { from, to ->
                         viewModel.reorderSubtasks(task.id ?: 0, listOf(from.toLong(), to.toLong()))
                     },
