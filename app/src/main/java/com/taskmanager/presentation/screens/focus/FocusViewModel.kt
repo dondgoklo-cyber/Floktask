@@ -102,7 +102,7 @@ class FocusViewModel @Inject constructor(
                 getPomodoroStatsUseCase().collect { stats ->
                     _state.value = _state.value.copy(
                         stats = stats,
-/
+//
        
                  completedPomodoros = stats.todayCount
                     )
@@ -165,7 +165,7 @@ class FocusViewModel @Inject constructor(
     fun reset() {
         timerJob?.cancel()
         applyDurationForType(_state.value.type)
-//                                         
+//                                        
         _state.value = _state.value.copy(isRunning = false)
     }
 
