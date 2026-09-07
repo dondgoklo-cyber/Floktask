@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kapt)
     alias(libs.plugins.hilt)
 }
@@ -13,7 +14,7 @@ android {
         applicationId = "com.taskmanager"
         minSdk = 24
         targetSdk = 34
-        versionCode = 10101  // major*10000 + minor*100 + patch = 1*10000 + 1*100 + 1 = 10101
+        versionCode = 10101
         versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -68,10 +69,6 @@ android {
         viewBinding = false
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -124,7 +121,7 @@ dependencies {
     // Security
     implementation("androidx.security:security-crypto:1.0.0")
 
-    // Core library desugaring (java.time on minSdk 24)
+    // Core library desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     // Leak detection (debug only)
