@@ -35,12 +35,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.presentation.theme.AppTheme
-import com.taskmanager.presentation.theme.Radius
+import com.taskmanager.presentatio
+n.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,7 +94,8 @@ fun InsightsScreen(
                             modifier = Modifier.weight(1f),
                             icon = Icons.Filled.Task,
                             iconColor = AppTheme.colors.primary,
-                            value = state.totalTasks.toString(),
+                            
+value = state.totalTasks.toString(),
                             label = "Всего задач"
                         )
                         StatCard(
@@ -132,7 +135,8 @@ fun InsightsScreen(
                             ) {
                                 LinearProgressIndicator(
                                     progress = { state.completionRate },
-                                    modifier = Modifier.weight(1f).clip(RoundedCornerShape(Radius.full)),
+ 
+                                   modifier = Modifier.weight(1f).clip(RoundedCornerShape(Radius.full)),
                                     color = AppTheme.colors.primary,
                                     trackColor = AppTheme.colors.surfaceVariant
                                 )
@@ -165,7 +169,8 @@ fun InsightsScreen(
                         Column(modifier = Modifier.fillMaxWidth().padding(Spacing.lg), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                             PriorityBar(label = "Высокий", count = state.highPriorityTasks, total = state.pendingTasks, color = AppTheme.colors.error)
                             PriorityBar(label = "Средний", count = state.mediumPriorityTasks, total = state.pendingTasks, color = AppTheme.colors.warning)
-                            PriorityBar(label = "Низкий", count = state.lowPriorityTasks, total = state.pendingTasks, color = AppTheme.colors.success)
+                            PriorityBar(label = "Низкий", count = state.lowPriorityTasks, total = state.pending
+Tasks, color = AppTheme.colors.success)
                         }
                     }
                 }
@@ -211,7 +216,8 @@ fun InsightsScreen(
                 // Gamification
                 item {
                     Text(
-                        "Достижения",
+        
+                "Достижения",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = Spacing.sm, bottom = Spacing.sm)
@@ -261,7 +267,8 @@ private fun StatCard(
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        shape = RoundedCornerShape(Radius.lg)
+  
+      shape = RoundedCornerShape(Radius.lg)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(Spacing.md),
