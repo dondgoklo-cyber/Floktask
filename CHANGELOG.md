@@ -1,44 +1,41 @@
 # CHANGELOG
 
-All notable changes to WOLFTASK (Floktask) project.
+Все заметные изменения проекта WOLFTASK (Floktask).
 
-## [Unreleased]
-
-### Refactoring
-- Add Logger interface to replace android.util.Log in domain layer
-- All UseCase now use Logger for logging
-- Add TestLogger for unit testing
-- Update mockk to version 1.13.9
-- Add mockk-agent-jvm dependency
-
-### Testing
-- Fix and update all unit tests
-- Add comprehensive tests for Logger
-- Add TestModule for DI in tests
-- Enable unit tests in CI pipeline
+## [v1.2.0] - 2026-09-07
 
 ### Features
-- Add Paging3 support for large lists
-- Repositories now return Flow<PagingData<T>> for paginated queries
+- Переподключены все 18 экранов к навигации (Today, Inbox, Calendar, Habits, More,
+  Focus, Insights, Projects, Finance, Notes, Kanban, Eisenhower, Search, Upcoming,
+  Tags, Profile, Settings, ProjectDetail)
+- Нижнее меню: Сегодня - Входящие - Календарь - Привычки - Ещё
+- FocusScreen: реальный Pomodoro-таймер с круговым прогрессом
+- InsightsScreen: Scaffold + EmptyState вместо заглушки
+- MoreScreen: 3 секции (Обзор / Рабочее пространство / Аккаунт)
+
+### CI/CD
+- build.yml: release-APK (assembleRelease) в GitHub Releases на каждый push в main
+- release-build.yml: удалён (вызывал красные воркфлоу без keystore secrets)
+- build.yml: автоматическая очистка старых prerelease-релизов
+- ci-checks.yml: unit-тесты + сборка + проверка зависимостей на PR/push
+
+### Documentation
+- README обновлён: правильный стек (Kotlin 2.0.20, Hilt 2.51.1, AGP 8.5.2),
+  навигация, все модули, ссылка на releases/latest
+- proguard-rules.pro: расширены keep-правила (Coroutines, Coil, Compose, domain models)
+
+### Build
+- build.gradle.kts: release buildType с debug-подписью (без keystore secrets),
+  isMinifyEnabled=false, версия 1.2.0 (versionCode 10200)
 
 ---
 
-## [v1.2.1] - 2026-09-02
-
-### Fixed
-- Various bug fixes and improvements
-
-## [v1.2.0] - 2026-09-02
-
-### Added
-- Additional features and improvements
-
-## [v1.1.0] - 2026-09-02
+## [v1.1.0] - 2026-09-01
 
 ### Added
 - Core functionality improvements
 
-## [v1.0.0-debug] - 2026-09-02
+## [v1.0.0] - 2026-09-01
 
 ### Added
-- Initial debug release
+- Initial release

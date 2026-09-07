@@ -37,7 +37,8 @@ Productivity-приложение для Android: задачи, проекты, 
 
 Нижнее меню: **Сегодня · Входящие · Календарь · Привычки · Ещё**
 
-Экран «Ещё» содержит: Поиск, Аналитика, Фокус, Проекты, Финансы, Заметки,
+Экран «Ещё» содержит: Поиск, Аналитик
+а, Фокус, Проекты, Финансы, Заметки,
 Канбан, Теги, Матрица Эйзенхауэра, Профиль, Настройки.
 
 ## Технологии
@@ -84,11 +85,11 @@ app/src/main/java/com/taskmanager/
 ./gradlew testDebugUnitTest    # unit-тесты
 ```
 
-## CI/CD
+## C
+I/CD
 
 - **ci-checks.yml** — unit-тесты и сборка на каждый PR/push
 - **build.yml** — release-APK в GitHub Releases на каждый push в main
-- **release-build.yml** — production-сборка с keystore по git-тегу v*
 
 ## Скачать
 
