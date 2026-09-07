@@ -32,14 +32,21 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run tests
-        run: ./gradlew testDebugUnitTest --stacktrace --no-daemon --console=plain
+        run: |
+          ./gradlew testDebugUnitTest --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/test-output.log
+          exit ${PIPESTATUS[0]}
         env:
           GRADLE_OPTS: "-Xmx4g"
 
-      - name: Report failures
+      - name: Report test errors
         if: failure()
         run: |
-          echo "::error::Unit tests failed. Check workflow logs for details."
+          echo "=== COMPILE ERRORS ==="
+          grep -E "^e: " /tmp/test-output.log | head -30 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== FAILED TESTS ==="
+          grep -E "FAILED|FAILURE|BUILD FAILED" /tmp/test-output.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== LAST 80 LINES ==="
+          tail -80 /tmp/test-output.log
 
   build-check:
     name: Verify Build
@@ -59,11 +66,26 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run assembleDebug
-        run: ./gradlew assembleDebug --stacktrace --no-daemon --console=plain
+        run: |
+          ./gradlew assembleDebug --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/build-output.log
+          exit ${PIPESTATUS[0]}
         env:
           GRADLE_OPTS: "-Xmx4g"
 
+      - name: Report build errors
+        if: failure()
+        run: |
+          echo "=== COMPILE ERRORS ==="
+          grep -E "^e: " /tmp/build-output.log | head -30 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== KAPT ERRORS ==="
+          grep -E "kapt|annotation processor|warning.*schema" /tmp/build-output.log | head -20 | while IFS= read -r line; do echo "::warning::$line"; done
+          echo "=== BUILD FAILED ==="
+          grep -E "FAILED|FAILURE|BUILD FAILED|error:" /tmp/build-output.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== LAST 80 LINES ==="
+          tail -80 /tmp/build-output.log
+
       - name: Verify APK exists
+        if: success()
         run: |
           APK=$(find app/build/outputs -name "*.apk" -type f | head -1)
           if [ -z "$APK" ]; then

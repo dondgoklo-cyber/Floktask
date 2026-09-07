@@ -31,11 +31,24 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon --console=plain
+        run: |
+          ./gradlew assembleDebug --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/build-output.log
+          exit ${PIPESTATUS[0]}
         env:
           GRADLE_OPTS: "-Xmx4g"
 
+      - name: Report build errors
+        if: failure()
+        run: |
+          echo "=== COMPILE ERRORS ==="
+          grep -E "^e: " /tmp/build-output.log | head -30 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== BUILD FAILED ==="
+          grep -E "FAILED|FAILURE|BUILD FAILED|error:" /tmp/build-output.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "=== LAST 80 LINES ==="
+          tail -80 /tmp/build-output.log
+
       - name: Find and copy APK
+        if: success()
         run: |
           mkdir -p release
           APK=$(find app/build/outputs -name "*.apk" -type f | head -1)
@@ -48,6 +61,7 @@ jobs:
           cp "$APK" release/TaskManager-v1.1.1-debug.apk
 
       - name: Upload APK Artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TaskManager-debug-apk
@@ -55,6 +69,7 @@ jobs:
           retention-days: 30
 
       - name: Create Release
+        if: success()
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.1.1-ci-${{ github.run_number }}
