@@ -61,7 +61,8 @@ jobs:
           
           # Проверяем импорты — исключаем data/logger (AndroidLogger — реализация Logger)
           DOMAIN_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/domain --include="*.kt" | wc -l)
-          DATA_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/data --include="*.kt" --exclude-dir="logger" | wc -l)
+          DATA_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/
+com/taskmanager/data --include="*.kt" --exclude-dir="logger" | wc -l)
           PRESENTATION_IMPORT=$(grep -r "import android.util.Log" app/src/main/java/com/taskmanager/presentation --include="*.kt" | wc -l)
           
           # Проверяем прямые вызовы Log.d, Log.e, Log.i, Log.w, Log.v
@@ -102,12 +103,28 @@ jobs:
           gradle-version: 8.2
 
       - name: Run assembleDebug
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: |
+          ./gradlew assembleDebug --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/build-output.log
         env:
           GRADLE_OPTS: "-Xmx4g"
+      
+      - name: Report build errors
+        if: failure()
+        run: |
+          if [ -f /tmp/build-output.log ]; then
+            echo "--- Build errors ---"
+            grep -E "^e: |error:|FAILED|FAILURE|Exception|Execution failed" /tmp/build-output.log | head -80 | sed "s/^/::error::BUILD /"
+            echo "--- Full error context ---"
+            grep -nE "error:|FAILED|FAILURE|Exception|Execution failed|What went wrong" /tmp/build-output.log | head -60 || true
+            echo "--- Last 100 lines of build output ---"
+            tail -100 /tmp/build-output.log || true
+          else
+            echo "::error::No build output log found"
+          fi
 
   dependency-check:
-    name: Check Dependencies
+    name: Check Depend
+encies
     runs-on: ubuntu-latest
     
     steps:

@@ -43,7 +43,8 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         UserStatsEntity::class,
         SubtaskEntity::class,
         HabitEntity::class,
-        HabitLogEntity::class,
+        HabitLogEnt
+ity::class,
         PomodoroSessionEntity::class,
         TransactionEntity::class,
         CategoryEntity::class,
@@ -55,7 +56,7 @@ import com.taskmanager.data.local.entity.UserStatsEntity
         TaskTagEntity::class
     ],
     version = 16,
-    exportSchema = true
+    exportSchema = false
 )
 @androidx.room.TypeConverters(BigDecimalConverters::class)
 abstract class AppDatabase : RoomDatabase() {

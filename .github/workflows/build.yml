@@ -30,9 +30,24 @@ jobs:
           gradle-version: 8.2
 
       - name: Build with Gradle
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: |
+          ./gradlew assembleDebug --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/build-output.log
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.jvmargs=-Xmx4g"
+      
+      - name: Report build errors
+        if: failure()
+        run: |
+          if [ -f /tmp/build-output.log ]; then
+            echo "--- Build errors ---"
+            grep -E "^e: |error:|FAILED|FAILURE|Exception|Execution failed" /tmp/build-output.log | head -80 | sed "s/^/::error::BUILD /"
+            echo "--- Full error context ---"
+            grep -nE "error:|FAILED|FAILURE|Exception|Execution failed|What went wrong" /tmp/build-output.log | head -60 || true
+            echo "--- Last 100 lines of build output ---"
+            tail -100 /tmp/build-output.log || true
+          else
+            echo "::error::No build output log found"
+          fi
 
       - name: Rename APK
         run: |
