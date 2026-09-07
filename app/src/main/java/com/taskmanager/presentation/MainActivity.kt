@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +17,9 @@ import com.taskmanager.haptic.LocalHapticManager
 import com.taskmanager.notification.AlarmScheduler
 import com.taskmanager.presentation.navigation.NavGraph
 import com.taskmanager.presentation.screens.onboarding.OnboardingScreen
+import com.taskmanager.presentation.theme.LocalThemeController
 import com.taskmanager.presentation.theme.TaskManagerTheme
+import com.taskmanager.presentation.theme.ThemeController
 import com.taskmanager.security.PinMode
 import com.taskmanager.security.PinScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,10 +55,25 @@ class MainActivity : ComponentActivity() {
         }
         
         setContent {
-            // Provide HapticManager to all composables via CompositionLocal
-            // Without this, rememberHaptic() crashes with "No HapticManager provided"
-            CompositionLocalProvider(LocalHapticManager provides hapticManager) {
-                TaskManagerTheme {
+            // Read theme mode from preferences and track it as state
+            var themeMode by remember { mutableStateOf(userPreferences.themeMode) }
+
+            // Determine if dark theme should be used
+            val isDark = when (themeMode) {
+                "DARK" -> true
+                "LIGHT" -> false
+                else -> isSystemInDarkTheme()
+            }
+
+            // Provide HapticManager and ThemeController to all composables
+            CompositionLocalProvider(
+                LocalHapticManager provides hapticManager,
+                LocalThemeController provides ThemeController(themeMode) { newMode ->
+                    userPreferences.themeMode = newMode
+                    themeMode = newMode
+                }
+            ) {
+                TaskManagerTheme(darkTheme = isDark) {
                     val prefs = remember { getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
                     var onboardingDone by remember {
                         mutableStateOf(prefs.getBoolean(KEY_ONBOARDING_DONE, false))

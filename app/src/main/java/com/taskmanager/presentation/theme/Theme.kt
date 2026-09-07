@@ -17,6 +17,18 @@ val OrangeDark = Color(0xFFFF8C00)
 /** Локальная композиция для доступа к расширенной палитре [AppColors] из любого компонента. */
 val LocalAppColors = staticCompositionLocalOf { LightAppColors }
 
+/**
+ * Controller for app theme mode.
+ * Allows any composable (e.g. SettingsScreen) to read and change the theme.
+ */
+data class ThemeController(
+    val mode: String, // "SYSTEM", "LIGHT", or "DARK"
+    val onChange: (String) -> Unit
+)
+
+/** Provides [ThemeController] to all composables in the tree. */
+val LocalThemeController = staticCompositionLocalOf { ThemeController("SYSTEM") {} }
+
 private val LightColors = lightColorScheme(
     primary = LightAppColors.primary,
     onPrimary = LightAppColors.onPrimary,

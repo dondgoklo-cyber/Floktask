@@ -19,6 +19,9 @@ interface UserPreferences {
     
     /** Base currency for finance operations (e.g., "RUB", "USD", "EUR") */
     var baseCurrency: String
+
+    /** Theme mode: "SYSTEM" (follow system), "LIGHT", or "DARK" */
+    var themeMode: String
     
     /** Whether a PIN has been set */
     val hasPin: Boolean
