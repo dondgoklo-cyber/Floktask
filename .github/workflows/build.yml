@@ -38,14 +38,22 @@ jobs:
           GRADLE_OPTS: "-Xmx4g"
 
       - name: Report build errors
-        if: failure()
+        if: always()
         run: |
-          echo "=== COMPILE ERRORS ==="
-          grep -E "^e: " /tmp/build-output.log | head -30 | while IFS= read -r line; do echo "::error::$line"; done
-          echo "=== BUILD FAILED ==="
-          grep -E "FAILED|FAILURE|BUILD FAILED|error:" /tmp/build-output.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
-          echo "=== LAST 80 LINES ==="
-          tail -80 /tmp/build-output.log
+          echo "=== KOTLIN ERRORS (e:) ==="
+          grep -E "^e: " /tmp/build-output.log | head -50 | while IFS= read -r line; do echo "::error::${line}"; done
+          echo "=== ALL ERROR LINES ==="
+          grep -iE "error|fail|exception|could not|cannot|unresolved|what went wrong|execution failed" /tmp/build-output.log | head -50 | while IFS= read -r line; do echo "::error::${line}"; done
+          echo "=== LAST 100 LINES ==="
+          tail -100 /tmp/build-output.log | while IFS= read -r line; do echo "${line}"; done
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output-log
+          path: /tmp/build-output.log
+          retention-days: 7
 
       - name: Find and copy APK
         if: success()
