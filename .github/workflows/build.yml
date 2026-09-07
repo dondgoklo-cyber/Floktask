@@ -1,20 +1,21 @@
-name: Build APK
+name: Build & Release APK
 
 on:
   workflow_dispatch:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 concurrency:
-  group: build-apk-${{ github.ref }}
+  group: build-release
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Debug APK
+    name: Build Release APK
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout repository
@@ -30,10 +31,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build Debug APK
+      - name: Build Release APK
         run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/build-output.log
-          exit ${{ PIPESTATUS[0] }}
+          ./gradlew assembleRelease --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/build-output.log
+          exit ${PIPESTATUS[0]}
         env:
           GRADLE_OPTS: "-Xmx4g"
 
@@ -44,8 +45,8 @@ jobs:
           grep -iE "^e: |error:|Caused by:|ScriptCompilation|requires|compileSdk" /tmp/build-output.log | head -40 | while IFS= read -r line; do echo "::error::$line"; done
           echo "=== BUILD FAILED ==="
           grep -iE "FAILED|FAILURE|BUILD FAILED|error:" /tmp/build-output.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
-          echo "=== LAST 150 LINES ==="
-          tail -150 /tmp/build-output.log
+          echo "=== LAST 80 LINES ==="
+          tail -80 /tmp/build-output.log
 
       - name: Upload build log
         if: always()
@@ -55,7 +56,7 @@ jobs:
           path: /tmp/build-output.log
           retention-days: 7
 
-      - name: Find and copy APK
+      - name: Find and rename APK
         if: success()
         run: |
           mkdir -p release
@@ -66,12 +67,50 @@ jobs:
           fi
           echo "Found APK: $APK"
           ls -lh "$APK"
-          cp "$APK" release/WOLFTASK-debug.apk
+          cp "$APK" release/WOLFTASK-v1.2.0.apk
 
       - name: Upload APK Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: WOLFTASK-debug-apk
-          path: release/WOLFTASK-debug.apk
+          name: WOLFTASK-release-apk
+          path: release/WOLFTASK-v1.2.0.apk
           retention-days: 30
+
+      - name: Delete old release
+        if: success()
+        run: gh release delete v1.2.0 --yes --cleanup-tag || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.2.0
+          name: WOLFTASK v1.2.0
+          body: |
+            # 🐺 WOLFTASK v1.2.0
+
+            Свежая сборка из ветки main.
+
+            ## Что нового
+            - Переподключены все экраны к навигации (18 маршрутов)
+            - Pomodoro-таймер, Календарь, Привычки, Канбан, Эйзенхауэр, Проекты, Финансы, Заметки
+            - Release-сборка без LeakCanary
+            - Версия 1.2.0
+
+            ## Скачать
+            Скачайте **WOLFTASK-v1.2.0.apk** ниже
+
+            ## Установка
+            1. Скачайте APK-файл
+            2. Откройте его на Android-устройстве (Android 7.0+)
+            3. Разрешите установку из неизвестных источников
+            4. Готово!
+
+            ---
+            Прямая ссылка: https://github.com/dondgoklo-cyber/Floktask/releases/download/v1.2.0/WOLFTASK-v1.2.0.apk
+          prerelease: false
+          files: release/WOLFTASK-v1.2.0.apk
+          fail_on_unmatched_files: true

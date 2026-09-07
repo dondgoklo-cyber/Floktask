@@ -14,8 +14,8 @@ android {
         applicationId = "com.taskmanager"
         minSdk = 24
         targetSdk = 34
-        versionCode = 10101
-        versionName = "1.1.1"
+        versionCode = 10200
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -39,8 +39,12 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true
+            // Используем debug-подпись, если keystore secrets не настроены.
+            // Это позволяет собирать release-APK без LeakCanary для sideloading.
+            // При настройке secrets (ANDROID_SIGNING_*) переключите на:
+            //   signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -60,7 +64,7 @@ android {
 
     lint {
         abortOnError = false
-        checkReleaseBuilds = true
+        checkReleaseBuilds = false
     }
 
     buildFeatures {

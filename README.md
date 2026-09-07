@@ -1,7 +1,7 @@
-# TaskManager
+# WOLFTASK
 
 Productivity-приложение для Android: задачи, проекты, календарь с time blocking,
-привычки, Pomodoro, матрица Эйзенхауэра и статистика.
+привычки, Pomodoro, матрица Эйзенхауэра, финансы, заметки и статистика.
 Построено на **Clean Architecture + MVVM**, **Jetpack Compose**, **Room**, **Hilt**.
 
 > Статус: активная разработка. Target API 34, min SDK 24.
@@ -20,26 +20,38 @@ Productivity-приложение для Android: задачи, проекты, 
   автопереключение, привязка к задаче, статистика (день/неделя/месяц)
 - **Матрица Эйзенхауэра**: 4 квадранта, авто-распределение по importance+urgency,
   ручное переопределение через drag&drop
+- **Канбан**: доска с колонками, drag&drop задач между статусами
+- **Финансы**: учёт доходов/расходов, транзакции, категории, экспорт
+- **Заметки**: создание, папки, связь с задачами и проектами
 - **Dashboard (Today)**: приветствие, прогресс дня, ближайшие задачи,
   фокус-время, привычки, сводка (всего/выполнено/просрочено)
 - **Task Detail**: bottom sheet с progressive disclosure, подзадачи, запуск Pomodoro
 - **Quick Add**: быстрое создание с парсингом ключевых слов
   («завтра», «15:00», «на час»)
+- **Поиск**: глобальный поиск по задачам, заметкам, проектам, привычкам
 - **Дизайн-система**: централизованные design tokens (цвета, spacing, radius,
   typography), light/dark темы, semantic colors (Success/Warning/Danger/Info)
 - **Геймификация**: уровни, очки, достижения
 
+## Навигация
+
+Нижнее меню: **Сегодня · Входящие · Календарь · Привычки · Ещё**
+
+Экран «Ещё» содержит: Поиск, Аналитика, Фокус, Проекты, Финансы, Заметки,
+Канбан, Теги, Матрица Эйзенхауэра, Профиль, Настройки.
+
 ## Технологии
 
-| Категория        | Технология                |
-|-----------------|---------------------------|
-| Язык             | Kotlin 1.9.22             |
+| Категория        | Технология                    |
+|-----------------|-------------------------------|
+| Язык             | Kotlin 2.0.20                 |
 | UI               | Jetpack Compose (BOM 2024.02.00) |
-| Локальная БД     | Room 2.6.1 (v5)           |
-| DI               | Hilt 2.48                |
-| Навигация        | Navigation Compose 2.7.3  |
-| Архитектура      | Clean Architecture + MVVM |
-| Асинхронность    | Coroutines + Flow        |
+| Сборка           | AGP 8.5.2, Gradle 8.7         |
+| Локальная БД     | Room 2.6.1 (DB v16)           |
+| DI               | Hilt 2.51.1 (KSP)             |
+| Навигация        | Navigation Compose            |
+| Архитектура      | Clean Architecture + MVVM     |
+| Асинхронность    | Coroutines + Flow             |
 
 ## Структура
 
@@ -59,17 +71,28 @@ app/src/main/java/com/taskmanager/
     ├── theme/                 # DesignTokens, Theme (light/dark)
     ├── navigation/            # NavGraph, Screen
     ├── components/            # TaskCard, PriorityBadge, Skeleton, EmptyState
-    └── screens/               # today, tasks, projects, calendar, habits, focus, eisenhower, more, profile
+    └── screens/               # today, inbox, calendar, habits, focus, more, projects,
+                                # finance, notes, kanban, eisenhower, search, settings,
+                                # profile, tags, upcoming, projectdetail, insights
 ```
 
 ## Сборка
 
 ```bash
-gradle assembleDebug        # debug APK
-gradle testDebugUnitTest    # unit-тесты
+./gradlew assembleDebug        # debug APK (с LeakCanary)
+./gradlew assembleRelease      # release APK (без LeakCanary)
+./gradlew testDebugUnitTest    # unit-тесты
 ```
 
-APK публикуется автоматически в [Releases](https://github.com/dondgoklo-cyber/Floktask/releases).
+## CI/CD
+
+- **ci-checks.yml** — unit-тесты и сборка на каждый PR/push
+- **build.yml** — release-APK в GitHub Releases на каждый push в main
+- **release-build.yml** — production-сборка с keystore по git-тегу v*
+
+## Скачать
+
+Последний APK: [Releases](https://github.com/dondgoklo-cyber/Floktask/releases/latest)
 
 ## Лицензия
 
