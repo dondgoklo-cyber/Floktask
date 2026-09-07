@@ -75,7 +75,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+ 
+       }
     }
 }
 
@@ -124,7 +125,7 @@ dependencies {
     implementation(libs.timber)
 
     // Security
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.security:security-crypto:1.0.0")
 
     // Core library desugaring (java.time on minSdk 24)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -139,7 +140,8 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.agent.jvm)
     testImplementation(libs.turbine)
-    testImplementation(libs.room.testing)
+    testImplementation(l
+ibs.room.testing)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
