@@ -16,12 +16,17 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
-# Retrofit / Gson
--keepattributes Signature, Exceptions
--keep class com.google.gson.** { *; }
--keep class retrofit2.** { *; }
--keepclasseswithmembers class * { @retrofit2.http.* <methods>; }
+# Kotlin Coroutines
+-keepclassmembernames class kotlinx.** { volatile <fields>; }
 
-# Firebase
--keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
+# Coil
+-keep class coil.** { *; }
+
+# Compose
+-keep class androidx.compose.** { *; }
+
+# Domain models
+-keep class com.taskmanager.domain.model.** { *; }
+
+# Data entities
+-keep class com.taskmanager.data.local.entity.** { *; }
