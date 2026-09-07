@@ -2,7 +2,7 @@ package com.taskmanager.domain.usecase.schedule
 
 import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.Task
-import com.taskmanager.domain.usecase.conflict.TimeInterval
+import com.taskmanager.domain.model.TimeInterval
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
