@@ -47,6 +47,8 @@ fun InsightsScreen() {
                 icon = Icons.Filled.BarChart,
                 title = "Аналитика скоро появится",
                 message = "Здесь будет статистика по задачам, фокусу, привычкам и финансам",
+                actionLabel = "Создать задачу",
+                onAction = { },
                 modifier = Modifier
             )
         }
