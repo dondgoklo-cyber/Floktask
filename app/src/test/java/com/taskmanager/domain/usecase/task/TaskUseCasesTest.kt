@@ -26,6 +26,7 @@ class TaskUseCasesTest {
 
     @Before
     fun setup() {
+        store.clear()
         logger = TestLogger()
         alarmScheduler = mockk<AlarmScheduler>(relaxed = true)
     }
@@ -125,7 +126,6 @@ class TaskUseCasesTest {
 
     @Test
     fun `deleteTask removes the task`() = runBlocking {
-        val alarmScheduler = mockk<AlarmScheduler>(relaxed = true)
         coEvery { alarmScheduler.cancelReminder(any()) } returns Unit
         
         val id = fakeRepo.createTask(Task(title = "y", createdAt = Instant.now(), updatedAt = Instant.now()))
@@ -146,7 +146,7 @@ class TaskUseCasesTest {
     fun `getAllTasks emits the full list`() = runBlocking {
         fakeRepo.createTask(Task(title = "a", createdAt = Instant.now(), updatedAt = Instant.now()))
         fakeRepo.createTask(Task(title = "b", createdAt = Instant.now(), updatedAt = Instant.now()))
-        val useCase = GetAllTasksUseCase(fakeRepo)
+        val useCase = GetAllTasksUseCase(fakeRepo, logger)
         val list = useCase().first()
         assertTrue(list.size == 2)
     }
