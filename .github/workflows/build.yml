@@ -77,9 +77,16 @@ jobs:
           path: release/WOLFTASK-v1.2.0.apk
           retention-days: 30
 
-      - name: Delete old release
+      - name: Delete old releases
         if: success()
-        run: gh release delete v1.2.0 --yes --cleanup-tag || true
+        run: |
+          # Delete all old prerelease releases
+          gh release list --json tagName,isPrerelease --limit 50 --jq '.[] | select(.isPrerelease == true) | .tagName' 2>/dev/null | while read -r tag; do
+            echo "Deleting prerelease: $tag"
+            gh release delete "$tag" --yes --cleanup-tag 2>/dev/null || true
+          done
+          # Delete existing v1.2.0 release (to recreate fresh)
+          gh release delete v1.2.0 --yes --cleanup-tag 2>/dev/null || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -90,7 +97,7 @@ jobs:
           tag_name: v1.2.0
           name: WOLFTASK v1.2.0
           body: |
-            # 🐺 WOLFTASK v1.2.0
+            # WOLFTASK v1.2.0
 
             Свежая сборка из ветки main.
 
@@ -101,7 +108,7 @@ jobs:
             - Версия 1.2.0
 
             ## Скачать
-            Скачайте **WOLFTASK-v1.2.0.apk** ниже
+            Скачайте WOLFTASK-v1.2.0.apk ниже
 
             ## Установка
             1. Скачайте APK-файл
