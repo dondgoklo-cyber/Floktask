@@ -53,7 +53,7 @@ class DetectConflictsUseCaseTest {
     fun `multiple conflicts returned`() {
         val a = interval("2026-01-15T10:00:00Z", "2026-01-15T11:00:00Z", 1)
         val b = interval("2026-01-15T10:30:00Z", "2026-01-15T11:30:00Z", 2)
-        val c = interval("2026-01-15T11:00:00Z", "2026-01-15T12:00:00Z", 3) // touches c, no conflict with candidate
+        val c = interval("2026-01-15T11:15:00Z", "2026-01-15T12:00:00Z", 3) // touches c, no conflict with candidate
         val candidate = interval("2026-01-15T10:45:00Z", "2026-01-15T11:15:00Z")
         val result = useCase(candidate, listOf(a, b, c))
         assertEquals(2, result.conflicting.size)
