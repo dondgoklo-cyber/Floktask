@@ -24,11 +24,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,6 +48,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
+import com.taskmanager.haptic.HapticType
+import com.taskmanager.haptic.rememberHaptic
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.components.TaskListSkeleton
@@ -64,6 +64,7 @@ fun HabitsScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val showCreate by viewModel.showCreateDialog.collectAsState()
+    val haptic = rememberHaptic()
 
     Scaffold(
         topBar = {
@@ -78,7 +79,10 @@ fun HabitsScreen(
             com.taskmanager.presentation.components.AppFloatingActionButton(
                 icon = Icons.Filled.Add,
                 contentDescription = stringResource(R.string.new_habit),
-                onClick = viewModel::openCreateDialog
+                onClick = {
+                    haptic(HapticType.LIGHT)
+                    viewModel.openCreateDialog()
+                }
             )
         }
     ) { padding ->
@@ -97,7 +101,10 @@ fun HabitsScreen(
                 items(state.habits, key = { it.habit.id ?: 0 }) { habitWithCompletion ->
                     HabitCard(
                         habitWithCompletion = habitWithCompletion,
-                        onToggle = { viewModel.toggleCompletion(habitWithCompletion.habit.id ?: 0) }
+                        onToggle = {
+                            haptic(HapticType.SUCCESS)
+                            viewModel.toggleCompletion(habitWithCompletion.habit.id ?: 0)
+                        }
                     )
                 }
             }
@@ -187,12 +194,12 @@ private fun HabitCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        "${habitWithCompletion.currentStreak} дн.",
+                        habitWithCompletion.currentStreak.toString() + " дн.",
                         style = MaterialTheme.typography.bodySmall,
                         color = AppTheme.colors.onSurfaceVariant
                     )
                     Text(
-                        "· Лучшая: ${habitWithCompletion.bestStreak}",
+                        "· Лучшая: " + habitWithCompletion.bestStreak,
                         style = MaterialTheme.typography.bodySmall,
                         color = AppTheme.colors.onSurfaceVariant
                     )
@@ -299,7 +306,7 @@ private fun CreateHabitDialog(
             TextButton(
                 onClick = {
                     if (name.isNotBlank()) {
-                        onCreate(name, "#$selectedColor", selectedFreq)
+                        onCreate(name, "#" + selectedColor, selectedFreq)
                     }
                 }
             ) { Text(stringResource(R.string.save)) }
@@ -313,7 +320,7 @@ private fun CreateHabitDialog(
 private fun parseColor(hex: String): Color {
     return try {
         val clean = hex.removePrefix("#")
-        Color(android.graphics.Color.parseColor("#$clean"))
+        Color(android.graphics.Color.parseColor("#" + clean))
     } catch (_: Throwable) {
         Color(0xFFFF6D00)
     }
