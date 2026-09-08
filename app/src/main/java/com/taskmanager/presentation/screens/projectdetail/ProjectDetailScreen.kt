@@ -76,6 +76,7 @@ fun ProjectDetailScreen(
     onAddTask: () -> Unit,
     onTaskClick: (Long) -> Unit,
     onNoteClick: (Long) -> Unit = {},
+    onEditTask: (Long) -> Unit = {},
     viewModel: ProjectDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -172,7 +173,8 @@ fun ProjectDetailScreen(
                 viewMode == ProjectViewMode.LIST -> {
                     ProjectTaskList(
                         tasks = state.tasks,
-                        onTaskClick = onTaskClick
+                        onTaskClick = onTaskClick,
+                        onEditTask = onEditTask
                     )
                 }
                 viewMode == ProjectViewMode.KANBAN -> {
@@ -209,7 +211,8 @@ fun ProjectDetailScreen(
 @Composable
 private fun ProjectTaskList(
     tasks: List<Task>,
-    onTaskClick: (Long) -> Unit
+    onTaskClick: (Long) -> Unit,
+    onEditTask: (Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -220,7 +223,10 @@ private fun ProjectTaskList(
             TaskCard(
                 task = task,
                 onClick = { task.id?.let(onTaskClick) },
-                onCheckedChange = { }
+                onCheckedChange = { checked ->
+                    if (checked) task.id?.let { /* viewModel.completeTask(it) */ }
+                },
+                onEditTask = onEditTask
             )
         }
     }

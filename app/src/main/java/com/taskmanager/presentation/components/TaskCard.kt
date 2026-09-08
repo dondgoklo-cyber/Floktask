@@ -27,7 +27,8 @@ import com.taskmanager.domain.model.Task
 fun TaskCard(
     task: Task,
     onClick: () -> Unit,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
+    onEditTask: (Long) -> Unit = {}
 ) {
     val style = PriorityStyles.forPriority(task.priority)
 

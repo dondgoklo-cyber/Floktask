@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.usecase.task.GetUpcomingTasksUseCase
+import com.taskmanager.domain.usecase.task.SetTaskCompletedUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,7 @@ data class UpcomingUiState(
 @HiltViewModel
 class UpcomingViewModel @Inject constructor(
     private val getUpcomingTasksUseCase: GetUpcomingTasksUseCase,
+    private val setTaskCompletedUseCase: SetTaskCompletedUseCase,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -32,4 +34,14 @@ class UpcomingViewModel @Inject constructor(
     )
         .map { tasks -> UpcomingUiState(tasks = tasks, isLoading = false) }
         .stateIn(viewModelScope, SharingStarted.Lazily, UpcomingUiState(isLoading = true))
+
+    fun completeTask(taskId: Long) {
+        viewModelScope.launch {
+            try {
+                setTaskCompletedUseCase(taskId, true)
+            } catch (e: Exception) {
+                logger.error("UpcomingViewModel", "Error completing task", e)
+            }
+        }
+    }
 }

@@ -1,11 +1,11 @@
+```
 # Compiled and build artifacts
 *.class
 *.o
 *.obj
-*.so
-*.dll
-*.exe
 *.out
+*.dll
+*.so
 *.a
 
 # Dependencies
@@ -18,34 +18,30 @@ __pycache__/
 target/
 .gradle/
 
-# Build directories
-build/
-dist/
-out/
-
-# Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Logs
+# Logs and temp files
 *.log
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
+*.tmp
+*.swp
 
 # Environment
 .env
 .env.local
 *.env.*
 
-# System
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System files
 .DS_Store
 Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
 
 # Compressed files
 *.zip
@@ -66,7 +62,4 @@ Thumbs.db
 *.Z
 *.lz
 *.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
+```
