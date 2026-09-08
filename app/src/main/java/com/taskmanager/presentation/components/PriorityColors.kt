@@ -8,8 +8,8 @@ import com.taskmanager.presentation.theme.AppTheme
 /** Утилита для получения цвета приоритета — единый источник истины для всех экранов. */
 @Composable
 fun priorityColor(priority: Priority): Color = when (priority) {
-    Priority.HIGH -> AppTheme.colors.danger
-    Priority.MEDIUM -> AppTheme.colors.warning
-    Priority.LOW -> AppTheme.colors.success
-    Priority.NONE -> AppTheme.colors.outline
+    Priority.HIGH -> AppTheme.colors.danger      // Красный (P1)
+    Priority.MEDIUM -> AppTheme.colors.warning   // Оранжевый (P2)
+    Priority.LOW -> AppTheme.colors.info         // Синий (P3) — по конвенции Todoist
+    Priority.NONE -> AppTheme.colors.outline     // Серый (без приоритета)
 }

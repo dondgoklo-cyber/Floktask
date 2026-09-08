@@ -121,12 +121,52 @@ fun InboxScreen(
                         )
                         SwipeToDismissBox(
                             state = dismissState,
-                            backgroundContent = {},
-                                                    ) {
-                            TaskCard(
+                            backgroundContent = {
+                                val direction = dismissState.dismissDirection
+                                val color by animateColorAsState(
+                                    when (dismissState.targetValue) {
+                                        SwipeToDismissBoxValue.StartToEnd -> AppTheme.colors.success.copy(alpha = 0.2f)
+                                        SwipeToDismissBoxValue.EndToStart -> AppTheme.colors.secondaryContainer.copy(alpha = 0.2f)
+                                        else -> Color.Transparent
+                                    }
+                                )
+                                val icon by animateIntAsState(
+                                    when (dismissState.targetValue) {
+                                        SwipeToDismissBoxValue.StartToEnd -> R.drawable.ic_check
+                                        SwipeToDismissBoxValue.EndToStart -> R.drawable.ic_schedule
+                                        else -> null
+                                    } ?: Icons.Default.Check
+                                )
+                                Box(
+                                    Modifier
+                                        .fillMaxSize()
+                                        .background(color)
+                                        .padding(horizontal = 20.dp),
+                                    contentAlignment = if (direction == SwipeToDismissBoxValue.StartToEnd) Alignment.CenterStart else Alignment.CenterEnd
+                                ) {
+                                    Icon(
+                                        imageVector = if (direction == SwipeToDismissBoxValue.StartToEnd) Icons.Default.Check else Icons.Default.Schedule,
+                                        contentDescription = null,
+                                        tint = if (direction == SwipeToDismissBoxValue.StartToEnd) AppTheme.colors.success else AppTheme.colors.onSecondaryContainer,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                            },
+                            confirmValueChange = { value ->
+                                if (value == SwipeToDismissBoxValue.StartToEnd) {
+                                    viewModel.completeTask(task.id ?: 0)
+                                    true
+                                } else false
+                            }
+                        ) {
+                            TaskRow(
                                 task = task,
+                                projectName = null,
+                                projectColor = null,
+                                isSelected = false,
+                                onCheckedChange = { checked -> if (checked) viewModel.completeTask(task.id ?: 0) },
                                 onClick = { detailTaskId = task.id ?: 0 },
-                                onCheckedChange = { checked -> if (checked) viewModel.completeTask(task.id ?: 0) }
+                                onLongClick = {}
                             )
                         }
                     }

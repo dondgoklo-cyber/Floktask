@@ -233,16 +233,19 @@ private fun ProjectTaskList(
         verticalArrangement = Arrangement.spacedBy(Spacing.sm)
     ) {
         items(tasks, key = { it.id ?: 0 }) { task ->
-            TaskCard(
+            TaskRow(
                 task = task,
+                projectName = null,
+                projectColor = null,
+                isSelected = false,
+                onCheckedChange = { checked ->
+                    if (checked) task.id?.let { viewModel.toggleTaskCompleted(it, true) }
+                },
                 onClick = { 
                     detailTaskId = task.id
                     task.id?.let(onTaskClick)
                 },
-                onCheckedChange = { checked ->
-                    if (checked) task.id?.let { viewModel.toggleTaskCompleted(it, true) }
-                },
-                onEditTask = onEditTask
+                onLongClick = {}
             )
         }
     }
@@ -312,10 +315,14 @@ private fun KanbanColumn(
             color = AppTheme.colors.onSurfaceVariant
         )
         tasks.forEach { task ->
-            TaskCard(
+            TaskRow(
                 task = task,
+                projectName = null,
+                projectColor = null,
+                isSelected = false,
+                onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } },
                 onClick = { task.id?.let(onTaskClick) },
-                onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } }
+                onLongClick = {}
             )
         }
     }
@@ -345,35 +352,35 @@ private fun ProjectEisenhowerView(
                 )
             }
             items(unassigned, key = { it.id ?: 0 }) { task ->
-                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } })
+                TaskRow(task = task, projectName = null, projectColor = null, isSelected = false, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } }, onClick = { task.id?.let(onTaskClick) }, onLongClick = {})
             }
         }
         val doNow = quadrants[EisenhowerQuadrant.DO_NOW] ?: emptyList()
         if (doNow.isNotEmpty()) {
             item { QuadrantHeader(R.string.do_now, AppTheme.colors.danger, doNow.size) }
             items(doNow, key = { it.id ?: 0 }) { task ->
-                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } })
+                TaskRow(task = task, projectName = null, projectColor = null, isSelected = false, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } }, onClick = { task.id?.let(onTaskClick) }, onLongClick = {})
             }
         }
         val schedule = quadrants[EisenhowerQuadrant.SCHEDULE] ?: emptyList()
         if (schedule.isNotEmpty()) {
             item { QuadrantHeader(R.string.schedule, AppTheme.colors.info, schedule.size) }
             items(schedule, key = { it.id ?: 0 }) { task ->
-                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } })
+                TaskRow(task = task, projectName = null, projectColor = null, isSelected = false, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } }, onClick = { task.id?.let(onTaskClick) }, onLongClick = {})
             }
         }
         val delegate = quadrants[EisenhowerQuadrant.DELEGATE] ?: emptyList()
         if (delegate.isNotEmpty()) {
             item { QuadrantHeader(R.string.delegate, AppTheme.colors.warning, delegate.size) }
             items(delegate, key = { it.id ?: 0 }) { task ->
-                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } })
+                TaskRow(task = task, projectName = null, projectColor = null, isSelected = false, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } }, onClick = { task.id?.let(onTaskClick) }, onLongClick = {})
             }
         }
         val eliminate = quadrants[EisenhowerQuadrant.ELIMINATE] ?: emptyList()
         if (eliminate.isNotEmpty()) {
             item { QuadrantHeader(R.string.eliminate, AppTheme.colors.outline, eliminate.size) }
             items(eliminate, key = { it.id ?: 0 }) { task ->
-                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } })
+                TaskRow(task = task, projectName = null, projectColor = null, isSelected = false, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } }, onClick = { task.id?.let(onTaskClick) }, onLongClick = {})
             }
         }
     }
@@ -507,7 +514,7 @@ private fun ProjectGanttView(
                 )
             }
             items(undatedTasks, key = { "un_${it.id ?: 0}" }) { task ->
-                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } })
+                TaskRow(task = task, projectName = null, projectColor = null, isSelected = false, onCheckedChange = { checked -> task.id?.let { viewModel.toggleTaskCompleted(it, checked) } }, onClick = { task.id?.let(onTaskClick) }, onLongClick = {})
             }
         }
     }

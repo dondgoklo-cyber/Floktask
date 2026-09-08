@@ -12,18 +12,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.taskmanager.domain.model.Priority
+import com.taskmanager.presentation.theme.AppTheme
 
 @Composable
 fun PriorityBadge(priority: Priority, modifier: Modifier = Modifier) {
-    val style = PriorityStyles.forPriority(priority)
+    val color = priorityColor(priority)
+    val label = when (priority) {
+        Priority.HIGH -> "P1"
+        Priority.MEDIUM -> "P2"
+        Priority.LOW -> "P3"
+        Priority.NONE -> ""
+    }
+    
+    if (label.isEmpty()) return
+    
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(style.accentColor)
+            .background(color)
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
-            text = PriorityStyles.priorityLabel(priority),
+            text = label,
             style = MaterialTheme.typography.labelSmall,
             color = Color.White
         )
