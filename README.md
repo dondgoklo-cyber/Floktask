@@ -1,7 +1,7 @@
 # TaskManager
 
 Smart Android task manager with an AI assistant, geolocation reminders, and gamification.
-Built with **Clean Architecture + MVVM**, **Jetpack Compose**, **Room**, **Hilt**, and **Firebase**.
+Built with **Clean Architecture + MVVM**, **Jetpack Compose**, **Room**, and **Hilt**.
 
 > Status: Stage 2 (MVP) — scaffolding complete. Target API 34, min SDK 24.
 
@@ -15,7 +15,7 @@ Built with **Clean Architecture + MVVM**, **Jetpack Compose**, **Room**, **Hilt*
 - Recurring tasks (`RecurrenceRule`)
 - Search and filtering
 - Local storage (Room)
-- Cloud sync scaffold (Firebase Auth + Realtime Database)
+- **Local-first architecture** — all data stored locally in Room database
 
 ### Planned
 - Kanban board, Gantt diagrams, Pomodoro timer, habit tracker
@@ -33,8 +33,6 @@ Built with **Clean Architecture + MVVM**, **Jetpack Compose**, **Room**, **Hilt*
 | UI              | Jetpack Compose (BOM)     |
 | Local DB        | Room 2.5.2               |
 | DI              | Hilt 2.48               |
-| Auth            | Firebase Auth            |
-| Cloud DB        | Firebase Realtime DB     |
 | HTTP            | Retrofit 2 + Gson        |
 | Async           | Coroutines + Flow        |
 | Navigation      | Navigation Compose 2.7.3 |
@@ -52,7 +50,6 @@ app/src/main/java/com/taskmanager/
 │   └── RepositoryModule.kt
 ├── data/                      # Data layer
 │   ├── local/                # Room (dao, entity, database)
-│   ├── remote/               # FirebaseService, AuthService
 │   └── repository/           # Repository implementations + mappers
 ├── domain/                    # Domain layer
 │   ├── model/                # Task, Project, Tag, enums
@@ -75,12 +72,10 @@ app/src/main/java/com/taskmanager/
 
 ### Setup
 1. Clone the repository.
-2. Create a project in the [Firebase console](https://console.firebase.google.com/),
-   enable **Authentication** (Email/Password) and **Realtime Database**.
-3. Download `google-services.json` and place it at `app/google-services.json`.
-   A redacted template is provided at `app/google-services.json.example`.
-4. Open the project in Android Studio and let Gradle sync.
-5. Run the `app` configuration on a device or emulator (API 24+).
+2. Open the project in Android Studio and let Gradle sync.
+3. Run the `app` configuration on a device or emulator (API 24+).
+
+**Note:** This is a local-first application. All data is stored locally in the Room database. No external services or API keys are required.
 
 ### Build
 ```bash

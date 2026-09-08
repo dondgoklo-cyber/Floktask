@@ -1,28 +1,40 @@
 package com.taskmanager.data.repository
 
 import com.taskmanager.data.local.dao.TaskDao
+import com.taskmanager.data.local.notification.LocalNotificationManager
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
+import java.util.Date
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
-    private val taskDao: TaskDao
+    private val taskDao: TaskDao,
+    private val notificationManager: LocalNotificationManager
 ) : TaskRepository {
 
-    override suspend fun createTask(task: Task): Long =
-        taskDao.insert(task.toEntity())
+    override suspend fun createTask(task: Task): Long {
+        val entityId = taskDao.insert(task.toEntity())
+        // Планируем уведомление для новой задачи с дедлайном
+        task.copy(id = entityId).let { notificationManager.scheduleTaskReminder(it) }
+        return entityId
+    }
 
     override suspend fun getTaskById(id: Long): Task? =
         taskDao.getById(id)?.toDomain()
 
     override suspend fun updateTask(task: Task) {
-        taskDao.update(task.copy(updatedAt = Instant.now()).toEntity())
+        val updatedTask = task.copy(updatedAt = Instant.now())
+        taskDao.update(updatedTask.toEntity())
+        // Перепланируем уведомление при обновлении задачи
+        notificationManager.scheduleTaskReminder(updatedTask)
     }
 
     override suspend fun deleteTask(id: Long) {
+        // Отменяем уведомление перед удалением
+        notificationManager.cancelTaskReminder(id)
         taskDao.deleteById(id)
     }
 

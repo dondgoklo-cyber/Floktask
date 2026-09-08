@@ -25,7 +25,9 @@ object DatabaseModule {
         context,
         AppDatabase::class.java,
         "taskmanager.db"
-    ).fallbackToDestructiveMigration().build()
+    )
+    .addMigrations() // Добавить миграции при изменении схемы
+    .build()
 
     @Provides
     fun provideTaskDao(db: AppDatabase): TaskDao = db.taskDao()

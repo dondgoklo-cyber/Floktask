@@ -1,7 +1,8 @@
 package com.taskmanager.di
 
-import com.taskmanager.data.remote.AuthService
-import com.taskmanager.data.remote.FirebaseService
+import android.app.Application
+import android.content.Context
+import com.taskmanager.data.local.notification.LocalNotificationManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,13 +12,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
+    
     @Provides
     @Singleton
-    fun provideFirebaseService(): FirebaseService = FirebaseService()
-
+    fun provideApplicationContext(application: Application): Context = application.applicationContext
+    
     @Provides
     @Singleton
-    fun provideAuthService(firebaseService: FirebaseService): AuthService =
-        AuthService(firebaseService)
+    fun provideLocalNotificationManager(application: Application): LocalNotificationManager =
+        LocalNotificationManager(application)
 }

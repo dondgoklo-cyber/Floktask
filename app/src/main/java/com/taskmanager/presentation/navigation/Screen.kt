@@ -7,6 +7,7 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Tasks : Screen("tasks", R.string.tasks)
     data object Projects : Screen("projects", R.string.projects)
     data object Calendar : Screen("calendar", R.string.calendar)
+    data object AddEditTask : Screen("add_edit_task", 0)
 
     companion object {
         val bottomNavItems = listOf(Tasks, Projects, Calendar)

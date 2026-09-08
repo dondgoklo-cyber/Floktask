@@ -31,6 +31,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- BroadcastReceiver для напоминаний о задачах -->
+        <receiver
+            android:name=".data.local.notification.TaskReminderReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.taskmanager.TASK_REMINDER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
