@@ -1,8 +1,11 @@
 package com.taskmanager.domain.usecase.batch
 
+import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.repository.TaskRepository
 import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 /**
@@ -49,6 +52,44 @@ class BatchTaskOperationsUseCase @Inject constructor(
             taskRepository.updateTask(
                 task.copy(
                     projectId = projectId,
+                    updatedAt = Instant.now()
+                )
+            )
+            affected++
+        }
+        return BatchResult(affected)
+    }
+
+    /**
+     * Set priority for multiple tasks.
+     */
+    suspend fun setPriority(taskIds: List<Long>, priority: Priority): BatchResult {
+        var affected = 0
+        taskIds.forEach { id ->
+            val task = taskRepository.getTaskById(id) ?: return@forEach
+            taskRepository.updateTask(
+                task.copy(
+                    priority = priority,
+                    updatedAt = Instant.now()
+                )
+            )
+            affected++
+        }
+        return BatchResult(affected)
+    }
+
+    /**
+     * Move multiple tasks to a specific date (deadline).
+     * If date is null, clears the deadline.
+     */
+    suspend fun moveToDate(taskIds: List<Long>, date: LocalDate?): BatchResult {
+        var affected = 0
+        taskIds.forEach { id ->
+            val task = taskRepository.getTaskById(id) ?: return@forEach
+            val newDeadline = date?.atStartOfDay(ZoneId.systemDefault())?.toInstant()
+            taskRepository.updateTask(
+                task.copy(
+                    deadline = newDeadline,
                     updatedAt = Instant.now()
                 )
             )

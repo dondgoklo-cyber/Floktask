@@ -55,12 +55,26 @@ import com.taskmanager.presentation.theme.Spacing
 @Composable
 fun KanbanScreen(
     onTaskClick: (Long) -> Unit,
+    onEditTask: (Long) -> Unit = {},
     viewModel: KanbanViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var draggedTaskId by remember { mutableStateOf<Long?>(null) }
     var hoveredColumn by remember { mutableStateOf<TaskStatus?>(null) }
     val columnBounds = remember { mutableMapOf<TaskStatus, Rect>() }
+    var detailTaskId by remember { mutableStateOf<Long?>(null) }
+
+    if (detailTaskId != null) {
+        com.taskmanager.presentation.screens.tasks.TaskDetailSheet(
+            taskId = detailTaskId!!,
+            onDismiss = { detailTaskId = null },
+            onEdit = { 
+                detailTaskId = null
+                onEditTask(it)
+            },
+            onStartFocus = { id -> detailTaskId = null }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -102,7 +116,10 @@ fun KanbanScreen(
                             draggedTaskId = null
                             hoveredColumn = null
                         },
-                        onTaskClick = onTaskClick
+                        onTaskClick = { id -> 
+                            detailTaskId = id
+                            onTaskClick(id)
+                        }
                     )
                 }
             }

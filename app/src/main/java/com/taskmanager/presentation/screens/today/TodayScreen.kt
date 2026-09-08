@@ -31,7 +31,9 @@ import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
-    viewModel: TodayViewModel = hiltViewModel()
+    viewModel: TodayViewModel = hiltViewModel(),
+    onEditTask: (Long) -> Unit = {},
+    onStartFocus: (Long) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
@@ -40,8 +42,14 @@ fun TodayScreen(
         TaskDetailSheet(
             taskId = detailTaskId!!,
             onDismiss = { detailTaskId = null },
-            onEdit = { detailTaskId = null },
-            onStartFocus = { detailTaskId = null }
+            onEdit = { 
+                detailTaskId = null
+                onEditTask(it)
+            },
+            onStartFocus = { 
+                detailTaskId = null
+                onStartFocus(it)
+            }
         )
     }
 
@@ -100,6 +108,13 @@ private fun SectionHeader(text: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskRow(task: Task, accent: Boolean, onClick: () -> Unit) {
+    val deadlineText = task.deadline?.let {
+        val localDate = java.time.Instant.ofEpochMilli(it.toEpochMilli())
+            .atZone(java.time.ZoneId.systemDefault())
+            .toLocalDate()
+        com.taskmanager.presentation.util.RelativeDateFormatter.formatDate(localDate)
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
@@ -114,11 +129,9 @@ private fun TaskRow(task: Task, accent: Boolean, onClick: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
-            task.deadline?.let {
+            deadlineText?.let {
                 Text(
-                    java.time.Instant.ofEpochMilli(it.toEpochMilli())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalDate().toString(),
+                    it,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline
                 )

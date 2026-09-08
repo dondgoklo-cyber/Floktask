@@ -112,6 +112,7 @@
     <string name="notes">Заметки</string>
     <string name="add_note">Добавить заметку</string>
     <string name="no_notes">Пока нет заметок</string>
+    <string name="edit_note">Редактировать заметку</string>
     <string name="folders">Папки</string>
     <string name="pinned">Закреплённые</string>
     <string name="recent">Недавние</string>
@@ -165,6 +166,11 @@
     <!-- Eisenhower -->
     <string name="do_now">Сделать сейчас</string>
     <string name="schedule">Запланировать</string>
+    <string name="schedule_task">Запланировать задачу</string>
+    <string name="this_weekend">На выходных</string>
+    <string name="next_week">Следующая неделя</string>
+    <string name="choose_date">Выбрать дату…</string>
+    <string name="clear_date">Очистить дату</string>
     <string name="delegate">Делегировать</string>
     <string name="eliminate">Удалить</string>
     <string name="important_urgent">Важное и срочное</string>
@@ -265,4 +271,18 @@
     <string name="pin_remove">Удалить PIN-код</string>
     <string name="pin_remove_subtitle">Отключить защиту приложения</string>
     <string name="pin_remove_confirm">Удалить PIN-код? Приложение будет открываться без защиты.</string>
+
+    <!-- Batch operations / Multi-select -->
+    <string name="selected_count">Выбрано: %1$d</string>
+    <string name="batch_complete">Завершить</string>
+    <string name="batch_move_project">В проект</string>
+    <string name="batch_set_priority">Приоритет</string>
+    <string name="batch_delete">Удалить</string>
+    <string name="batch_schedule">Дата</string>
+    <string name="delete_tasks_confirm">Удалить %1$d задач?</string>
+    <string name="task_created">Задача создана</string>
+    <string name="task_completed">Задача выполнена</string>
+    <string name="undo">Отменить</string>
+    <string name="moved_to_date">Перенесено на %1$s</string>
+    <string name="save_and_continue">Сохранить и продолжить</string>
 </resources>

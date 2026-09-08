@@ -13,6 +13,7 @@ import com.taskmanager.domain.usecase.note.GetNotesByProjectUseCase
 import com.taskmanager.domain.usecase.project.GetProjectByIdUseCase
 import com.taskmanager.domain.usecase.tag.GetAllTagsUseCase
 import com.taskmanager.domain.usecase.task.GetTasksByProjectUseCase
+import com.taskmanager.domain.usecase.task.SetTaskCompletedUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,6 +46,7 @@ class ProjectDetailViewModel @Inject constructor(
     private val getNotesByProjectUseCase: GetNotesByProjectUseCase,
     private val createNoteUseCase: CreateNoteUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
+    private val setTaskCompletedUseCase: SetTaskCompletedUseCase,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -109,6 +111,16 @@ class ProjectDetailViewModel @Inject constructor(
                 updateTaskUseCase(task.copy(eisenhowerQuadrant = quadrant))
             } catch (e: Exception) {
                 logger.error("ProjectDetailViewModel", "Error moving task to quadrant", e)
+            }
+        }
+    }
+
+    fun toggleTaskCompleted(taskId: Long, completed: Boolean) {
+        viewModelScope.launch {
+            try {
+                setTaskCompletedUseCase(taskId, completed)
+            } catch (e: Exception) {
+                logger.error("ProjectDetailViewModel", "Error toggling task completion", e)
             }
         }
     }

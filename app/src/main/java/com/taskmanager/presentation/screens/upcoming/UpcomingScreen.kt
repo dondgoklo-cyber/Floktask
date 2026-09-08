@@ -124,10 +124,14 @@ fun UpcomingScreen(
                         }
                         items(tasks.size, key = { tasks[it].id ?: 0 }) { index ->
                             val task = tasks[index]
-                            TaskCard(
+                            TaskRow(
                                 task = task,
+                                projectName = null,
+                                projectColor = null,
+                                isSelected = false,
+                                onCheckedChange = { checked -> if (checked) viewModel.completeTask(task.id ?: 0) },
                                 onClick = { detailTaskId = task.id ?: 0 },
-                                onCheckedChange = { }
+                                onLongClick = {}
                             )
                         }
                     }

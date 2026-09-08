@@ -150,8 +150,7 @@ private fun StatCard(
     secondaryValues: List<String>
 ) {
     Card(
-        modifier = Mod
-ifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Radius.lg),
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
         colors = CardDefaults.cardColors(

@@ -16,7 +16,8 @@ import javax.inject.Inject
 data class TodayUiState(
     val overdue: List<Task> = emptyList(),
     val dueToday: List<Task> = emptyList(),
-    val noDeadline: List<Task> = emptyList()
+    val noDeadline: List<Task> = emptyList(),
+    val backlogVisibleCount: Int = 5
 )
 
 @HiltViewModel
@@ -36,7 +37,7 @@ class TodayViewModel @Inject constructor(
             val (dueToday, noDeadline) = rest.partition { task ->
                 task.deadline?.atZone(zone)?.toLocalDate() == today
             }
-            TodayUiState(overdue = overdue, dueToday = dueToday, noDeadline = noDeadline.take(5))
+            TodayUiState(overdue = overdue, dueToday = dueToday, noDeadline = noDeadline, backlogVisibleCount = 5)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TodayUiState())
 

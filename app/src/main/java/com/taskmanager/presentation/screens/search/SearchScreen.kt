@@ -56,6 +56,7 @@ import com.taskmanager.presentation.theme.Spacing
 fun SearchScreen(
     onBack: () -> Unit,
     onTaskClick: (Long) -> Unit,
+    onEditTask: (Long) -> Unit = {},
     onNoteClick: (Long) -> Unit = {},
     onProjectClick: (Long) -> Unit = {},
     onHabitClick: () -> Unit = {},
@@ -63,6 +64,19 @@ fun SearchScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val results = state.results
+    var detailTaskId by remember { mutableStateOf<Long?>(null) }
+
+    if (detailTaskId != null) {
+        com.taskmanager.presentation.screens.tasks.TaskDetailSheet(
+            taskId = detailTaskId!!,
+            onDismiss = { detailTaskId = null },
+            onEdit = { 
+                detailTaskId = null
+                onEditTask(it)
+            },
+            onStartFocus = { id -> detailTaskId = null }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -130,7 +144,10 @@ fun SearchScreen(
                                 iconColor = priorityColor(task.priority),
                                 title = task.title,
                                 subtitle = task.description,
-                                onClick = { task.id?.let(onTaskClick) }
+                                onClick = { 
+                                    detailTaskId = task.id
+                                    task.id?.let(onTaskClick)
+                                }
                             )
                         }
                     }
