@@ -241,6 +241,7 @@
     <string name="kanban">Канбан</string>
     <string name="view_list">Список</string>
     <string name="view_kanban">Канбан</string>
+    <string name="view_gantt">Гант</string>
     <string name="view_calendar">Календарь</string>
     <string name="column_todo">К выполнению</string>
     <string name="column_in_progress">В процессе</string>

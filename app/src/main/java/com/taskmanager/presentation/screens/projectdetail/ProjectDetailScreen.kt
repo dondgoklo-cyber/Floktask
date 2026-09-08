@@ -1,17 +1,22 @@
 package com.taskmanager.presentation.screens.projectdetail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -38,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
@@ -54,8 +60,13 @@ import com.taskmanager.presentation.components.TaskListSkeleton
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
-private enum class ProjectViewMode { LIST, KANBAN, EISENHOWER, NOTES }
+private enum class ProjectViewMode { LIST, KANBAN, EISENHOWER, GANTT, NOTES }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,6 +145,11 @@ fun ProjectDetailScreen(
                     label = { Text(stringResource(R.string.eisenhower_matrix)) }
                 )
                 FilterChip(
+                    selected = viewMode == ProjectViewMode.GANTT,
+                    onClick = { viewMode = ProjectViewMode.GANTT },
+                    label = { Text(stringResource(R.string.view_gantt)) }
+                )
+                FilterChip(
                     selected = viewMode == ProjectViewMode.NOTES,
                     onClick = { viewMode = ProjectViewMode.NOTES },
                     label = { Text(stringResource(R.string.notes)) }
@@ -168,6 +184,12 @@ fun ProjectDetailScreen(
                 }
                 viewMode == ProjectViewMode.EISENHOWER -> {
                     ProjectEisenhowerView(
+                        tasks = state.tasks,
+                        onTaskClick = onTaskClick
+                    )
+                }
+                viewMode == ProjectViewMode.GANTT -> {
+                    ProjectGanttView(
                         tasks = state.tasks,
                         onTaskClick = onTaskClick
                     )
@@ -364,6 +386,162 @@ private fun QuadrantHeader(
             style = MaterialTheme.typography.labelSmall,
             color = AppTheme.colors.onSurfaceVariant
         )
+    }
+}
+
+@Composable
+private fun ProjectGanttView(
+    tasks: List<Task>,
+    onTaskClick: (Long) -> Unit
+) {
+    val zoneId = ZoneId.systemDefault()
+    val now = remember { Instant.now() }
+
+    val datedTasks = tasks.filter { it.startTime != null || it.deadline != null }
+    val undatedTasks = tasks.filter { it.startTime == null && it.deadline == null }
+
+    if (datedTasks.isEmpty()) {
+        EmptyState(
+            icon = Icons.Filled.Add,
+            title = "Нет задач с датами",
+            message = "Добавьте дату начала или дедлайн к задачам для отображения на диаграмме Ганта",
+            actionLabel = stringResource(R.string.add_task),
+            onAction = { }
+        )
+        return
+    }
+
+    // Calculate date range from all tasks
+    val allInstants = datedTasks.mapNotNull { it.startTime } + datedTasks.mapNotNull { it.deadline }
+    val minInstant = allInstants.minByOrNull { it } ?: now
+    val maxInstant = allInstants.maxByOrNull { it } ?: now
+    val minDate = minInstant.atZone(zoneId).toLocalDate()
+    val maxDate = maxInstant.atZone(zoneId).toLocalDate()
+    val totalDays = maxOf(ChronoUnit.DAYS.between(minDate, maxDate).toInt() + 1, 7)
+    val dayWidthDp = 80.dp
+    val rowHeightDp = 52.dp
+    val scrollState = rememberScrollState()
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs)
+    ) {
+        // Timeline header — horizontally scrollable in sync with task bars
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(scrollState),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                for (i in 0 until totalDays) {
+                    val date = minDate.plusDays(i.toLong())
+                    val isToday = date == LocalDate.now(zoneId)
+                    Column(
+                        modifier = Modifier
+                            .width(dayWidthDp)
+                            .padding(Spacing.xs),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            date.dayOfWeek.name.take(3).lowercase()
+                                .replaceFirstChar { c -> c.uppercase() },
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (isToday) AppTheme.colors.primary else AppTheme.colors.onSurfaceVariant
+                        )
+                        Text(
+                            date.dayOfMonth.toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isToday) AppTheme.colors.primary else AppTheme.colors.onSurface
+                        )
+                    }
+                }
+            }
+        }
+
+        // Task bars
+        items(datedTasks, key = { it.id ?: 0 }) { task ->
+            GanttTaskBar(
+                task = task,
+                minDate = minDate,
+                dayWidthDp = dayWidthDp,
+                rowHeightDp = rowHeightDp,
+                zoneId = zoneId,
+                scrollState = scrollState,
+                onTaskClick = onTaskClick
+            )
+        }
+
+        // Undated tasks
+        if (undatedTasks.isNotEmpty()) {
+            item {
+                Text(
+                    "Без даты",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AppTheme.colors.onSurfaceVariant,
+                    modifier = Modifier.padding(top = Spacing.sm)
+                )
+            }
+            items(undatedTasks, key = { "un_${it.id ?: 0}" }) { task ->
+                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { })
+            }
+        }
+    }
+}
+
+@Composable
+private fun GanttTaskBar(
+    task: Task,
+    minDate: LocalDate,
+    dayWidthDp: androidx.compose.ui.unit.Dp,
+    rowHeightDp: androidx.compose.ui.unit.Dp,
+    zoneId: ZoneId,
+    scrollState: androidx.compose.foundation.ScrollState,
+    onTaskClick: (Long) -> Unit
+) {
+    val taskStart = (task.startTime ?: task.deadline ?: Instant.now()).atZone(zoneId).toLocalDate()
+    val taskEnd = (task.deadline ?: task.startTime ?: Instant.now()).atZone(zoneId).toLocalDate()
+
+    val startOffsetDays = maxOf(ChronoUnit.DAYS.between(minDate, taskStart).toInt(), 0)
+    val durationDays = maxOf(ChronoUnit.DAYS.between(taskStart, taskEnd).toInt() + 1, 1)
+    val barWidthDp = (durationDays * dayWidthDp.value).dp
+    val startOffsetDp = (startOffsetDays * dayWidthDp.value).dp
+
+    val barColor = when (task.status) {
+        TaskStatus.TODO -> AppTheme.colors.info
+        TaskStatus.IN_PROGRESS -> AppTheme.colors.warning
+        TaskStatus.DONE -> AppTheme.colors.success
+    }
+    val barAlpha = if (task.status == TaskStatus.DONE) 0.4f else 0.7f
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(rowHeightDp)
+            .horizontalScroll(scrollState),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = Modifier.width(startOffsetDp))
+        Box(
+            modifier = Modifier
+                .width(barWidthDp)
+                .height(rowHeightDp - Spacing.sm)
+                .clip(RoundedCornerShape(Radius.sm))
+                .background(barColor.copy(alpha = barAlpha))
+                .padding(horizontal = Spacing.xs, vertical = 2.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                task.title,
+                style = MaterialTheme.typography.labelSmall,
+                color = androidx.compose.ui.graphics.Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
