@@ -7,59 +7,80 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.taskmanager.domain.model.Task
+import com.taskmanager.presentation.components.EmptyState
+import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
     viewModel: TodayViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var detailTaskId by remember { mutableStateOf<Long?>(null) }
+
+    if (detailTaskId != null) {
+        TaskDetailSheet(
+            taskId = detailTaskId!!,
+            onDismiss = { detailTaskId = null },
+            onEdit = { detailTaskId = null },
+            onStartFocus = { detailTaskId = null }
+        )
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("Today", style = MaterialTheme.typography.headlineSmall)
+            Text("Сегодня", style = MaterialTheme.typography.headlineSmall)
         }
 
         if (state.overdue.isNotEmpty()) {
-            item { SectionHeader("Overdue (${state.overdue.size})") }
+            item { SectionHeader("Просрочено (" + state.overdue.size + ")") }
             items(state.overdue, key = { it.id ?: it.title.hashCode().toLong() }) { task ->
-                TaskRow(task, accent = true)
+                TaskRow(task, accent = true, onClick = { task.id?.let { detailTaskId = it } })
             }
         }
 
         if (state.dueToday.isNotEmpty()) {
-            item { SectionHeader("Due today (${state.dueToday.size})") }
+            item { SectionHeader("На сегодня (" + state.dueToday.size + ")") }
             items(state.dueToday, key = { it.id ?: it.title.hashCode().toLong() }) { task ->
-                TaskRow(task, accent = false)
+                TaskRow(task, accent = false, onClick = { task.id?.let { detailTaskId = it } })
             }
         }
 
         if (state.noDeadline.isNotEmpty()) {
-            item { SectionHeader("Backlog") }
+            item { SectionHeader("Бэклог") }
             items(state.noDeadline, key = { it.id ?: it.title.hashCode().toLong() }) { task ->
-                TaskRow(task, accent = false)
+                TaskRow(task, accent = false, onClick = { task.id?.let { detailTaskId = it } })
             }
         }
 
         if (state.overdue.isEmpty() && state.dueToday.isEmpty() && state.noDeadline.isEmpty()) {
             item {
-                Text(
-                    "Nothing for today. Plan ahead or take a break.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.outline
+                EmptyState(
+                    icon = Icons.Filled.CheckCircle,
+                    title = "На сегодня задач нет",
+                    message = "Запланируйте задачи или отдохните",
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -76,11 +97,13 @@ private fun SectionHeader(text: String) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TaskRow(task: Task, accent: Boolean) {
+private fun TaskRow(task: Task, accent: Boolean, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = androidx.compose.material3.CardDefaults.cardColors(
+        onClick = onClick,
+        colors = CardDefaults.cardColors(
             containerColor = if (accent) MaterialTheme.colorScheme.errorContainer
                 else MaterialTheme.colorScheme.surfaceVariant
         )

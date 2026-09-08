@@ -77,15 +77,13 @@ jobs:
           path: release/WOLFTASK-v${{ github.run_number }}.apk
           retention-days: 30
 
-      - name: Delete old releases
+      - name: Delete old prereleases
         if: success()
         run: |
-          gh release list --json tagName,isPrerelease --limit 50 --jq '.[] | select(.isPrerelease == true) | .tagName' 2>/dev/null | while read -r tag; do
-            echo "Deleting prerelease: $tag"
+          gh release list --json tagName,isPrerelease --limit 30 --jq '.[] | select(.isPrerelease == true) | .tagName' 2>/dev/null | while read -r tag; do
+            echo "Deleting old prerelease: $tag"
             gh release delete "$tag" --yes --cleanup-tag 2>/dev/null || true
           done
-          gh release delete v1.2.0 --yes --cleanup-tag 2>/dev/null || true
-          gh release delete v1.3.0 --yes --cleanup-tag 2>/dev/null || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -100,23 +98,16 @@ jobs:
 
             Свежая сборка из ветки main.
 
-            ## Что нового
-            - Обновленный Pomodoro-таймер с уведомлениями
-            - Улучшенная синхронизация задач между устройствами
-            - Исправление ошибок и оптимизация производительности
-            - Поддержка Android 7.0+
-
-            ## Исправления
-            - Исправлены баги с отображением задач
-            - Улучшена работа с виджетом
-            - Оптимизировано потребление батареи
-            - Исправлены проблемы с уведомлениями
-
-            ## Как использовать
+            ## Установка
             1. Скачайте APK-файл
-            2. Установите на ваше Android-устройство
-            3. Наслаждайтесь управлением задачами
-            4. Используйте Pomodoro-таймер для повышения продуктивности!
+            2. Установите на Android-устройство (Android 7.0+)
+            3. Разрешите установку из неизвестных источников при необходимости
+
+            ## Технологии
+            - Kotlin 2.0.20 + Jetpack Compose
+            - Clean Architecture + MVVM
+            - Room + Hilt + Coroutines
+            - Android 7.0+ (minSdk 24, targetSdk 34)
 
             ---
             Скачать: https://github.com/dondgoklo-cyber/Floktask/releases/download/v${{ github.run_number }}/WOLFTASK-v${{ github.run_number }}.apk

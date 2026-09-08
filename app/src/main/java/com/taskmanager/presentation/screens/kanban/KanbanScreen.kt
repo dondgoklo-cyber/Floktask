@@ -138,7 +138,7 @@ private fun KanbanColumn(
             .width(280.dp)
             .fillMaxHeight()
             .clip(RoundedCornerShape(Radius.md))
-            .background(AppTheme.colors.surfaceVariant.copy(alpha = if (isDropTarget) 0.5f else 0.3f))
+            .background(accentColor.copy(alpha = if (isDropTarget) 0.25f else 0.12f))
             .border(
                 width = if (isDropTarget) 2.dp else 0.dp,
                 color = accentColor.copy(alpha = if (isDropTarget) 0.6f else 0f),
@@ -177,7 +177,7 @@ private fun KanbanColumn(
             color = accentColor
         )
         Text(
-            "${tasks.size}",
+            tasks.size.toString(),
             style = MaterialTheme.typography.labelSmall,
             color = AppTheme.colors.onSurfaceVariant,
             modifier = Modifier.padding(bottom = Spacing.sm)
@@ -218,7 +218,10 @@ private fun KanbanCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isBeingDragged) 8.dp else 1.dp
         ),
-        shape = RoundedCornerShape(Radius.sm)
+        shape = RoundedCornerShape(Radius.sm),
+        colors = CardDefaults.cardColors(
+            containerColor = AppTheme.colors.surface
+        )
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(Spacing.sm)) {
             Text(
