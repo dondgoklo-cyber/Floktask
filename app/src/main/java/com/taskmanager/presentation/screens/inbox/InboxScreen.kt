@@ -126,7 +126,7 @@ fun InboxScreen(
                             TaskCard(
                                 task = task,
                                 onClick = { detailTaskId = task.id ?: 0 },
-                                onCheckedChange = { }
+                                onCheckedChange = { checked -> if (checked) viewModel.completeTask(task.id ?: 0) }
                             )
                         }
                     }

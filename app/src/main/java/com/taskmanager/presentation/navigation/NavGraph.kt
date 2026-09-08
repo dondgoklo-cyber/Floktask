@@ -59,6 +59,8 @@ import com.taskmanager.presentation.screens.tags.TagsScreen
 import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
 import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 @Composable
 fun NavGraph() {
@@ -113,24 +115,56 @@ fun NavGraph() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Today.route) { TodayScreen() }
-            composable(Screen.Inbox.route) { InboxScreen(onEditTask = { }) }
+            composable(Screen.Inbox.route) { InboxScreen(onEditTask = { id -> navController.navigate("taskEdit/$id") }) }
             composable(Screen.Calendar.route) { CalendarScreen() }
             composable(Screen.Habits.route) { HabitsScreen() }
             composable(Screen.More.route) { MoreScreen(onNavigate = { route -> navController.navigate(route) }) }
-            composable(Screen.Focus.route) { FocusScreen() }
+            composable(Screen.Focus.route) { FocusScreen(focusTaskId = null) }
+            composable(
+                route = Screen.FocusWithTask.route,
+                arguments = listOf(navArgument("taskId") { type = NavType.LongType, nullable = true })
+            ) { backStackEntry ->
+                val taskId = backStackEntry.arguments?.getLong("taskId")
+                FocusScreen(focusTaskId = taskId)
+            }
             composable(Screen.Insights.route) { InsightsScreen() }
             composable(Screen.Projects.route) {
                 ProjectsScreen(onProjectClick = { projectId -> navController.navigate("projectDetail/" + projectId) })
             }
             composable(Screen.Finance.route) { FinanceScreen() }
-            composable(Screen.Notes.route) { NotesScreen(onNoteClick = { }, onFolderClick = { }) }
+            composable(Screen.Notes.route) { 
+                NotesScreen(
+                    onNoteClick = { id -> navController.navigate("noteEdit/$id") },
+                    onFolderClick = { folderId -> /* handled internally in NotesScreen */ }
+                )
+            }
             composable(Screen.Kanban.route) { KanbanScreen(onTaskClick = { }) }
             composable(Screen.Eisenhower.route) { EisenhowerScreen() }
-            composable(Screen.Search.route) { SearchScreen(onBack = { navController.popBackStack() }, onTaskClick = { }) }
-            composable(Screen.Upcoming.route) { UpcomingScreen(onEditTask = { }) }
+            composable(Screen.Search.route) { 
+                SearchScreen(
+                    onBack = { navController.popBackStack() },
+                    onTaskClick = { },
+                    onNoteClick = { id -> navController.navigate("noteEdit/$id") }
+                )
+            }
+            composable(Screen.Upcoming.route) { UpcomingScreen(onEditTask = { id -> navController.navigate("taskEdit/$id") }) }
             composable(Screen.Tags.route) { TagsScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Profile.route) { ProfileScreen(onBack = { navController.popBackStack() }) }
             composable(Screen.Settings.route) { SettingsScreen(onBack = { navController.popBackStack() }) }
+            composable(
+                route = Screen.TaskEdit.route,
+                arguments = listOf(navArgument("taskId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val taskId = backStackEntry.arguments?.getLong("taskId") ?: 0L
+                TaskEditScreen(taskId = taskId, onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = Screen.NoteEdit.route,
+                arguments = listOf(navArgument("noteId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val noteId = backStackEntry.arguments?.getLong("noteId") ?: 0L
+                NoteEditScreen(noteId = noteId, onBack = { navController.popBackStack() })
+            }
             composable(
                 route = Screen.ProjectDetail.route,
                 arguments = listOf(navArgument("projectId") { type = NavType.LongType })
