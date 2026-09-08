@@ -39,8 +39,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ru
-ntime.setValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
@@ -86,8 +85,7 @@ fun FinanceScreen(
                     Text(
                         stringResource(R.string.finance),
                         style = MaterialTheme.typography.headlineSmall,
-       
-                 fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold
                     )
                 },
                 colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
@@ -135,8 +133,7 @@ fun FinanceScreen(
                 }
             }
         }
-        val importLau
-ncher = rememberLauncherForActivityResult(
+        val importLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.OpenDocument()
         ) { uri ->
             uri?.let {
@@ -188,8 +185,7 @@ ncher = rememberLauncherForActivityResult(
             // Category breakdown (expenses)
             if (state.categoryExpenses.isNotEmpty()) {
                 item {
-                    Catego
-ryBreakdown(
+                    CategoryBreakdown(
                         expenses = state.categoryExpenses,
                         currency = state.currency
                     )
@@ -244,7 +240,8 @@ ryBreakdown(
                             jsonLauncher.launch(exportManager.generateFileName("wolftask_finance", "json"))
                         }) { Text("📦 JSON") }
                         TextButton(onClick = {
-                      
+                  
+    
       importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
                         }) { Text("📥 Импорт") }
                     }
@@ -286,8 +283,7 @@ ryBreakdown(
                     EmptyState(
                         icon = Icons.Filled.AccountBalanceWallet,
                         title = stringResource(R.string.no_transactions),
-                        message = "Здесь появятся ваш
-и доходы и расходы",
+                        message = "Здесь появятся ваши доходы и расходы",
                         actionLabel = stringResource(R.string.add_transaction),
                         onAction = { showAddSheet = true }
                     )
@@ -340,8 +336,7 @@ ryBreakdown(
                 showAddSheet = false
                 editingTx = null
             },
-            editingTransaction = editin
-gTx
+            editingTransaction = editingTx
         )
     }
 }
@@ -394,7 +389,8 @@ private fun BalanceCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            ab.currency,
+                
+            ab.currency,
                             style = MaterialTheme.typography.bodySmall,
                             color = AppTheme.colors.onSurfaceVariant
                         )
@@ -514,8 +510,7 @@ private fun CategoryBreakdown(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        v
-erticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
                         Box(
@@ -552,7 +547,8 @@ private fun GoalCard(state: FinanceUiState) {
         ) {
             Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.goals.forEach { goal ->
-                val progress = if (goal.targetAmount > BigDecimal.ZERO) (goal.savedAmount.toDouble() / goal.targetAmount.toDouble()).coerceIn(0.0, 1.0) else 0.0
+                val progress = if (goal.targ
+etAmount > BigDecimal.ZERO) (goal.savedAmount.toDouble() / goal.targetAmount.toDouble()).coerceIn(0.0, 1.0) else 0.0
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -592,7 +588,8 @@ private fun BudgetCard(state: FinanceUiState) {
             Text("Бюджеты", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.budgets.forEach { (cat, budget) ->
                 val spentBd = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: BigDecimal.ZERO
-                val spent = spentBd.toDouble()
+                val spent = spentBd.t
+oDouble()
                 val budgetAmount = budget.amount.toDouble()
                 val progress = if (budgetAmount > 0) (spent / budgetAmount).coerceIn(0.0, 1.0) else 0.0
                 val isOverBudget = spent > budgetAmount
@@ -634,7 +631,8 @@ private fun AnalyticsCard(state: FinanceUiState) {
         ) {
             Text(
                 stringResource(R.string.analytics),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.
+titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
             AnalyticsRow("Средние траты в день", formatMoney(state.avgDailySpending, state.baseCurrency))
@@ -687,7 +685,8 @@ private fun TransactionRow(
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevatio
+n.none),
         shape = RoundedCornerShape(Radius.lg),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
     ) {
