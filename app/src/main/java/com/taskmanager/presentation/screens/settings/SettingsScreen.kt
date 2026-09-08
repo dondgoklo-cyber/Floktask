@@ -39,8 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.
-platform.LocalContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,12 +47,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.usecase.settings.UserPreferences
+import com.taskmanager.domain.usecase.settings.ThemeMode
 import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.components.AppTextButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
-import com.taskmanager.domain.usecase.settings.ThemeMode
 import com.taskmanager.security.PinMode
 import com.taskmanager.security.PinScreen
 
@@ -91,8 +90,7 @@ fun SettingsScreen(
     }
 
     val exportLauncher = rememberLauncherForActivityResult(
-        ActivityResul
-tContracts.CreateDocument("application/json")
+        ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         uri?.let {
             viewModel.exportToUri(it, onSuccess = {}, onError = {})
@@ -147,8 +145,7 @@ tContracts.CreateDocument("application/json")
             // Имя пользователя
             Text(
                 stringResource(R.string.profile),
-                style = MaterialTheme.typography.titleMediu
-m,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = Spacing.md)
             )
@@ -195,8 +192,7 @@ m,
             } else {
                 SettingsCard(
                     title = stringResource(R.string.pin_create),
-                   
- subtitle = stringResource(R.string.pin_create_subtitle),
+                    subtitle = stringResource(R.string.pin_create_subtitle),
                     icon = Icons.Filled.Lock,
                     onClick = { showPinScreen = PinMode.CREATE }
                 )
@@ -239,8 +235,30 @@ m,
                             userPreferences.hapticEnabled = value
                         }
                     )
-     
-           }
+                }
+            }
+
+            // Основная валюта
+            Text(
+                stringResource(R.string.base_currency),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = Spacing.sm)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+            ) {
+                listOf("RUB", "USD", "EUR", "GBP").forEach { curr ->
+                    FilterChip(
+                        selected = baseCurrency == curr,
+                        onClick = {
+                            baseCurrency = curr
+                            userPreferences.baseCurrency = curr
+                        },
+                        label = { Text(curr) }
+                    )
+                }
             }
 
             // Тема приложения
@@ -266,29 +284,6 @@ m,
                             userPreferences.themeMode = mode
                         },
                         label = { Text(label) }
-                    )
-                }
-            }
-
-            // Основная валюта
-            Text(
-                stringResource(R.string.base_currency),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = Spacing.sm)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
-            ) {
-                listOf("RUB", "USD", "EUR", "GBP").forEach { curr ->
-                    FilterChip(
-                        selected = baseCurrency == curr,
-                        onClick = {
-                            baseCurrency = curr
-                            userPreferences.baseCurrency = curr
-                        },
-                        label = { Text(curr) }
                     )
                 }
             }
@@ -319,8 +314,7 @@ m,
 }
 
 @Composable
-private fun Settin
-gsCard(
+private fun SettingsCard(
     title: String,
     subtitle: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
