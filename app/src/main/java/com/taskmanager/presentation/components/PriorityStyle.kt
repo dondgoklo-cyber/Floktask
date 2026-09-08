@@ -1,8 +1,12 @@
 package com.taskmanager.presentation.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import com.taskmanager.domain.model.Priority
@@ -49,6 +53,15 @@ object PriorityStyles {
             elevation = 0.dp,
             accentColor = MaterialTheme.colorScheme.outline
         )
+    }
+
+    /** Returns icon for priority — triple encoding: color + icon + label */
+    @Composable
+    fun priorityIcon(priority: Priority): ImageVector = when (priority) {
+        Priority.HIGH -> Icons.Filled.FiberManualRecord  // 🔴 red circle
+        Priority.MEDIUM -> Icons.Filled.FiberManualRecord  // 🟡 orange circle
+        Priority.LOW -> Icons.Filled.Circle  // 🟢 green/gray circle
+        Priority.NONE -> Icons.Filled.Circle  // ⚪ neutral
     }
 
     val priorityLabel: (Priority) -> String = { priority ->
