@@ -26,9 +26,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("../keystore/release.keystore")
-            storePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD")
-            keyAlias = System.getenv("ANDROID_SIGNING_ALIAS")
-            keyPassword = System.getenv("ANDROID_SIGNING_PASSWORD")
+            storePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD") ?: "android"
+            keyAlias = System.getenv("ANDROID_SIGNING_ALIAS") ?: "androiddebugkey"
+            keyPassword = System.getenv("ANDROID_SIGNING_PASSWORD") ?: "android"
         }
     }
 
@@ -39,7 +39,7 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
