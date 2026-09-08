@@ -19,14 +19,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -61,14 +64,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -116,14 +122,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
