@@ -114,7 +114,12 @@ fun NavGraph() {
             startDestination = Screen.Today.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Today.route) { TodayScreen() }
+            composable(Screen.Today.route) { 
+                TodayScreen(
+                    onEditTask = { id -> navController.navigate("taskEdit/$id") },
+                    onStartFocus = { id -> navController.navigate("focus?taskId=$id") }
+                ) 
+            }
             composable(Screen.Inbox.route) { InboxScreen(onEditTask = { id -> navController.navigate("taskEdit/$id") }) }
             composable(Screen.Calendar.route) { CalendarScreen() }
             composable(Screen.Habits.route) { HabitsScreen() }
@@ -138,12 +143,18 @@ fun NavGraph() {
                     onFolderClick = { folderId -> /* handled internally in NotesScreen */ }
                 )
             }
-            composable(Screen.Kanban.route) { KanbanScreen(onTaskClick = { }) }
+            composable(Screen.Kanban.route) { 
+                KanbanScreen(
+                    onTaskClick = { id -> /* открывается TaskDetailSheet внутри экрана */ },
+                    onEditTask = { id -> navController.navigate("taskEdit/$id") }
+                ) 
+            }
             composable(Screen.Eisenhower.route) { EisenhowerScreen() }
             composable(Screen.Search.route) { 
                 SearchScreen(
                     onBack = { navController.popBackStack() },
-                    onTaskClick = { },
+                    onTaskClick = { id -> /* открывается TaskDetailSheet внутри экрана */ },
+                    onEditTask = { id -> navController.navigate("taskEdit/$id") },
                     onNoteClick = { id -> navController.navigate("noteEdit/$id") }
                 )
             }
@@ -173,8 +184,9 @@ fun NavGraph() {
                 ProjectDetailScreen(
                     projectId = projectId,
                     onBack = { navController.popBackStack() },
-                    onAddTask = { },
-                    onTaskClick = { }
+                    onAddTask = { /* QuickAddSheet будет подключён в Задании 2 */ },
+                    onTaskClick = { id -> /* открывается TaskDetailSheet внутри экрана */ },
+                    onEditTask = { id -> navController.navigate("taskEdit/$id") }
                 )
             }
         }

@@ -1,21 +1,48 @@
-```
-# Compiled and build artifacts
+```kotlin
+# Kotlin/Android specific
 *.class
-*.o
-*.obj
-*.out
-build/
-# Dependencies
+*.dex
+*.jar
+*.war
+*.apk
+*.aar
+
+# Gradle
 .gradle/
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-# Editors
-.vscode/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android
+*.ap_
+*.aab
+*.so
+*.dll
+*.dylib
+*.exe
+
+# IDE
 .idea/
-# Environment
-.env
-.env.local
-.env.*
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Temp files
+*.tmp
+*.temp
+*.log
+
+# Local configuration
+local.properties
+.settings/
+.problems/
+
+# Coverage
+coverage/
+*.gcda
+*.gcno
+
+# System files
+.DS_Store
+Thumbs.db
 ```

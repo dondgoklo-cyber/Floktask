@@ -81,6 +81,19 @@ fun ProjectDetailScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var viewMode by rememberSaveable { mutableStateOf(ProjectViewMode.LIST) }
+    var detailTaskId by remember { mutableStateOf<Long?>(null) }
+
+    if (detailTaskId != null) {
+        com.taskmanager.presentation.screens.tasks.TaskDetailSheet(
+            taskId = detailTaskId!!,
+            onDismiss = { detailTaskId = null },
+            onEdit = { 
+                detailTaskId = null
+                onEditTask(it)
+            },
+            onStartFocus = { id -> detailTaskId = null }
+        )
+    }
 
     LaunchedEffect(projectId) {
         viewModel.loadProject(projectId)
@@ -222,9 +235,12 @@ private fun ProjectTaskList(
         items(tasks, key = { it.id ?: 0 }) { task ->
             TaskCard(
                 task = task,
-                onClick = { task.id?.let(onTaskClick) },
+                onClick = { 
+                    detailTaskId = task.id
+                    task.id?.let(onTaskClick)
+                },
                 onCheckedChange = { checked ->
-                    if (checked) task.id?.let { /* viewModel.completeTask(it) */ }
+                    if (checked) task.id?.let { viewModel.toggleTaskCompleted(it, true) }
                 },
                 onEditTask = onEditTask
             )

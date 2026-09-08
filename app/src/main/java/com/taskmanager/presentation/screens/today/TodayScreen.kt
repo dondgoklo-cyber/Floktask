@@ -31,7 +31,9 @@ import com.taskmanager.presentation.screens.tasks.TaskDetailSheet
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
-    viewModel: TodayViewModel = hiltViewModel()
+    viewModel: TodayViewModel = hiltViewModel(),
+    onEditTask: (Long) -> Unit = {},
+    onStartFocus: (Long) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var detailTaskId by remember { mutableStateOf<Long?>(null) }
@@ -40,8 +42,14 @@ fun TodayScreen(
         TaskDetailSheet(
             taskId = detailTaskId!!,
             onDismiss = { detailTaskId = null },
-            onEdit = { detailTaskId = null },
-            onStartFocus = { detailTaskId = null }
+            onEdit = { 
+                detailTaskId = null
+                onEditTask(it)
+            },
+            onStartFocus = { 
+                detailTaskId = null
+                onStartFocus(it)
+            }
         )
     }
 
