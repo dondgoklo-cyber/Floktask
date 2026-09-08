@@ -92,7 +92,8 @@ fun CalendarScreen(
                 navigationIcon = {
                     IconButton(onClick = { viewModel.goToPreviousDay() }) {
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
-                    }
+     
+               }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.goToNextDay() }) {
@@ -260,7 +261,8 @@ private fun DraggableTimeBlock(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(end = Spacing.md, top = offsetDp.dp)
+       
+     .padding(end = Spacing.md, top = offsetDp.dp)
             .height(heightDp.dp)
             .pointerInput(task.id) {
                 detectDragGesturesAfterLongPress(
@@ -305,7 +307,8 @@ private fun DraggableTimeBlock(
                 val fmt = DateTimeFormatter.ofPattern("HH:mm")
                 Text(
                     "${task.startTime.atZone(zone).toLocalTime().format(fmt)} - ${endTime.atZone(zone).toLocalTime().format(fmt)}",
-                    style = MaterialTheme.typography.labelSmall,
+                   
+ style = MaterialTheme.typography.labelSmall,
                     color = AppTheme.colors.onSurfaceVariant
                 )
             }
@@ -358,7 +361,8 @@ private fun UntimedTaskChip(task: Task) {
 }
 
 @Composable
-private fun WeekView(state: CalendarUiState, viewModel: CalendarViewModel, days: Int = 7) {
+private fun WeekView(state
+: CalendarUiState, viewModel: CalendarViewModel, days: Int = 7) {
     val startOfWeek = state.selectedDate.with(DayOfWeek.MONDAY)
     val weekDays = (0 until days).map { startOfWeek.plusDays(it.toLong()) }
 
@@ -411,7 +415,8 @@ private fun DaySection(
                 Text(
                     "Нет задач",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppTheme.colors.onSurfaceVariant
+                    color
+ = AppTheme.colors.onSurfaceVariant
                 )
             } else {
                 tasks.forEach { task ->
@@ -462,7 +467,8 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
     ) {
         item {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm),
+          
+      modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 (1..7).forEach { dayNum ->
@@ -502,7 +508,8 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                             .pointerInput(date) {
                                 detectDragGesturesAfterLongPress(
                                     onDragStart = { viewModel.selectDate(date) },
-                                    onDrag = { _, _ -> }
+                                 
+   onDrag = { _, _ -> }
                                 )
                             },
                         contentAlignment = Alignment.TopCenter

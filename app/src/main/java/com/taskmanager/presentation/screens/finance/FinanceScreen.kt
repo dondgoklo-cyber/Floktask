@@ -85,7 +85,8 @@ fun FinanceScreen(
                     Text(
                         stringResource(R.string.finance),
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+       
+                 fontWeight = FontWeight.Bold
                     )
                 },
                 colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
@@ -241,7 +242,8 @@ fun FinanceScreen(
                         }) { Text("📦 JSON") }
                         TextButton(onClick = {
                   
-    
+   
+ 
       importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
                         }) { Text("📥 Импорт") }
                     }
@@ -283,7 +285,8 @@ fun FinanceScreen(
                     EmptyState(
                         icon = Icons.Filled.AccountBalanceWallet,
                         title = stringResource(R.string.no_transactions),
-                        message = "Здесь появятся ваши доходы и расходы",
+                        message = "Здесь появятся в
+аши доходы и расходы",
                         actionLabel = stringResource(R.string.add_transaction),
                         onAction = { showAddSheet = true }
                     )
@@ -390,7 +393,8 @@ private fun BalanceCard(
                     ) {
                         Text(
                 
-            ab.currency,
+    
+        ab.currency,
                             style = MaterialTheme.typography.bodySmall,
                             color = AppTheme.colors.onSurfaceVariant
                         )
@@ -446,7 +450,8 @@ private fun PeriodSummary(income: Double, expense: Double, net: Double, currency
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             PeriodSummaryItem(
-                icon = Icons.Filled.ArrowUpward,
+                icon 
+= Icons.Filled.ArrowUpward,
                 label = stringResource(R.string.income),
                 value = formatSignedMoney(income, currency),
                 color = AppTheme.colors.success
@@ -547,8 +552,7 @@ private fun GoalCard(state: FinanceUiState) {
         ) {
             Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.goals.forEach { goal ->
-                val progress = if (goal.targ
-etAmount > BigDecimal.ZERO) (goal.savedAmount.toDouble() / goal.targetAmount.toDouble()).coerceIn(0.0, 1.0) else 0.0
+                val progress = if (goal.targetAmount > BigDecimal.ZERO) (goal.savedAmount.toDouble() / goal.targetAmount.toDouble()).coerceIn(0.0, 1.0) else 0.0
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -588,16 +592,14 @@ private fun BudgetCard(state: FinanceUiState) {
             Text("Бюджеты", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.budgets.forEach { (cat, budget) ->
                 val spentBd = state.categoryExpenses.find { it.categoryName == cat.name }?.total ?: BigDecimal.ZERO
-                val spent = spentBd.t
-oDouble()
+                val spent = spentBd.toDouble()
                 val budgetAmount = budget.amount.toDouble()
                 val progress = if (budgetAmount > 0) (spent / budgetAmount).coerceIn(0.0, 1.0) else 0.0
                 val isOverBudget = spent > budgetAmount
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Cente
-rVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(cat.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     Text(
@@ -631,8 +633,7 @@ private fun AnalyticsCard(state: FinanceUiState) {
         ) {
             Text(
                 stringResource(R.string.analytics),
-                style = MaterialTheme.typography.
-titleSmall,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
             AnalyticsRow("Средние траты в день", formatMoney(state.avgDailySpending, state.baseCurrency))
@@ -685,8 +686,8 @@ private fun TransactionRow(
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevatio
-n.none),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation
+.none),
         shape = RoundedCornerShape(Radius.lg),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
     ) {
