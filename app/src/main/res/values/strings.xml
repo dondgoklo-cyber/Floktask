@@ -280,8 +280,6 @@
     <string name="batch_delete">Удалить</string>
     <string name="batch_schedule">Дата</string>
     <string name="delete_tasks_confirm">Удалить %1$d задач?</string>
-    <string name="no_project">Без проекта</string>
-    <string name="priority_none">Без приоритета</string>
     <string name="task_created">Задача создана</string>
     <string name="task_completed">Задача выполнена</string>
     <string name="undo">Отменить</string>
