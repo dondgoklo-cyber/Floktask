@@ -26,96 +26,4 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("../keystore/release.keystore")
-            storePassword = System.getenv("ANDROID_SIGNING_STORE_PASSWORD")
-            keyAlias = System.getenv("ANDROID_SIGNING_ALIAS")
-            keyPassword = System.getenv("ANDROID_SIGNING_PASSWORD")
-        }
-    }
-
-    buildTypes {
-        debug {
-            isMinifyEnabled = false
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
-        }
-        release {
-            signingConfig = signingConfigs.getByName("debug")
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true
-    }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
-    lint {
-        abortOnError = false
-        checkReleaseBuilds = false
-    }
-
-    buildFeatures {
-        compose = true
-        buildConfig = true
-        viewBinding = false
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-}
-
-dependencies {
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.navigation.compose)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.svg)
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.glance.material3)
-    implementation(libs.timber)
-    implementation("androidx.security:security-crypto:1.0.0")
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
-    debugImplementation(libs.leakcanary)
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.mockk)
-    testImplementation(libs.mockk.agent.jvm)
-    testImplementation(libs.turbine)
-    testImplementation(libs.room.testing)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-}
+            storePassword = System.getenv('i9I=%}M%9%9}MQ=I}AMM]=I(共̀􁍥͑ѕؠ9I=%}M%9%9}1%L(偅͍ݽɐ􁍥͑ѕؠ9I=%}M%9%9}AMM]=I(����եQ偕́쨀՜쨀͵啹􁙅͔(Aѥ%Mՙ4՜(ٕɍ9Mՙ4՜(��ɕ͔쨀ͥ􁍥̹щ幅՜(͵啹􁙅͔(IՅɑ̠(ёձсɽՅɑIՅɐɽQ锹ѡЈ(IՅɐɕ̹I((����e=Q́쨀ͽՉEѥѤ􁩅مYɍYIM%=9|Ĝ(хɝэEѥѤ􁩅مYɍYIM%=9|Ĝ(͍ɕ1Ʌɥ͕ɥ􁑉Ք(��ѱ=Q́쨀ٵQɝЀ􀈄܈(��Ё쨀ɑ=ɉȀ􁙅͔(I͕	ե̀􁙅͔(��եѕɕ́쨀}͔􁑉Ք(ե􁑉Ք(٥݉􁙅͔(��E쨀ɕͽՉ́쨀፱Ց̀􀈽5Q%9텰ȸ11A0ȸŴ(����)Ú쨀qхѥ̹ѱ͑(qхѥ̹ѱํɽՑ̹ɽ(qхѥ̹ѱํɥ酑ͽ(qхѥ̹ɽํɔѠ(qхѥ̹ɽ๱危ɕѥѠ(qхѥ̹ɽ๱危٥ݵ}͔(qхѥ̹ɽ๱危ɕѥ}͔(qхѥ̹ɽๅѥ٥Ѥ}͔(qхѥqљɴ̹ɽํ}͔(qхѥ̹ɽํ}͔դ(qхѥ̹ɽํ}͔դɅa̤(qхѥ̹ɽํ}͔դѽI٥ܤ(qхѥ̹ɽํ}͔ѕɥ̤(qхѥ̹ɽํ}͔ѕɥ̹ᑕ(qхѥ̹ɽ๹٥ѥ}͔(՝%qхѥ̹ɽํ}͔դѽ(qхѥ̹ɽ้ɕѥ(qхѥ̹ɽ้Ѡ(̹̀ɽ้eȤ(qхѥ̹йɽ(̹̀йeȤ(qхѥ̹ɽ๡й٥ѥ}͔(qхѥ̹}͔(qхѥ̹͙(qхѥ̹ɽ๝AݥФ(qхѥ̹ɽ๝ѕɥ̤(qхѥ̹ѥȤ(qхѥɽํՉѤ鍕ՉѤɥQ脸8(ɕ1Ʌɥ͕ɥ̹͕ȹ̤(՝%qхѥ̹ɤ(ѕ͑%qхѥ̹չФ(ѕ͑%qхѥ̹ѱํɽՑ̹ѕ͐(ѕ͑%qхѥ̹(ѕ͑%qхѥ̹йٴ(ѕ͑%qхѥ̹ѕɉ(ѕ͑%qхѥ̹ɽѕ͑(ɽQ͑%qхѥ̹ɽ๑͐ᐹչФ(ɽQ͑%qхѥ̹ɽ๑͐́ɕ͍ɔ(ɽQ͑%qхѥqљɴ̹ɽํ}͔(ɽQ͑%qхѥ̹ɽํ}͔դѕ͐չА(՝%qхѥ̹ɽํ}͔դѕ͐͐)��
