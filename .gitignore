@@ -1,1 +1,57 @@
-Nothing needs to be added to the .gitignore file since the changes only include YAML workflow configuration files (.github/workflows/build.yml, .github/workflows/ci-checks.yml) which are source/config files that should be tracked in version control. No build artifacts, dependencies, or temporary files are present in the changes.
+```
+# Gradle
+.gradle/
+!gradle/wrapper/
+
+# Kotlin
+.kotlin/
+
+# Android build artifacts
+app/build/
+!app/src/
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+hs_err_pid*.log
+
+# Local configuration
+.local/
+
+# Coverage reports
+coverage/
+htmlcov/
+
+# Python artifacts (if any Python files exist in the project)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Distribution / packaging
+*.tar.gz
+*.whl
+
+# Environment variables
+.env*
+!.env.example
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*~
+```
