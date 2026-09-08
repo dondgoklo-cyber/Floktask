@@ -22,7 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.taskmanager.domain.model.Task
+import com.taskmanager.domain.model.Priority
 
+/**
+ * Старый компонент карточки задачи (будет удалён после завершения Задания 4).
+ * Сейчас используется как временная основа для нового TaskRow.
+ */
 @Composable
 fun TaskCard(
     task: Task,
@@ -69,4 +74,36 @@ fun TaskCard(
             }
         }
     }
+}
+
+/**
+ * Единый компонент строки задачи по эталону Todoist/TickTick.
+ * @param task задача для отображения
+ * @param projectName имя проекта (опционально)
+ * @param projectColorHex цвет проекта в формате HEX (опционально)
+ * @param isCompleted выполнена ли задача
+ * @param priority приоритет задачи
+ * @param onClick клик по строке
+ * @param onCheckedChange изменение состояния чекбокса
+ * @param onLongClick долгое нажатие (для мультивыбора)
+ * @param selected состояние выделения (для мультивыбора)
+ */
+@Composable
+fun TaskRow(
+    task: Task,
+    projectName: String? = null,
+    projectColorHex: String? = null,
+    isCompleted: Boolean = false,
+    priority: Priority = task.priority,
+    onClick: () -> Unit = {},
+    onCheckedChange: (Boolean) -> Unit = {},
+    onLongClick: () -> Unit = {},
+    selected: Boolean? = null
+) {
+    // Временная реализация через TaskCard — будет заменена на полноценный TaskRow в Задании 4
+    TaskCard(
+        task = task,
+        onClick = onClick,
+        onCheckedChange = onCheckedChange
+    )
 }

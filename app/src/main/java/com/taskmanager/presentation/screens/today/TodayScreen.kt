@@ -108,6 +108,13 @@ private fun SectionHeader(text: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskRow(task: Task, accent: Boolean, onClick: () -> Unit) {
+    val deadlineText = task.deadline?.let {
+        val localDate = java.time.Instant.ofEpochMilli(it.toEpochMilli())
+            .atZone(java.time.ZoneId.systemDefault())
+            .toLocalDate()
+        com.taskmanager.presentation.util.RelativeDateFormatter.formatDate(localDate)
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
@@ -122,11 +129,9 @@ private fun TaskRow(task: Task, accent: Boolean, onClick: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
-            task.deadline?.let {
+            deadlineText?.let {
                 Text(
-                    java.time.Instant.ofEpochMilli(it.toEpochMilli())
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .toLocalDate().toString(),
+                    it,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline
                 )

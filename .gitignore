@@ -1,48 +1,19 @@
-```kotlin
-# Kotlin/Android specific
-*.class
-*.dex
-*.jar
-*.war
-*.apk
-*.aar
-
-# Gradle
-.gradle/
+```
+# Build artifacts
 build/
-!gradle/wrapper/gradle-wrapper.jar
-
-# Android
-*.ap_
-*.aab
-*.so
-*.dll
-*.dylib
-*.exe
-
-# IDE
+# Dependencies
+.gradle/
+# IDE files
 .idea/
 *.iml
 *.ipr
 *.iws
-.vscode/
-
+# Logs
+*.log
 # Temp files
 *.tmp
-*.temp
-*.log
-
-# Local configuration
-local.properties
-.settings/
-.problems/
-
-# Coverage
-coverage/
-*.gcda
-*.gcno
-
-# System files
-.DS_Store
-Thumbs.db
+# Environment
+.env
+.env.local
+*.env.*
 ```
