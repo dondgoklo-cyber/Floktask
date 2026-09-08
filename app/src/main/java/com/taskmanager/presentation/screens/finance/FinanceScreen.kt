@@ -39,7 +39,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ru
+ntime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
@@ -85,7 +86,8 @@ fun FinanceScreen(
                     Text(
                         stringResource(R.string.finance),
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+       
+                 fontWeight = FontWeight.Bold
                     )
                 },
                 colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
@@ -133,7 +135,8 @@ fun FinanceScreen(
                 }
             }
         }
-        val importLauncher = rememberLauncherForActivityResult(
+        val importLau
+ncher = rememberLauncherForActivityResult(
             ActivityResultContracts.OpenDocument()
         ) { uri ->
             uri?.let {
@@ -185,7 +188,8 @@ fun FinanceScreen(
             // Category breakdown (expenses)
             if (state.categoryExpenses.isNotEmpty()) {
                 item {
-                    CategoryBreakdown(
+                    Catego
+ryBreakdown(
                         expenses = state.categoryExpenses,
                         currency = state.currency
                     )
@@ -240,7 +244,8 @@ fun FinanceScreen(
                             jsonLauncher.launch(exportManager.generateFileName("wolftask_finance", "json"))
                         }) { Text("📦 JSON") }
                         TextButton(onClick = {
-                            importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
+                      
+      importLauncher.launch(arrayOf("application/json", "text/plain", "*/*"))
                         }) { Text("📥 Импорт") }
                     }
                 }
@@ -281,7 +286,8 @@ fun FinanceScreen(
                     EmptyState(
                         icon = Icons.Filled.AccountBalanceWallet,
                         title = stringResource(R.string.no_transactions),
-                        message = "Здесь появятся ваши доходы и расходы",
+                        message = "Здесь появятся ваш
+и доходы и расходы",
                         actionLabel = stringResource(R.string.add_transaction),
                         onAction = { showAddSheet = true }
                     )
@@ -334,7 +340,8 @@ fun FinanceScreen(
                 showAddSheet = false
                 editingTx = null
             },
-            editingTransaction = editingTx
+            editingTransaction = editin
+gTx
         )
     }
 }
@@ -345,11 +352,18 @@ private fun BalanceCard(
     currency: String,
     balancesByCurrency: List<AccountBalance> = emptyList()
 ) {
+    val balanceColor = when {
+        balance < 0 -> AppTheme.colors.danger
+        balance > 0 -> AppTheme.colors.success
+        else -> AppTheme.colors.onSurfaceVariant
+    }
+    val balancePrefix = if (balance > 0) "+" else ""
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
         shape = RoundedCornerShape(Radius.lg),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.primary)
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surfaceVariant.copy(alpha = 0.4f))
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(Spacing.xl),
@@ -358,19 +372,23 @@ private fun BalanceCard(
             Text(
                 stringResource(R.string.current_balance),
                 style = MaterialTheme.typography.labelLarge,
-                color = AppTheme.colors.onPrimary.copy(alpha = 0.8f)
+                color = AppTheme.colors.onSurfaceVariant
             )
             Spacer(Modifier.height(Spacing.xs))
             Text(
-                formatMoney(balance, currency),
+                balancePrefix + formatMoney(balance, currency),
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
-                color = AppTheme.colors.onPrimary
+                color = balanceColor
             )
-            // Per-currency balances
             if (balancesByCurrency.size > 1) {
                 Spacer(Modifier.height(Spacing.md))
                 balancesByCurrency.forEach { ab ->
+                    val abColor = when {
+                        ab.balance < 0 -> AppTheme.colors.danger
+                        ab.balance > 0 -> AppTheme.colors.success
+                        else -> AppTheme.colors.onSurfaceVariant
+                    }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -378,13 +396,13 @@ private fun BalanceCard(
                         Text(
                             ab.currency,
                             style = MaterialTheme.typography.bodySmall,
-                            color = AppTheme.colors.onPrimary.copy(alpha = 0.7f)
+                            color = AppTheme.colors.onSurfaceVariant
                         )
                         Text(
                             formatMoney(ab.balance, ab.currency),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium,
-                            color = AppTheme.colors.onPrimary.copy(alpha = 0.9f)
+                            color = abColor
                         )
                     }
                 }
@@ -441,7 +459,8 @@ private fun PeriodSummary(income: Double, expense: Double, net: Double, currency
                 icon = Icons.Filled.ArrowDownward,
                 label = stringResource(R.string.expense),
                 value = formatSignedMoney(-expense, currency),
-                color = AppTheme.colors.danger
+              
+  color = AppTheme.colors.danger
             )
             PeriodSummaryItem(
                 icon = Icons.Filled.AccountBalanceWallet,
@@ -495,7 +514,8 @@ private fun CategoryBreakdown(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                        v
+erticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
                         Box(
@@ -538,7 +558,8 @@ private fun GoalCard(state: FinanceUiState) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(goal.title, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                    Text(goal.title, style = MaterialTheme.typography.bodyMedium
+, modifier = Modifier.weight(1f))
                     Text(
                         "${formatMoney(goal.savedAmount, goal.currency)} / ${formatMoney(goal.targetAmount, goal.currency)}",
                         style = MaterialTheme.typography.bodySmall,
@@ -578,7 +599,8 @@ private fun BudgetCard(state: FinanceUiState) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Cente
+rVertically
                 ) {
                     Text(cat.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     Text(
@@ -619,7 +641,8 @@ private fun AnalyticsCard(state: FinanceUiState) {
             AnalyticsRow("Средние траты в месяц", formatMoney(state.avgMonthlySpending, state.baseCurrency))
             AnalyticsRow("Норма сбережений", "${state.savingsRate.toInt()}%")
             state.topIncomeSource?.let { source ->
-                AnalyticsRow("Основной источник дохода", source)
+              
+  AnalyticsRow("Основной источник дохода", source)
             }
             state.largestExpense?.let { tx ->
                 val catName = state.categories.find { it.id == tx.categoryId }?.name ?: tx.note ?: "Расход"
@@ -675,7 +698,8 @@ private fun TransactionRow(
         ) {
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+            
+        .size(36.dp)
                     .clip(CircleShape)
                     .background(
                         (if (categoryColor != null) parseTagColor(categoryColor) else AppTheme.colors.primary)
