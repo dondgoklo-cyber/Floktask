@@ -241,9 +241,9 @@ fun NavGraph() {
             composable(Screen.Focus.route) { FocusScreen(focusTaskId = null) }
             composable(
                 route = Screen.FocusWithTask.route,
-                arguments = listOf(navArgument("taskId") { type = NavType.LongType, nullable = true })
+                arguments = listOf(navArgument("taskId") { type = NavType.LongType })
             ) { backStackEntry ->
-                val taskId = backStackEntry.arguments?.getLong("taskId")
+                val taskId = backStackEntry.arguments.getLong("taskId")
                 FocusScreen(focusTaskId = taskId)
             }
             composable(Screen.Insights.route) { InsightsScreen() }

@@ -547,8 +547,7 @@ private fun GoalCard(state: FinanceUiState) {
         ) {
             Text("Цели", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             state.goals.forEach { goal ->
-                val progress = if (goal.targ
-etAmount > BigDecimal.ZERO) (goal.savedAmount.toDouble() / goal.targetAmount.toDouble()).coerceIn(0.0, 1.0) else 0.0
+                val progress = if (goal.targetAmount > BigDecimal.ZERO) (goal.savedAmount.toDouble() / goal.targetAmount.toDouble()).coerceIn(0.0, 1.0) else 0.0
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -596,8 +595,7 @@ oDouble()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Cente
-rVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(cat.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                     Text(
@@ -685,8 +683,7 @@ private fun TransactionRow(
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        elevation = CardDefaults.cardElevation(defaultElevation = Elevatio
-n.none),
+        elevation = CardDefaults.cardElevation(defaultElevation = Elevation.none),
         shape = RoundedCornerShape(Radius.lg),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.surface)
     ) {

@@ -37,7 +37,7 @@ fun ScheduleTaskSheet(
                     }
                 )
                 ScheduleOption(
-                    label = stringResource(R.string.tomorrow),
+                    label = stringResource(R.string.tomorrow_label),
                     icon = Icons.Filled.DateRange,
                     onClick = {
                         onSchedule(LocalDate.now().plusDays(1))

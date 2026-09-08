@@ -90,7 +90,6 @@ class BatchTaskOperationsUseCase @Inject constructor(
             taskRepository.updateTask(
                 task.copy(
                     deadline = newDeadline,
-                    isSomeday = false,
                     updatedAt = Instant.now()
                 )
             )

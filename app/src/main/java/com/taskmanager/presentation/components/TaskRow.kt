@@ -2,6 +2,7 @@ package com.taskmanager.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -249,7 +250,7 @@ fun TaskRow(
                 )
 
                 // Мета-строка
-                val metaItems = buildMetaList(task, projectName)
+                val metaItems = buildMetaList(task, projectName, projectColor)
                 if (metaItems.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
@@ -291,7 +292,8 @@ fun TaskRow(
 
 data class MetaItem(val icon: ImageVector?, val text: String, val color: Color)
 
-private fun buildMetaList(task: Task, projectName: String?): List<MetaItem> {
+@Composable
+private fun buildMetaList(task: Task, projectName: String?, projectColor: Color?): List<MetaItem> {
     val list = mutableListOf<MetaItem>()
     val now = LocalDate.now()
     
@@ -299,7 +301,6 @@ private fun buildMetaList(task: Task, projectName: String?): List<MetaItem> {
     task.deadline?.let { instant ->
         val localDate = instant.atZone(java.time.ZoneId.systemDefault()).toLocalDate()
         val dateStr = formatDateRelative(localDate, now)
-        val color = if (localDate.isBefore(now) && !task.isCompleted) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant
         val isOverdue = localDate.isBefore(now) && !task.isCompleted
         list.add(MetaItem(Icons.Default.Event, dateStr, if (isOverdue) AppTheme.colors.danger else AppTheme.colors.onSurfaceVariant.copy(alpha = 0.7f)))
     }
@@ -339,11 +340,11 @@ private fun buildMetaList(task: Task, projectName: String?): List<MetaItem> {
 
     // 6. Повтор
     task.recurrenceRule?.let { rule ->
-        val repeatStr = when (rule.frequency) {
-            com.taskmanager.domain.model.Frequency.DAILY -> "ежедн."
-            com.taskmanager.domain.model.Frequency.WEEKLY -> "еженед."
-            com.taskmanager.domain.model.Frequency.MONTHLY -> "ежемес."
-            com.taskmanager.domain.model.Frequency.YEARLY -> "ежегод."
+        val repeatStr = when (rule) {
+            com.taskmanager.domain.model.RecurrenceRule.DAILY -> "ежедн."
+            com.taskmanager.domain.model.RecurrenceRule.WEEKLY -> "еженед."
+            com.taskmanager.domain.model.RecurrenceRule.MONTHLY -> "ежемес."
+            com.taskmanager.domain.model.RecurrenceRule.YEARLY -> "ежегод."
             else -> ""
         }
         if (repeatStr.isNotEmpty()) {
