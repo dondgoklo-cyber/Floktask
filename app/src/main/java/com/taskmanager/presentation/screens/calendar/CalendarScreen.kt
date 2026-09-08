@@ -92,10 +92,7 @@ fun CalendarScreen(
                 navigationIcon = {
                     IconButton(onClick = { viewModel.goToPreviousDay() }) {
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
-    
- 
-
-               }
+                    }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.goToNextDay() }) {
@@ -200,9 +197,7 @@ private fun HourRow(
             .height(HOUR_HEIGHT)
             .clickable {
                 if (hourTasks.isEmpty()) {
-                    viewModel.c
-rea
-teTaskAtTime(state.selectedDate, hour)
+                    viewModel.createTaskAtTime(state.selectedDate, hour)
                 }
             },
         verticalAlignment = Alignment.Top
@@ -265,14 +260,11 @@ private fun DraggableTimeBlock(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-  
-    
-      .padding(end = Spacing.md, top = offsetDp.dp)
+            .padding(end = Spacing.md, top = offsetDp.dp)
             .height(heightDp.dp)
             .pointerInput(task.id) {
                 detectDragGesturesAfterLongPress(
-   
-                 onDragEnd = {
+                    onDragEnd = {
                         val deltaMinutes = with(density) { (dragY / HOUR_HEIGHT.toPx() * 60).roundToInt() }
                         if (deltaMinutes != 0) {
                             onMove(deltaMinutes)
@@ -317,8 +309,7 @@ private fun DraggableTimeBlock(
                     color = AppTheme.colors.onSurfaceVariant
                 )
             }
-            // Resize handle (нижня
-я граница) — перетаскивание меняет длительность
+            // Resize handle (нижняя граница) — перетаскивание меняет длительность
             var resizeY by remember { mutableFloatStateOf(0f) }
             Box(
                 modifier = Modifier
@@ -367,9 +358,7 @@ private fun UntimedTaskChip(task: Task) {
 }
 
 @Composable
-private fun WeekVi
-ew(st
-ate: CalendarUiState, viewModel: CalendarViewModel, days: Int = 7) {
+private fun WeekView(state: CalendarUiState, viewModel: CalendarViewModel, days: Int = 7) {
     val startOfWeek = state.selectedDate.with(DayOfWeek.MONDAY)
     val weekDays = (0 until days).map { startOfWeek.plusDays(it.toLong()) }
 
@@ -422,9 +411,7 @@ private fun DaySection(
                 Text(
                     "Нет задач",
                     style = MaterialTheme.typography.bodySmall,
-                
-    co
-lor = AppTheme.colors.onSurfaceVariant
+                    color = AppTheme.colors.onSurfaceVariant
                 )
             } else {
                 tasks.forEach { task ->
@@ -475,9 +462,7 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
     ) {
         item {
             Row(
-
-       
-         modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm),
+                modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 (1..7).forEach { dayNum ->
@@ -517,9 +502,7 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                             .pointerInput(date) {
                                 detectDragGesturesAfterLongPress(
                                     onDragStart = { viewModel.selectDate(date) },
-                      
-        
-      onDrag = { _, _ -> }
+                                    onDrag = { _, _ -> }
                                 )
                             },
                         contentAlignment = Alignment.TopCenter
@@ -568,9 +551,7 @@ private fun AgendaView(state: CalendarUiState, viewModel: CalendarViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        stringR
-esource(R
-.string.no_scheduled_tasks),
+                        stringResource(R.string.no_scheduled_tasks),
                         color = AppTheme.colors.onSurfaceVariant
                     )
                 }
