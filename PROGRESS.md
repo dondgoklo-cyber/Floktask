@@ -50,7 +50,8 @@
 
 ### ✅ P0-7: Убрать android.app.Application из FinanceViewModel
 - **Статус:** Завершено
-- **Дата:** 6 сентября 2026
+- *
+*Дата:** 6 сентября 2026
 - **Изменения:** Заменен на UserPreferences интерфейс + UserPreferencesImpl реализацию
 - **Коммит:** 17f64e7
 - **Проверка:** FinanceViewModel больше не зависит от Android Application
@@ -110,6 +111,7 @@
 2. 🔄 Разрешить P0-2 (PR #87 Logger абстракция)
 3. ⏳ Начать P0-3 (ViewModel → UseCase рефакторинг)
 
+
 ---
 
 ## 📝 Заметки
@@ -117,3 +119,22 @@
 - 2026-09-06: Начата работа по ТЗ
 - 2026-09-06: PR #88 успешно замерджен
 - 2026-09-06: Обнаружены конфликты при мердже PR #87
+
+
+---
+
+## 🔄 Сессия 2026-09-08 (Vibe Agent)
+
+### ✅ Выполнено:
+- **CI/CD починен:** build.yml — убраны хардкод release notes и хардкод удаления версий
+- **TodayScreen:** русская локализация (Today→Сегодня, Overdue→Просрочено, Due today→На сегодня, Backlog→Бэклог)
+- **TodayScreen:** тап по задаче открывает TaskDetailSheet (ранее не работал)
+- **TodayScreen:** добавлен EmptyState для пустого экрана
+- **KanbanScreen:** цветные фоны колонок (синий/оранжевый/зелёный)
+- **FinanceScreen:** цветовое кодирование баланса (красный/зелёный/серый)
+- **Todoist:** закрыто 27 задач (уже реализованных в коде)
+- **Релиз:** v1.3.0 — push в main запускает build.yml для сборки APK
+
+### Коммиты:
+- 48fdbd9 — fix: Russian localization, colored kanban columns, CI/CD improvements
+- 6f1a4bb — feat: color-coded finance balance
