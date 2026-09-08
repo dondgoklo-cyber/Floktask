@@ -4,12 +4,14 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.taskmanager.domain.logger.Logger
+import com.taskmanager.domain.usecase.settings.ThemeMode
 import com.taskmanager.domain.usecase.settings.UserPreferences
 import com.taskmanager.haptic.HapticManager
 import com.taskmanager.haptic.LocalHapticManager
@@ -56,7 +58,12 @@ class MainActivity : ComponentActivity() {
             // Without this, screens calling rememberHaptic() (Finance, Notes, ...) crash
             // with "No HapticManager provided".
             CompositionLocalProvider(LocalHapticManager provides hapticManager) {
-                TaskManagerTheme {
+                val darkTheme = when (userPreferences.themeMode) {
+                    ThemeMode.LIGHT -> false
+                    ThemeMode.DARK -> true
+                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                }
+                TaskManagerTheme(darkTheme = darkTheme) {
                     val prefs = remember { getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
                     var onboardingDone by remember {
                         mutableStateOf(prefs.getBoolean(KEY_ONBOARDING_DONE, false))

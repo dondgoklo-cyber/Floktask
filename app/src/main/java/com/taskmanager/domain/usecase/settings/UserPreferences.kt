@@ -3,6 +3,9 @@ package com.taskmanager.domain.usecase.settings
 import com.taskmanager.domain.logger.Logger
 import javax.inject.Inject
 
+/** Режим темы приложения: по системе / светлая / тёмная. */
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
 /**
  * Interface for user preferences.
  * Part of Clean Architecture - Presentation layer depends only on abstractions, not concrete implementations.
@@ -16,6 +19,9 @@ interface UserPreferences {
     
     /** Base currency for finance operations (e.g., "RUB", "USD", "EUR") */
     var baseCurrency: String
+
+    /** Режим темы приложения. */
+    var themeMode: ThemeMode
     
     // ─── Pomodoro settings ───
     /** Work phase duration in minutes (default 25) */

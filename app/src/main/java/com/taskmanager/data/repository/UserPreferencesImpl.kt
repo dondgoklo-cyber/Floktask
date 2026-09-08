@@ -2,6 +2,7 @@ package com.taskmanager.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.taskmanager.domain.usecase.settings.ThemeMode
 import com.taskmanager.domain.usecase.settings.UserPreferences
 import javax.inject.Inject
 
@@ -24,6 +25,10 @@ class UserPreferencesImpl @Inject constructor(
         get() = prefs.getString(KEY_BASE_CURRENCY, "RUB") ?: "RUB"
         set(value) = prefs.edit().putString(KEY_BASE_CURRENCY, value).apply()
 
+    override var themeMode: ThemeMode
+        get() = ThemeMode.entries.getOrElse(prefs.getInt(KEY_THEME_MODE, 0)) { ThemeMode.SYSTEM }
+        set(value) = prefs.edit().putInt(KEY_THEME_MODE, value.ordinal).apply()
+
     // ─── Pomodoro settings ───
     override var pomodoroWorkDuration: Int
         get() = prefs.getInt(KEY_POMO_WORK, 25)
@@ -45,7 +50,8 @@ class UserPreferencesImpl @Inject constructor(
         get() = prefs.getBoolean(KEY_POMO_AUTO_BREAKS, false)
         set(value) = prefs.edit().putBoolean(KEY_POMO_AUTO_BREAKS, value).apply()
 
-    override var pomodoroAutoStartPomodoros: Boolean
+    override var pomodoroAutoStartPom
+odoros: Boolean
         get() = prefs.getBoolean(KEY_POMO_AUTO_POMO, false)
         set(value) = prefs.edit().putBoolean(KEY_POMO_AUTO_POMO, value).apply()
 
@@ -90,13 +96,15 @@ class UserPreferencesImpl @Inject constructor(
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_HAPTIC_ENABLED = "haptic_enabled"
         private const val KEY_BASE_CURRENCY = "base_currency"
+        private const val KEY_THEME_MODE = "theme_mode"
         // Pomodoro keys
         private const val KEY_POMO_WORK = "pomo_work_duration"
         private const val KEY_POMO_SHORT_BREAK = "pomo_short_break"
         private const val KEY_POMO_LONG_BREAK = "pomo_long_break"
         private const val KEY_POMO_BEFORE_LONG = "pomo_before_long_break"
         private const val KEY_POMO_AUTO_BREAKS = "pomo_auto_start_breaks"
-        private const val KEY_POMO_AUTO_POMO = "pomo_auto_start_pomodoros"
+        private const val KEY_POMO
+_AUTO_POMO = "pomo_auto_start_pomodoros"
         private const val KEY_POMO_SOUND = "pomo_sound_enabled"
         private const val KEY_POMO_VIBRATION = "pomo_vibration_enabled"
         private const val KEY_POMO_DAILY_GOAL = "pomo_daily_goal"

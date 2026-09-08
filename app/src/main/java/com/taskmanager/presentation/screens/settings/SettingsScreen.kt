@@ -39,7 +39,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.
+platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +53,7 @@ import com.taskmanager.presentation.components.AppTextButton
 import com.taskmanager.presentation.components.AppTextField
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.domain.usecase.settings.ThemeMode
 import com.taskmanager.security.PinMode
 import com.taskmanager.security.PinScreen
 
@@ -70,6 +72,7 @@ fun SettingsScreen(
     var showRemovePinDialog by remember { mutableStateOf(false) }
     var hapticEnabled by remember { mutableStateOf(userPreferences.hapticEnabled) }
     var baseCurrency by remember { mutableStateOf(userPreferences.baseCurrency) }
+    var themeMode by remember { mutableStateOf(userPreferences.themeMode) }
 
     if (showPinScreen != null) {
         PinScreen(
@@ -88,7 +91,8 @@ fun SettingsScreen(
     }
 
     val exportLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/json")
+        ActivityResul
+tContracts.CreateDocument("application/json")
     ) { uri ->
         uri?.let {
             viewModel.exportToUri(it, onSuccess = {}, onError = {})
@@ -143,7 +147,8 @@ fun SettingsScreen(
             // Имя пользователя
             Text(
                 stringResource(R.string.profile),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMediu
+m,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = Spacing.md)
             )
@@ -190,7 +195,8 @@ fun SettingsScreen(
             } else {
                 SettingsCard(
                     title = stringResource(R.string.pin_create),
-                    subtitle = stringResource(R.string.pin_create_subtitle),
+                   
+ subtitle = stringResource(R.string.pin_create_subtitle),
                     icon = Icons.Filled.Lock,
                     onClick = { showPinScreen = PinMode.CREATE }
                 )
@@ -232,6 +238,34 @@ fun SettingsScreen(
                             hapticEnabled = value
                             userPreferences.hapticEnabled = value
                         }
+                    )
+     
+           }
+            }
+
+            // Тема приложения
+            Text(
+                "Тема приложения",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = Spacing.sm)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+            ) {
+                listOf(
+                    ThemeMode.SYSTEM to "Системная",
+                    ThemeMode.LIGHT to "Светлая",
+                    ThemeMode.DARK to "Тёмная"
+                ).forEach { (mode, label) ->
+                    FilterChip(
+                        selected = themeMode == mode,
+                        onClick = {
+                            themeMode = mode
+                            userPreferences.themeMode = mode
+                        },
+                        label = { Text(label) }
                     )
                 }
             }
@@ -285,7 +319,8 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsCard(
+private fun Settin
+gsCard(
     title: String,
     subtitle: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
