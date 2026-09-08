@@ -11,13 +11,16 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import com.taskmanager.domain.usecase.task.CreateTaskUseCase
+import com.taskmanager.domain.usecase.project.GetAllProjectsFlowUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class QuickAddViewModel @Inject constructor(
     private val createTaskUseCase: CreateTaskUseCase,
+    private val getAllProjectsFlowUseCase: GetAllProjectsFlowUseCase,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -59,11 +62,27 @@ class QuickAddViewModel @Inject constructor(
                     null to null
                 }
 
+                // Resolve project name to ID
+                var projectId: Long? = null
+                if (parsed.projectName != null) {
+                    try {
+                        val projects = getAllProjectsFlowUseCase().first()
+                        projectId = projects.find {
+                            it.title.equals(parsed.projectName, ignoreCase = true)
+                        }?.id
+                    } catch (e: Exception) {
+                        logger.error("QuickAddViewModel", "Failed to resolve project", e)
+                    }
+                }
+
                 val task = Task(
                     title = parsed.title,
                     deadline = deadline,
                     startTime = startTime,
-                    durationMinutes = parsed.durationMinutes
+                    durationMinutes = parsed.durationMinutes,
+                    projectId = projectId,
+                    tags = parsed.tags,
+                    priority = parsed.priority ?: Priority.NONE
                 )
                 val id = createTaskUseCase(task)
                 onCreated(id)

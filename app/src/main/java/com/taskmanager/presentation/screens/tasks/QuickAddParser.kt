@@ -1,5 +1,6 @@
 package com.taskmanager.presentation.screens.tasks
 
+import com.taskmanager.domain.model.Priority
 import com.taskmanager.domain.model.Task
 import java.time.LocalDate
 import java.time.LocalTime
@@ -9,13 +10,21 @@ data class ParsedQuickTask(
     val title: String,
     val deadlineDate: LocalDate? = null,
     val startTime: LocalTime? = null,
-    val durationMinutes: Long? = null
+    val durationMinutes: Long? = null,
+    val projectName: String? = null,
+    val tags: List<String> = emptyList(),
+    val priority: Priority? = null
 )
 
 /**
- * Ручной парсер Quick Add (без NLP).
- * Распознаёт ключевые слова: «завтра», «сегодня», «послезавтра»,
- * время в формате ЧЧ:ММ, длительность: «на час», «на 2 часа», «на 30 мин».
+ * Расширенный парсер Quick Add (Rich Quick Add).
+ * Распознаёт:
+ * - Даты: «завтра», «сегодня», «послезавтра», дни недели
+ * - Время: ЧЧ:ММ, «в N»
+ * - Длительность: «на час», «на N (часов/мин)»
+ * - Проект: #НазваниеПроекта (без пробелов)
+ * - Теги: @тег1 @тег2
+ * - Приоритет: p1 (высокий), p2 (средний), p3 (низкий)
  */
 object QuickAddParser {
 
@@ -26,6 +35,35 @@ object QuickAddParser {
         var date: LocalDate? = null
         var time: LocalTime? = null
         var duration: Long? = null
+        var projectName: String? = null
+        val tags = mutableListOf<String>()
+        var priority: Priority? = null
+
+        // Проект: #Название (одно слово, без пробелов)
+        val projectRegex = Regex("#(\\S+)")
+        projectRegex.findAll(text).toList().forEach { match ->
+            projectName = match.groupValues[1]
+            text = text.replace(match.value, "")
+        }
+
+        // Теги: @тег (одно слово, без пробелов)
+        val tagRegex = Regex("@(\\S+)")
+        tagRegex.findAll(text).toList().forEach { match ->
+            tags.add(match.groupValues[1])
+            text = text.replace(match.value, "")
+        }
+
+        // Приоритет: p1/p2/p3 как отдельное слово
+        val priorityRegex = Regex("\\bp([1-3])\\b", RegexOption.IGNORE_CASE)
+        priorityRegex.find(text)?.let { match ->
+            priority = when (match.groupValues[1]) {
+                "1" -> Priority.HIGH
+                "2" -> Priority.MEDIUM
+                "3" -> Priority.LOW
+                else -> null
+            }
+            text = text.replace(match.value, "")
+        }
 
         // Дата
         if (text.contains("сегодня")) {
@@ -39,6 +77,22 @@ object QuickAddParser {
         if (text.contains("завтра")) {
             date = today.plusDays(1)
             text = text.replace("завтра", "").trim()
+        }
+
+        // Дни недели
+        val weekdays = mapOf(
+            "понедельник" to 1, "вторник" to 2, "среда" to 3, "четверг" to 4,
+            "пятница" to 5, "суббота" to 6, "воскресенье" to 7
+        )
+        for ((word, dayOfWeek) in weekdays) {
+            if (text.contains(word)) {
+                val todayDow = today.dayOfWeek.value
+                var diff = dayOfWeek - todayDow
+                if (diff <= 0) diff += 7
+                date = today.plusDays(diff.toLong())
+                text = text.replace(word, "").trim()
+                break
+            }
         }
 
         // Время ЧЧ:ММ
@@ -64,7 +118,7 @@ object QuickAddParser {
             }
         }
 
-        // Длительность: "на час", "на 2 часа", "на 30 мин", "на полтора часа"
+        // Длительность: "на час", "на 2 часа", "на 30 мин", "на полчаса"
         if (text.contains("на час")) {
             duration = 60
             text = text.replace("на час", "").trim()
@@ -99,7 +153,10 @@ object QuickAddParser {
             title = text.ifBlank { input.trim() },
             deadlineDate = date,
             startTime = time,
-            durationMinutes = duration
+            durationMinutes = duration,
+            projectName = projectName,
+            tags = tags,
+            priority = priority
         )
     }
 }
