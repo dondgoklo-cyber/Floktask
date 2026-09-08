@@ -37,8 +37,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getVa
-lue
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,7 +92,8 @@ fun CalendarScreen(
                 navigationIcon = {
                     IconButton(onClick = { viewModel.goToPreviousDay() }) {
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
-     
+    
+ 
 
                }
                 },
@@ -139,8 +139,7 @@ fun CalendarScreen(
                 when (state.viewMode) {
                     CalendarViewMode.DAY -> DayView(state, viewModel)
                     CalendarViewMode.WEEK -> WeekView(state, viewModel)
-                    CalendarViewMode.THREE_DAYS -> WeekView(state, viewM
-odel, days = 3)
+                    CalendarViewMode.THREE_DAYS -> WeekView(state, viewModel, days = 3)
                     CalendarViewMode.MONTH -> MonthView(state, viewModel)
                     CalendarViewMode.AGENDA -> AgendaView(state, viewModel)
                 }
@@ -201,7 +200,8 @@ private fun HourRow(
             .height(HOUR_HEIGHT)
             .clickable {
                 if (hourTasks.isEmpty()) {
-                    viewModel.crea
+                    viewModel.c
+rea
 teTaskAtTime(state.selectedDate, hour)
                 }
             },
@@ -265,7 +265,8 @@ private fun DraggableTimeBlock(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-      
+  
+    
       .padding(end = Spacing.md, top = offsetDp.dp)
             .height(heightDp.dp)
             .pointerInput(task.id) {
@@ -366,7 +367,8 @@ private fun UntimedTaskChip(task: Task) {
 }
 
 @Composable
-private fun WeekView(st
+private fun WeekVi
+ew(st
 ate: CalendarUiState, viewModel: CalendarViewModel, days: Int = 7) {
     val startOfWeek = state.selectedDate.with(DayOfWeek.MONDAY)
     val weekDays = (0 until days).map { startOfWeek.plusDays(it.toLong()) }
@@ -420,7 +422,8 @@ private fun DaySection(
                 Text(
                     "Нет задач",
                     style = MaterialTheme.typography.bodySmall,
-                    co
+                
+    co
 lor = AppTheme.colors.onSurfaceVariant
                 )
             } else {
@@ -472,6 +475,7 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
     ) {
         item {
             Row(
+
        
          modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -513,7 +517,8 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                             .pointerInput(date) {
                                 detectDragGesturesAfterLongPress(
                                     onDragStart = { viewModel.selectDate(date) },
-                              
+                      
+        
       onDrag = { _, _ -> }
                                 )
                             },
@@ -563,7 +568,8 @@ private fun AgendaView(state: CalendarUiState, viewModel: CalendarViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        stringResource(R
+                        stringR
+esource(R
 .string.no_scheduled_tasks),
                         color = AppTheme.colors.onSurfaceVariant
                     )
