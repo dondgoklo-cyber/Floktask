@@ -8,17 +8,12 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Inbox : Screen("inbox", R.string.inbox)
     data object Calendar : Screen("calendar", R.string.calendar)
     data object Habits : Screen("habits", R.string.habits)
-    data object More : Screen("more", R.string.more)
+    data object Finance : Screen("finance", R.string.finance)
 
-    data object Plan : Screen("plan", R.string.plan)
     data object Focus : Screen("focus", R.string.focus)
     data object Insights : Screen("insights", R.string.insights)
     data object Projects : Screen("projects", R.string.projects)
-    data object Finance : Screen("finance", R.string.finance)
     data object Notes : Screen("notes", R.string.notes)
-
-    data object Upcoming : Screen("upcoming", R.string.upcoming)
-    data object Search : Screen("search", R.string.search)
     data object Kanban : Screen("kanban", R.string.kanban)
     data object Tags : Screen("tags", R.string.tags)
     data object Eisenhower : Screen("eisenhower", R.string.eisenhower_matrix)
@@ -27,6 +22,28 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object ProjectDetail : Screen("projectDetail/{projectId}", R.string.projects)
 
     companion object {
-        val bottomNavItems = listOf(Today, Inbox, Calendar, Habits, More)
+        /** 5 фиксированных + 1 настраиваемый слот (по умолчанию Finance) */
+        val bottomNavItems = listOf(Today, Inbox, Calendar, Habits, Finance)
+        
+        /** Пункты для navigation drawer, сгруппированные по секциям */
+        val drawerSections = listOf(
+            DrawerSection(
+                title = "Обзор",
+                items = listOf(Search, Insights, Focus, Upcoming)
+            ),
+            DrawerSection(
+                title = "Рабочее пространство",
+                items = listOf(Projects, Kanban, Notes, Tags, Eisenhower)
+            ),
+            DrawerSection(
+                title = "Аккаунт",
+                items = listOf(Profile, Settings)
+            )
+        )
     }
 }
+
+data class DrawerSection(
+    val title: String,
+    val items: List<Screen>
+)
