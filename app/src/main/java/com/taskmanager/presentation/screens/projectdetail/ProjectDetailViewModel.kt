@@ -7,6 +7,7 @@ import com.taskmanager.domain.model.Note
 import com.taskmanager.domain.model.Project
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
+import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.domain.usecase.note.CreateNoteUseCase
 import com.taskmanager.domain.usecase.note.GetNotesByProjectUseCase
 import com.taskmanager.domain.usecase.project.GetProjectByIdUseCase
@@ -100,5 +101,15 @@ class ProjectDetailViewModel @Inject constructor(
                 logger.error("ProjectDetailViewModel", "Error moving task", e)
             }
     }
+    }
+
+    fun moveTaskToQuadrant(task: Task, quadrant: EisenhowerQuadrant) {
+        viewModelScope.launch {
+            try {
+                updateTaskUseCase(task.copy(eisenhowerQuadrant = quadrant))
+            } catch (e: Exception) {
+                logger.error("ProjectDetailViewModel", "Error moving task to quadrant", e)
+            }
+        }
     }
 }

@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.taskmanager.R
 import com.taskmanager.domain.model.Task
 import com.taskmanager.domain.model.TaskStatus
+import com.taskmanager.domain.model.EisenhowerQuadrant
 import com.taskmanager.presentation.components.AppFloatingActionButton
 import com.taskmanager.presentation.components.EmptyState
 import androidx.compose.material3.Card
@@ -53,7 +54,7 @@ import com.taskmanager.presentation.theme.AppTheme
 import com.taskmanager.presentation.theme.Radius
 import com.taskmanager.presentation.theme.Spacing
 
-private enum class ProjectViewMode { LIST, KANBAN, NOTES }
+private enum class ProjectViewMode { LIST, KANBAN, EISENHOWER, NOTES }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,6 +128,11 @@ fun ProjectDetailScreen(
                     label = { Text(stringResource(R.string.view_kanban)) }
                 )
                 FilterChip(
+                    selected = viewMode == ProjectViewMode.EISENHOWER,
+                    onClick = { viewMode = ProjectViewMode.EISENHOWER },
+                    label = { Text(stringResource(R.string.eisenhower_matrix)) }
+                )
+                FilterChip(
                     selected = viewMode == ProjectViewMode.NOTES,
                     onClick = { viewMode = ProjectViewMode.NOTES },
                     label = { Text(stringResource(R.string.notes)) }
@@ -156,6 +162,12 @@ fun ProjectDetailScreen(
                     ProjectKanbanView(
                         tasks = state.tasks,
                         onMoveTask = { task, status -> viewModel.moveTask(task, status) },
+                        onTaskClick = onTaskClick
+                    )
+                }
+                viewMode == ProjectViewMode.EISENHOWER -> {
+                    ProjectEisenhowerView(
+                        tasks = state.tasks,
                         onTaskClick = onTaskClick
                     )
                 }
@@ -261,6 +273,96 @@ private fun KanbanColumn(
                 onCheckedChange = { }
             )
         }
+    }
+}
+
+@Composable
+private fun ProjectEisenhowerView(
+    tasks: List<Task>,
+    onTaskClick: (Long) -> Unit
+) {
+    val quadrants = EisenhowerQuadrant.entries.associateWith { q ->
+        tasks.filter { it.eisenhowerQuadrant == q }
+    }
+    val unassigned = tasks.filter { it.eisenhowerQuadrant == null }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = Spacing.lg, vertical = Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+    ) {
+        if (unassigned.isNotEmpty()) {
+            item {
+                Text(
+                    "Без квадранта",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AppTheme.colors.onSurfaceVariant
+                )
+            }
+            items(unassigned, key = { it.id ?: 0 }) { task ->
+                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { })
+            }
+        }
+        val doNow = quadrants[EisenhowerQuadrant.DO_NOW] ?: emptyList()
+        if (doNow.isNotEmpty()) {
+            item { QuadrantHeader(R.string.do_now, AppTheme.colors.danger, doNow.size) }
+            items(doNow, key = { it.id ?: 0 }) { task ->
+                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { })
+            }
+        }
+        val schedule = quadrants[EisenhowerQuadrant.SCHEDULE] ?: emptyList()
+        if (schedule.isNotEmpty()) {
+            item { QuadrantHeader(R.string.schedule, AppTheme.colors.info, schedule.size) }
+            items(schedule, key = { it.id ?: 0 }) { task ->
+                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { })
+            }
+        }
+        val delegate = quadrants[EisenhowerQuadrant.DELEGATE] ?: emptyList()
+        if (delegate.isNotEmpty()) {
+            item { QuadrantHeader(R.string.delegate, AppTheme.colors.warning, delegate.size) }
+            items(delegate, key = { it.id ?: 0 }) { task ->
+                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { })
+            }
+        }
+        val eliminate = quadrants[EisenhowerQuadrant.ELIMINATE] ?: emptyList()
+        if (eliminate.isNotEmpty()) {
+            item { QuadrantHeader(R.string.eliminate, AppTheme.colors.outline, eliminate.size) }
+            items(eliminate, key = { it.id ?: 0 }) { task ->
+                TaskCard(task = task, onClick = { task.id?.let(onTaskClick) }, onCheckedChange = { })
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuadrantHeader(
+    titleRes: Int,
+    color: androidx.compose.ui.graphics.Color,
+    count: Int
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs)
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(Radius.full))
+                .background(color.copy(alpha = 0.2f))
+                .padding(horizontal = Spacing.sm, vertical = 2.dp)
+        ) {
+            Text(
+                stringResource(titleRes),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+        }
+        Text(
+            "$count",
+            style = MaterialTheme.typography.labelSmall,
+            color = AppTheme.colors.onSurfaceVariant
+        )
     }
 }
 
