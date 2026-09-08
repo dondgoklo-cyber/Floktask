@@ -92,9 +92,10 @@ class CalendarViewModel @Inject constructor(
         _selectedDate.value = _selectedDate.value.minusWeeks(1)
     }
 
+
     /**
-     * Создаёт новую задачу с временем начала в указанный час выбранного дня.
-     * Вызывается при tap на пустой временной слот в календаре.
+     * Creates a new task starting at the specified hour of the selected day.
+     * Called when tapping an empty time slot in the calendar.
      */
     fun createTaskAtTime(date: LocalDate, hour: Int) {
         viewModelScope.launch {
@@ -102,7 +103,7 @@ class CalendarViewModel @Inject constructor(
                 val startTime = date.atTime(hour, 0).atZone(zone).toInstant()
                 createTaskUseCase(
                     Task(
-                        title = "Новая задача",
+                        title = "New Task",
                         startTime = startTime,
                         deadline = startTime,
                         durationMinutes = 60
@@ -138,7 +139,8 @@ class CalendarViewModel @Inject constructor(
      * Переносит задачу на другой день (без изменения времени).
      */
     fun moveTaskToDate(task: Task, newDate: LocalDate) {
-        viewModelScope.launch {
+        viewModelScope.launch 
+{
             try {
                 val currentTime = task.startTime?.atZone(zone)?.toLocalTime() ?: java.time.LocalTime.NOON
                 val newInstant = newDate.atTime(currentTime).atZone(zone).toInstant()

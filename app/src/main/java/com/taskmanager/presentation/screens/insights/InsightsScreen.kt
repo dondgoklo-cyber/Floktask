@@ -78,7 +78,6 @@ fun InsightsScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(Spacing.md)
             ) {
-                // Задачи
                 item {
                     StatCard(
                         icon = Icons.Filled.CheckCircle,
@@ -93,7 +92,6 @@ fun InsightsScreen(
                     )
                 }
 
-                // Pomodoro
                 item {
                     StatCard(
                         icon = Icons.Filled.Schedule,
@@ -109,7 +107,6 @@ fun InsightsScreen(
                     )
                 }
 
-                // Финансы
                 item {
                     StatCard(
                         icon = Icons.Filled.AccountBalanceWallet,
@@ -124,7 +121,6 @@ fun InsightsScreen(
                     )
                 }
 
-                // Месячная сводка Pomodoro
                 item {
                     StatCard(
                         icon = Icons.Filled.LocalFireDepartment,
