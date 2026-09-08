@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskmanager.domain.logger.Logger
 import com.taskmanager.domain.model.Task
+import com.taskmanager.domain.usecase.task.CreateTaskUseCase
 import com.taskmanager.domain.usecase.task.GetAllTasksUseCase
 import com.taskmanager.domain.usecase.task.UpdateTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +34,7 @@ data class CalendarUiState(
 class CalendarViewModel @Inject constructor(
     private val getAllTasksUseCase: GetAllTasksUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
+    private val createTaskUseCase: CreateTaskUseCase,
     private val logger: Logger
 ) : ViewModel() {
 
@@ -88,6 +90,28 @@ class CalendarViewModel @Inject constructor(
 
     fun goToPreviousWeek() {
         _selectedDate.value = _selectedDate.value.minusWeeks(1)
+    }
+
+    /**
+     * Создаёт новую задачу с временем начала в указанный час выбранного дня.
+     * Вызывается при tap на пустой временной слот в календаре.
+     */
+    fun createTaskAtTime(date: LocalDate, hour: Int) {
+        viewModelScope.launch {
+            try {
+                val startTime = date.atTime(hour, 0).atZone(zone).toInstant()
+                createTaskUseCase(
+                    Task(
+                        title = "Новая задача",
+                        startTime = startTime,
+                        deadline = startTime,
+                        durationMinutes = 60
+                    )
+                )
+            } catch (e: Exception) {
+                logger.error("CalendarViewModel", "Error creating task at time", e)
+            }
+        }
     }
 
     /**

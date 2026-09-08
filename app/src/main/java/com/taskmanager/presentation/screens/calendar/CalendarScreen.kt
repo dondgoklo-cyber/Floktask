@@ -1,6 +1,7 @@
 package com.taskmanager.presentation.screens.calendar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,7 +38,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.getVa
+lue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -92,7 +94,8 @@ fun CalendarScreen(
                 navigationIcon = {
                     IconButton(onClick = { viewModel.goToPreviousDay() }) {
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null)
-                    }
+     
+               }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.goToNextDay() }) {
@@ -136,7 +139,8 @@ fun CalendarScreen(
                 when (state.viewMode) {
                     CalendarViewMode.DAY -> DayView(state, viewModel)
                     CalendarViewMode.WEEK -> WeekView(state, viewModel)
-                    CalendarViewMode.THREE_DAYS -> WeekView(state, viewModel, days = 3)
+                    CalendarViewMode.THREE_DAYS -> WeekView(state, viewMo
+del, days = 3)
                     CalendarViewMode.MONTH -> MonthView(state, viewModel)
                     CalendarViewMode.AGENDA -> AgendaView(state, viewModel)
                 }
@@ -194,12 +198,18 @@ private fun HourRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(HOUR_HEIGHT),
+            .height(HOUR_HEIGHT)
+            .clickable {
+                if (hourTasks.isEmpty()) {
+                    viewModel.createTaskAtTime(state.selectedDate, hour)
+                }
+            },
         verticalAlignment = Alignment.Top
     ) {
         // Метка часа
         Text(
-            text = String.format("%02d:00", hour),
+            text
+ = String.format("%02d:00", hour),
             style = MaterialTheme.typography.labelSmall,
             color = AppTheme.colors.onSurfaceVariant,
             modifier = Modifier.width(48.dp).padding(top = Spacing.xs)
@@ -258,7 +268,8 @@ private fun DraggableTimeBlock(
             .height(heightDp.dp)
             .pointerInput(task.id) {
                 detectDragGesturesAfterLongPress(
-                    onDragEnd = {
+   
+                 onDragEnd = {
                         val deltaMinutes = with(density) { (dragY / HOUR_HEIGHT.toPx() * 60).roundToInt() }
                         if (deltaMinutes != 0) {
                             onMove(deltaMinutes)
@@ -303,7 +314,8 @@ private fun DraggableTimeBlock(
                     color = AppTheme.colors.onSurfaceVariant
                 )
             }
-            // Resize handle (нижняя граница) — перетаскивание меняет длительность
+            // Resize handle (нижня
+я граница) — перетаскивание меняет длительность
             var resizeY by remember { mutableFloatStateOf(0f) }
             Box(
                 modifier = Modifier
@@ -354,7 +366,8 @@ private fun UntimedTaskChip(task: Task) {
 @Composable
 private fun WeekView(state: CalendarUiState, viewModel: CalendarViewModel, days: Int = 7) {
     val startOfWeek = state.selectedDate.with(DayOfWeek.MONDAY)
-    val weekDays = (0 until days).map { startOfWeek.plusDays(it.toLong()) }
+    val weekDays = (0 until days).map { star
+tOfWeek.plusDays(it.toLong()) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -410,7 +423,8 @@ private fun DaySection(
             } else {
                 tasks.forEach { task ->
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                        modifier =
+ Modifier.fillMaxWidth().padding(top = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(Spacing.sm)
                     ) {
@@ -458,7 +472,8 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                (1..7).forEach { dayNum ->
+                (1..7).f
+orEach { dayNum ->
                     Text(
                         DayOfWeek.of(dayNum).getDisplayName(TextStyle.NARROW, Locale("ru")),
                         style = MaterialTheme.typography.labelSmall,
@@ -500,6 +515,7 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                             },
                         contentAlignment = Alignment.TopCenter
                     ) {
+
                         Text(
                             date.dayOfMonth.toString(),
                             style = MaterialTheme.typography.bodySmall,
@@ -549,7 +565,8 @@ private fun AgendaView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 }
             }
         } else {
-            items(sortedDays, key = { it }) { date ->
+            it
+ems(sortedDays, key = { it }) { date ->
                 val tasks = state.timedTasks[date] ?: emptyList()
                 DaySection(
                     date = date,
