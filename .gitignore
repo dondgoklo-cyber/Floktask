@@ -1,43 +1,150 @@
 ```
-# Kotlin/Android build artifacts
-*.class
+# Android build outputs
+app/build/
+*.ap_
+*.apk
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Built application files
+*.apk
+*.aar
+*.ap_
 *.dex
-*.jar
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+gen/
+out/
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Android Studio profiler
+*.hprof
+
+# External Native Build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+
+# NDK
+obj/
+
+# Android Archive Files
 *.aar
 
-# Android specific
-/build/
-.gradle/
-local.properties
-.pro
-captures/
+# Built bundle files
+*.aab
 
-# Dependencies
-node_modules/
-.libs/
+# Unit Tests
+*.test
 
-# IDE files
-.idea/
-*.iml
-*.ipr
-*.iws
-.vscode/
+# Coverage reports
+coverage/
+*.ec
+*.lcov
 
-# Compiled Python files (if any Python present)
+# Project backup files
+*.bak
+
+# Proguard folder generated in Android Studio 2.2 and later
+.proguard/
+
+# Log Files
+*.log
+
+# Android cache files
+.cache/
+
+# Ignore all .swp files
+*.swp
+
+# Environment variable files
+.env
+.env.local
+*.env.*
+
+# Python files
 *.pyc
 __pycache__/
 *.pyo
 *.pyd
-
-# Logs
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 *.log
+.git/modules/
+.gitattributes
+.gitignore
+.pytest_cache/
+.mypy_cache/
 
-# Environment
-.env
-.env.local
-.env.*
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/node_modules/
+/.pnp
+.pnp.js
 
-# OS generated files
-.DS_Store
-Thumbs.db
+# IDE
+.vscode/
+.idea/
+
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+
 ```
