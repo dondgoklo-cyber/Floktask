@@ -81,7 +81,7 @@ fun InsightsScreen(
                 item {
                     StatCard(
                         icon = Icons.Filled.CheckCircle,
-                        iconTint = AppTheme.colors.success,
+                        iconTint = AppTheme.colors.primary,
                         title = "Задачи",
                         mainValue = state.tasksCompletedToday.toString(),
                         mainLabel = "выполнено сегодня",
@@ -152,7 +152,7 @@ private fun StatCard(
         shape = RoundedCornerShape(Radius.lg),
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
         colors = CardDefaults.cardColors(
-            containerColor = AppTheme.colors.surfaceElevated
+            containerColor = AppTheme.colors.surface
         )
     ) {
         Column(
@@ -204,4 +204,4 @@ private fun StatCard(
             }
         }
     }
-}
+}��
