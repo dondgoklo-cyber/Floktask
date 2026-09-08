@@ -173,7 +173,8 @@
     <string name="not_important_not_urgent">Не важное, не срочное</string>
 
     <!-- Inbox / Upcoming -->
-    <string name="inbox_empty_title">Входящих нет</string>
+  
+  <string name="inbox_empty_title">Входящих нет</string>
     <string name="inbox_empty_subtitle">Быстро фиксируйте задачи здесь — без проекта и даты</string>
     <string name="upcoming_empty_title">Предстоящих задач нет</string>
     <string name="upcoming_empty_subtitle">Назначьте задачам дату или срок, чтобы увидеть их здесь</string>
