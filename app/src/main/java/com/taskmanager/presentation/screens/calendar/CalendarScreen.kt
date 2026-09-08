@@ -225,17 +225,19 @@ private fun HourRow(
                     .background(AppTheme.colors.divider)
             )
             hourTasks.forEach { task ->
-                DraggableTimeBlock(
-                    task = task,
-                    hour = hour,
-                    onMove = { deltaMinutes ->
-                        val newStart = task.startTime!!.plusSeconds(deltaMinutes * 60L)
-                        viewModel.updateTaskSchedule(task, newStart, task.durationMinutes)
-                    },
-                    onResize = { newDuration ->
-                        viewModel.updateTaskSchedule(task, task.startTime!!, newDuration)
-                    }
-                )
+                task.startTime?.let { startTime ->
+                    DraggableTimeBlock(
+                        task = task,
+                        hour = hour,
+                        onMove = { deltaMinutes ->
+                            val newStart = startTime.plusSeconds(deltaMinutes * 60L)
+                            viewModel.updateTaskSchedule(task, newStart, task.durationMinutes)
+                        },
+                        onResize = { newDuration ->
+                            viewModel.updateTaskSchedule(task, startTime, newDuration)
+                        }
+                    )
+                }
             }
         }
     }
@@ -301,13 +303,15 @@ private fun DraggableTimeBlock(
                     fontWeight = FontWeight.Medium,
                     maxLines = 1
                 )
-                val endTime = task.startTime!!.plusSeconds(duration * 60)
-                val fmt = DateTimeFormatter.ofPattern("HH:mm")
-                Text(
-                    "${task.startTime.atZone(zone).toLocalTime().format(fmt)} - ${endTime.atZone(zone).toLocalTime().format(fmt)}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = AppTheme.colors.onSurfaceVariant
-                )
+                task.startTime?.let { startTime ->
+                    val endTime = startTime.plusSeconds(duration * 60)
+                    val fmt = DateTimeFormatter.ofPattern("HH:mm")
+                    Text(
+                        "${startTime.atZone(zone).toLocalTime().format(fmt)} - ${endTime.atZone(zone).toLocalTime().format(fmt)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AppTheme.colors.onSurfaceVariant
+                    )
+                }
             }
             // Resize handle (нижняя граница) — перетаскивание меняет длительность
             var resizeY by remember { mutableFloatStateOf(0f) }

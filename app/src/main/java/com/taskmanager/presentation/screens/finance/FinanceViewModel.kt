@@ -404,14 +404,16 @@ class FinanceViewModel @Inject constructor(
     ): List<CategoryExpense> {
         return transactions
             .filter { it.type == TransactionType.EXPENSE && it.categoryId != null }
-            .groupBy { it.categoryId!! }
-            .map { (catId, txs) ->
+            .groupBy { it.categoryId }
+            .mapNotNull { (catId, txs) ->
                 val cat = categories.find { it.id == catId }
-                CategoryExpense(
-                    categoryName = cat?.name ?: "Без категории",
-                    categoryColor = cat?.color,
-                    total = txs.sumOfBigDecimal { it.amount }.toDouble()
-                )
+                cat?.let { category ->
+                    CategoryExpense(
+                        categoryName = category.name ?: "Без категории",
+                        categoryColor = category.color,
+                        total = txs.sumOfBigDecimal { it.amount }.toDouble()
+                    )
+                }
             }
             .sortedByDescending { it.total }
     }

@@ -75,7 +75,7 @@ fun SettingsScreen(
 
     if (showPinScreen != null) {
         PinScreen(
-            mode = showPinScreen!!,
+            mode = showPinScreen,
             userName = userName,
             userPrefs = userPreferences,
             onSuccess = {

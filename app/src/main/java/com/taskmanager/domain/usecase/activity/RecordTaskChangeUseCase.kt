@@ -48,8 +48,9 @@ class RecordTaskChangeUseCase @Inject constructor() {
             )
         }
         // Update — diff fields.
-        val b = before!!
-        val a = after!!
+        val b = before
+        val a = after
+        if (b == null || a == null) return emptyList()
         val events = mutableListOf<ActivityEvent>()
         val base = ActivityEvent(
             taskId = a.id ?: 0,
