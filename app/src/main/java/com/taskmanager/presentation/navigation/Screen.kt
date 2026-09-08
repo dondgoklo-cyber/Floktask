@@ -26,6 +26,10 @@ sealed class Screen(val route: String, @StringRes val labelRes: Int) {
     data object Settings : Screen("settings", R.string.settings)
     data object ProjectDetail : Screen("projectDetail/{projectId}", R.string.projects)
 
+    // Роуты с аргументами для редактирования
+    data object TaskEdit : Screen("taskEdit/{taskId}", R.string.edit_task)
+    data object NoteEdit : Screen("noteEdit/{noteId}", R.string.edit_note)
+
     companion object {
         val bottomNavItems = listOf(Today, Inbox, Calendar, Habits, More)
     }

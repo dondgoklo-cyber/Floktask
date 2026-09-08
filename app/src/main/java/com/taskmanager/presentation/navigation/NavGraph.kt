@@ -48,6 +48,7 @@ import com.taskmanager.presentation.screens.inbox.InboxScreen
 import com.taskmanager.presentation.screens.insights.InsightsScreen
 import com.taskmanager.presentation.screens.kanban.KanbanScreen
 import com.taskmanager.presentation.screens.more.MoreScreen
+import com.taskmanager.presentation.screens.notes.NoteEditScreen
 import com.taskmanager.presentation.screens.notes.NotesScreen
 import com.taskmanager.presentation.screens.profile.ProfileScreen
 import com.taskmanager.presentation.screens.projectdetail.ProjectDetailScreen
@@ -55,6 +56,7 @@ import com.taskmanager.presentation.screens.projects.ProjectsScreen
 import com.taskmanager.presentation.screens.search.SearchScreen
 import com.taskmanager.presentation.screens.settings.SettingsScreen
 import com.taskmanager.presentation.screens.tags.TagsScreen
+import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
 import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
 

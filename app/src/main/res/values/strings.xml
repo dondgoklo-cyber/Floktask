@@ -112,6 +112,7 @@
     <string name="notes">Заметки</string>
     <string name="add_note">Добавить заметку</string>
     <string name="no_notes">Пока нет заметок</string>
+    <string name="edit_note">Редактировать заметку</string>
     <string name="folders">Папки</string>
     <string name="pinned">Закреплённые</string>
     <string name="recent">Недавние</string>
