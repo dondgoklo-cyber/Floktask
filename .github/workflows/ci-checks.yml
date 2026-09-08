@@ -111,20 +111,34 @@ jobs:
           echo "APK found: $APK"
           ls -lh "$APK"
 
-  dependency-check:
-    name: Check Dependencies
+  lint:
+    name: Run Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
-      - name: Check for dependency updates
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run lintDebug
         run: |
-          echo "Checking for dependency updates..."
-          # TODO: uncomment when dependencyUpdates plugin is configured
-          # ./gradlew dependencyUpdates
+          ./gradlew lintDebug --stacktrace --no-daemon --console=plain 2>&1 | tee /tmp/lint-output.log
+          exit ${PIPESTATUS[0]}
+        env:
+          GRADLE_OPTS: "-Xmx4g"
+
+      - name: Upload lint log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-output-log
+          path: /tmp/lint-output.log
+          retention-days: 7

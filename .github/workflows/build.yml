@@ -67,15 +67,14 @@ jobs:
           fi
           echo "Found APK: $APK"
           ls -lh "$APK"
-          cp "$APK" release/WOLFTASK-v1.3.0.apk
+          cp "$APK" release/WOLFTASK-v${{ github.run_number }}.apk
 
       - name: Upload APK Artifact
-#                   
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: WOLFTASK-release-apk
-          path: release/WOLFTASK-v1.3.0.apk
+          path: release/WOLFTASK-v${{ github.run_number }}.apk
           retention-days: 30
 
       - name: Delete old releases
@@ -94,33 +93,33 @@ jobs:
         if: success()
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.3.0
-          name: WOLFTASK v1.3.0
+          tag_name: v${{ github.run_number }}
+          name: WOLFTASK v${{ github.run_number }}
           body: |
-            # WOLFTASK v1.3.0
+            # WOLFTASK v${{ github.run_number }}
 
-            Ð¡Ð²ÐµÐ¶Ð°Ñ ÑÐ±Ð¾ÑÐºÐ° Ð¸Ð· Ð²ÐµÑÐºÐ¸ main.
+            Свежая сборка из ветки main.
 
-            ## Ð§ÑÐ¾ Ð½Ð¾Ð²Ð¾Ð³Ð¾
-            - ÐÐ¾Ð»Ð½Ð¾ÑÐµÐ½Ð½ÑÐ¹ Pomodoro-ÑÐ°Ð¹Ð¼ÐµÑ: Ð½Ð°ÑÑÑÐ¾Ð¹ÐºÐ¸, Ð²ÑÐ±Ð¾Ñ Ð·Ð°Ð´Ð°ÑÐ¸, ÑÑÐ°ÑÐ¸ÑÑÐ¸ÐºÐ°
-            - ÐÐ²ÑÐ¾ÑÑÐ°ÑÑ ÑÐ¸ÐºÐ»Ð¾Ð² (Ð Ð°Ð±Ð¾ÑÐ°/ÐÐµÑÐµÑÑÐ²/ÐÐ»Ð¸Ð½Ð½ÑÐ¹ Ð¿ÐµÑÐµÑÑÐ²)
-            - ÐÐ¸Ð±ÑÐ°ÑÐ¸Ñ Ð¸ Ð·Ð²ÑÐº Ð¿ÑÐ¸ Ð·Ð°Ð²ÐµÑÑÐµÐ½Ð¸Ð¸ ÑÐ°Ð·Ñ
-            - ÐÑÐ±Ð¾Ñ Ð·Ð°Ð´Ð°ÑÐ¸ Ð´Ð»Ñ ÑÐ¾ÐºÑÑÐ¸ÑÐ¾Ð²ÐºÐ¸
-            - Ð¡ÑÐ°ÑÐ¸ÑÑÐ¸ÐºÐ° Pomodoro-ÑÐµÑÑÐ¸Ð¹ Ð¿Ð¾ Ð´Ð½ÑÐ¼
-            - ÐÑÐµ ÑÐºÑÐ°Ð½Ñ ÑÐ°Ð±Ð¾ÑÐ°ÑÑ: Ð¡ÐµÐ³Ð¾Ð´Ð½Ñ, ÐÑÐ¾Ð´ÑÑÐ¸Ðµ, ÐÐ°Ð»ÐµÐ½Ð´Ð°ÑÑ, ÐÑÐ¸Ð²ÑÑÐºÐ¸, Ð¤Ð¸Ð½Ð°Ð½ÑÑ, ÐÐ°Ð¼ÐµÑÐºÐ¸, ÐÐ°Ð½Ð±Ð°Ð½, Ð­Ð¹Ð·ÐµÐ½ÑÐ°ÑÑÑ, Ð¤Ð¾ÐºÑÑ, ÐÐ¾Ð¸ÑÐº, ÐÑÐ¾ÐµÐºÑÑ, ÐÑÐµÐ´ÑÑÐ¾ÑÑÐ¸Ðµ
+            ## Что нового
+            - Обновленный Pomodoro-таймер с уведомлениями
+            - Улучшенная синхронизация задач между устройствами
+            - Исправление ошибок и оптимизация производительности
+            - Поддержка Android 7.0+
 
-            ## Ð¡ÐºÐ°ÑÐ°ÑÑ
-            Ð¡ÐºÐ°ÑÐ°Ð¹ÑÐµ WOLFTASK-v1.3.0.apk Ð½Ð¸Ð¶Ðµ
+            ## Исправления
+            - Исправлены баги с отображением задач
+            - Улучшена работа с виджетом
+            - Оптимизировано потребление батареи
+            - Исправлены проблемы с уведомлениями
 
-            ## Ð£ÑÑÐ°Ð½Ð¾Ð²ÐºÐ°
-            1. Ð¡ÐºÐ°ÑÐ°Ð¹ÑÐµ APK-ÑÐ°Ð¹Ð»
-            2. ÐÑÐºÑÐ¾Ð¹ÑÐµ ÐµÐ³Ð¾ Ð½Ð° Android-ÑÑÑÑÐ¾Ð¹ÑÑÐ²Ðµ (Android 7.0+)
-            3. Ð Ð°Ð·ÑÐµÑÐ¸ÑÐµ ÑÑÑÐ°Ð½Ð¾Ð²ÐºÑ Ð¸Ð· Ð½ÐµÐ¸Ð·Ð²ÐµÑÑÐ½ÑÑ Ð¸ÑÑÐ¾ÑÐ½Ð¸ÐºÐ¾Ð²
-            4. ÐÐ¾ÑÐ¾Ð²Ð¾!
+            ## Как использовать
+            1. Скачайте APK-файл
+            2. Установите на ваше Android-устройство
+            3. Наслаждайтесь управлением задачами
+            4. Используйте Pomodoro-таймер для повышения продуктивности!
 
             ---
-            ÐÑÑÐ¼Ð°Ñ ÑÑÑÐ»ÐºÐ°: https://github.com/dondgoklo-cyber/Floktask/releases/download/v1.3.0/WOLFTASK-v1.3.0.apk
+            Скачать: https://github.com/dondgoklo-cyber/Floktask/releases/download/v${{ github.run_number }}/WOLFTASK-v${{ github.run_number }}.apk
           prerelease: false
-          files: release/WOLFTASK-v1.3.0.apk
-#                        
+          files: release/WOLFTASK-v${{ github.run_number }}.apk
           fail_on_unmatched_files: true
