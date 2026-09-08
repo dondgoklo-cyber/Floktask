@@ -1,7 +1,6 @@
 package com.taskmanager.presentation.screens.calendar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,8 +37,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getVa
-lue
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -139,8 +137,7 @@ fun CalendarScreen(
                 when (state.viewMode) {
                     CalendarViewMode.DAY -> DayView(state, viewModel)
                     CalendarViewMode.WEEK -> WeekView(state, viewModel)
-                    CalendarViewMode.THREE_DAYS -> WeekView(state, viewMo
-del, days = 3)
+                    CalendarViewMode.THREE_DAYS -> WeekView(state, viewModel, days = 3)
                     CalendarViewMode.MONTH -> MonthView(state, viewModel)
                     CalendarViewMode.AGENDA -> AgendaView(state, viewModel)
                 }
@@ -366,8 +363,7 @@ private fun UntimedTaskChip(task: Task) {
 @Composable
 private fun WeekView(state: CalendarUiState, viewModel: CalendarViewModel, days: Int = 7) {
     val startOfWeek = state.selectedDate.with(DayOfWeek.MONDAY)
-    val weekDays = (0 until days).map { star
-tOfWeek.plusDays(it.toLong()) }
+    val weekDays = (0 until days).map { startOfWeek.plusDays(it.toLong()) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -472,8 +468,7 @@ private fun MonthView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.sm),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                (1..7).f
-orEach { dayNum ->
+                (1..7).forEach { dayNum ->
                     Text(
                         DayOfWeek.of(dayNum).getDisplayName(TextStyle.NARROW, Locale("ru")),
                         style = MaterialTheme.typography.labelSmall,
@@ -565,8 +560,7 @@ private fun AgendaView(state: CalendarUiState, viewModel: CalendarViewModel) {
                 }
             }
         } else {
-            it
-ems(sortedDays, key = { it }) { date ->
+            items(sortedDays, key = { it }) { date ->
                 val tasks = state.timedTasks[date] ?: emptyList()
                 DaySection(
                     date = date,
