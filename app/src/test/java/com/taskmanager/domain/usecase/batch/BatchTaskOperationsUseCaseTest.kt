@@ -100,5 +100,39 @@ class BatchTaskOperationsUseCaseTest {
         assertEquals(0, useCase.complete(emptyList(), true).affected)
         assertEquals(0, useCase.delete(emptyList()).affected)
         assertEquals(0, useCase.moveToProject(emptyList(), null).affected)
+        assertEquals(0, useCase.setPriority(emptyList(), Priority.HIGH).affected)
+        assertEquals(0, useCase.moveToDate(emptyList(), null).affected)
+    }
+
+    @Test
+    fun `setPriority updates priority on all selected`() = runTest {
+        val ids = seed(3)
+        val result = useCase.setPriority(ids, Priority.HIGH)
+        assertEquals(3, result.affected)
+        ids.forEach { id -> assertEquals(Priority.HIGH, store[id]?.priority) }
+    }
+
+    @Test
+    fun `moveToDate sets deadline on all selected`() = runTest {
+        val ids = seed(2)
+        val testDate = LocalDate.of(2026, 9, 15)
+        val result = useCase.moveToDate(ids, testDate)
+        assertEquals(2, result.affected)
+        ids.forEach { id ->
+            val task = store[id]!!
+            assertEquals(testDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant(), task.deadline)
+            assertEquals(false, task.isSomeday)
+        }
+    }
+
+    @Test
+    fun `moveToDate with null clears deadline`() = runTest {
+        val ids = seed(1)
+        // First set a date
+        useCase.moveToDate(ids, LocalDate.of(2026, 9, 15))
+        // Then clear it
+        val result = useCase.moveToDate(ids, null)
+        assertEquals(1, result.affected)
+        assertEquals(null, store[ids[0]]?.deadline)
     }
 }
