@@ -380,4 +380,4 @@ private fun TaskPickerDialog(state: FocusUiState, viewModel: FocusViewModel) {
             }
         },
         confirmButton = { TextButton(onClick = viewModel::hideTaskPicker) { Text("Закрыть") } }
-    )��
+    )
