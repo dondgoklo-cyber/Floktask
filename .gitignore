@@ -1,55 +1,43 @@
 ```
-# Dependencies
-.gradle/
-node_modules/
-
-# Build artifacts
-build/
-dist/
-target/
-
-# Compiled files
+# Kotlin/Android build artifacts
 *.class
-*.o
-*.obj
-*.so
-*.dll
-*.exe
+*.dex
+*.jar
+*.aar
 
-# Environment
-.env
-.env.local
-*.env.*
+# Android specific
+/build/
+.gradle/
+local.properties
+.pro
+captures/
 
-# Editors
-.vscode/
+# Dependencies
+node_modules/
+.libs/
+
+# IDE files
 .idea/
-*.swp
-*.swo
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Compiled Python files (if any Python present)
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
 
 # Logs
 *.log
 
-# Temp files
-*.tmp
+# Environment
+.env
+.env.local
+.env.*
 
-# Python specific
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-
-# Java/Kotlin specific
-*.class
-*.jar
-*.war
-*.ear
-*.nar
-*.hprof
-
-# Gradle
-.gradle/
-!gradlew
+# OS generated files
+.DS_Store
+Thumbs.db
 ```

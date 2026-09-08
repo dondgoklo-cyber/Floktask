@@ -40,17 +40,22 @@ class TasksViewModel @Inject constructor(
     }
 
     fun createTask(title: String) {
-        viewModelScope.launch { createTaskUseCase(Task(title = title)) }
+        viewModelScope.launch { 
+            createTaskUseCase(Task(title = title, priority = com.taskmanager.domain.model.Priority.MEDIUM)) 
+        }
     }
 
     fun toggleComplete(task: Task) {
         viewModelScope.launch {
-            updateTaskUseCase(task.copy(isCompleted = !task.isCompleted))
+            updateTaskUseCase(task.copy(isCompleted = !task.isCompleted, updatedAt = System.currentTimeMillis()))
         }
     }
 
     fun deleteTask(taskId: Long) {
-        viewModelScope.launch { deleteTaskUseCase(taskId) }
+        viewModelScope.launch { 
+            deleteTaskUseCase(taskId)
+            loadTasks() // Перезагружаем список после удаления
+        }
     }
 }
 

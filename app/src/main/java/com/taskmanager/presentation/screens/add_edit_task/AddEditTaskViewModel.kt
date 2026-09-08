@@ -19,8 +19,8 @@ data class AddEditTaskUiState(
     val taskId: Long? = null,
     val title: String = "",
     val description: String = "",
-    val dueDate: Date? = null,
-    val priority: Priority = Priority.NONE,
+    val deadline: Long? = null,
+    val priority: Priority = Priority.MEDIUM,
     val projectId: Long? = null,
     val tagIds: List<Long> = emptyList(),
     val isLoading: Boolean = false,
@@ -55,8 +55,8 @@ class AddEditTaskViewModel @Inject constructor(
                     _uiState.value = _uiState.value.copy(
                         taskId = task.id,
                         title = task.title,
-                        description = task.description,
-                        dueDate = task.dueDate,
+                        description = task.description.orEmpty(),
+                        deadline = task.deadline,
                         priority = task.priority,
                         projectId = task.projectId,
                         tagIds = task.tagIds,
@@ -87,8 +87,8 @@ class AddEditTaskViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(description = description)
     }
 
-    fun updateDueDate(date: Date?) {
-        _uiState.value = _uiState.value.copy(dueDate = date)
+    fun updateDeadline(deadline: Long?) {
+        _uiState.value = _uiState.value.copy(deadline = deadline)
     }
 
     fun updatePriority(priority: Priority) {
@@ -119,20 +119,19 @@ class AddEditTaskViewModel @Inject constructor(
             _uiState.value = currentState.copy(isLoading = true)
             
             try {
+                val existingTask = currentState.taskId?.let { getTaskByIdUseCase(it) }
+                
                 val task = Task(
                     id = currentState.taskId,
                     title = currentState.title.trim(),
                     description = currentState.description.trim(),
-                    dueDate = currentState.dueDate,
+                    deadline = currentState.deadline,
                     priority = currentState.priority,
                     projectId = currentState.projectId,
                     tagIds = currentState.tagIds,
-                    isCompleted = currentState.taskId != null && currentState.taskId > 0 
-                        && getTaskByIdUseCase(currentState.taskId!!)?.isCompleted == true,
-                    createdAt = currentState.taskId != null && currentState.taskId > 0 
-                        ? getTaskByIdUseCase(currentState.taskId!!)?.createdAt ?: Date() 
-                        : Date(),
-                    updatedAt = Date()
+                    isCompleted = existingTask?.isCompleted ?: false,
+                    createdAt = existingTask?.createdAt ?: System.currentTimeMillis(),
+                    updatedAt = System.currentTimeMillis()
                 )
 
                 saveTaskUseCase(task)

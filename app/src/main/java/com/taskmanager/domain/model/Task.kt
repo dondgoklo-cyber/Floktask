@@ -7,14 +7,15 @@ data class Task(
     val title: String,
     val description: String? = null,
     val projectId: Long? = null,
-    val priority: Priority = Priority.NONE,
-    val deadline: Instant? = null,
+    val priority: Priority = Priority.MEDIUM,
+    val deadline: Long? = null, // Timestamp in milliseconds
     val isCompleted: Boolean = false,
-    val createdAt: Instant = Instant.now(),
-    val updatedAt: Instant = Instant.now(),
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis(),
     val color: String? = null,
-    val reminderDate: Instant? = null,
-    val recurrenceRule: RecurrenceRule? = null
+    val reminderDate: Long? = null,
+    val recurrenceRule: RecurrenceRule? = null,
+    val tagIds: List<Long> = emptyList()
 )
 
 enum class Priority(val value: Int) {

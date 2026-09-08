@@ -24,10 +24,10 @@ class LocalNotificationManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     companion object {
-        private const val CHANNEL_ID = "task_deadlines"
+        const val CHANNEL_ID = "task_deadlines"
         private const val CHANNEL_NAME = "Напоминания о задачах"
         private const val CHANNEL_DESCRIPTION = "Уведомления о приближающихся дедлайнах"
-        private const val REQUEST_CODE_PREFIX = 1000
+        const val REQUEST_CODE_PREFIX = 1000
     }
 
     init {
@@ -68,46 +68,30 @@ class LocalNotificationManager @Inject constructor(
             return
         }
 
-        task.dueDate?.let { dueDate ->
+        task.deadline?.let { deadline ->
             val currentTime = System.currentTimeMillis()
-            val dueTime = dueDate.time
 
             // Планируем уведомление за 1 час до дедлайна
-            val reminderTime = dueTime - (60 * 60 * 1000) // 1 час до дедлайна
+            val reminderTime = deadline - (60 * 60 * 1000) // 1 час до дедлайна
             
             // Если время напоминания уже прошло, но дедлайн ещё не наступил - показываем сейчас
             val triggerTime = when {
                 reminderTime > currentTime -> reminderTime
-                dueTime > currentTime -> currentTime
+                deadline > currentTime -> currentTime
                 else -> return // Дедлайн уже прошёл
             }
 
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intent = Intent(context, Task::class.java).apply {
+            val intent = Intent(context, TaskReminderReceiver::class.java).apply {
                 putExtra("TASK_ID", task.id)
                 putExtra("TASK_TITLE", task.title)
-                putExtra("TASK_DUE_DATE", dueTime)
+                putExtra("TASK_DUE_DATE", deadline)
             }
             
-            // Создаём PendingIntent для открытия задачи при клике
-            val pendingIntent = PendingIntent.getActivity(
+            val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                (REQUEST_CODE_PREFIX + (task.id ?: 0)).toInt(),
-                Intent(context, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                },
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-
-            // Создаём PendingIntent для BroadcastReceiver (если нужен)
-            val broadcastIntent = Intent(context, Task::class.java).apply {
-                putExtra("TASK_ID", task.id)
-                putExtra("TASK_TITLE", task.title)
-            }
-            val broadcastPendingIntent = PendingIntent.getBroadcast(
-                context,
-                (REQUEST_CODE_PREFIX + (task.id ?: 0)).toInt(),
-                broadcastIntent,
+                (REQUEST_CODE_PREFIX + task.id.toInt()),
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
@@ -115,7 +99,7 @@ class LocalNotificationManager @Inject constructor(
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 triggerTime,
-                broadcastPendingIntent
+                pendingIntent
             )
 
             // Немедленно показываем уведомление, если время уже настало
@@ -132,11 +116,12 @@ class LocalNotificationManager @Inject constructor(
 
         val notificationIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("TASK_ID", task.id)
         }
 
         val pendingIntent = PendingIntent.getActivity(
             context,
-            (REQUEST_CODE_PREFIX + (task.id ?: 0)).toInt(),
+            (REQUEST_CODE_PREFIX + task.id.toInt()),
             notificationIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -151,7 +136,7 @@ class LocalNotificationManager @Inject constructor(
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("📋 Напоминание о задаче")
             .setContentText(task.title)
-            .setSubText(task.dueDate?.let { "Дедлайн: ${android.text.format.DateFormat.format("dd MMM yyyy", it)}" })
+            .setSubText(task.deadline?.let { "Дедлайн: ${android.text.format.DateFormat.format("dd MMM yyyy", it)}" })
             .setPriority(priority)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
@@ -159,20 +144,20 @@ class LocalNotificationManager @Inject constructor(
             .build()
 
         NotificationManagerCompat.from(context).notify(
-            (REQUEST_CODE_PREFIX + (task.id ?: 0)).toInt(),
+            (REQUEST_CODE_PREFIX + task.id.toInt()),
             notification
         )
     }
 
     fun cancelTaskReminder(taskId: Long) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, Task::class.java).apply {
+        val intent = Intent(context, TaskReminderReceiver::class.java).apply {
             putExtra("TASK_ID", taskId)
         }
         
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            (REQUEST_CODE_PREFIX + taskId.toInt()).toInt(),
+            (REQUEST_CODE_PREFIX + taskId.toInt()),
             intent,
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
@@ -184,7 +169,7 @@ class LocalNotificationManager @Inject constructor(
 
         // Также отменяем уведомление
         NotificationManagerCompat.from(context).cancel(
-            (REQUEST_CODE_PREFIX + taskId.toInt()).toInt()
+            (REQUEST_CODE_PREFIX + taskId.toInt())
         )
     }
 
@@ -193,7 +178,7 @@ class LocalNotificationManager @Inject constructor(
         
         // Отменяем все наши будильники (в диапазоне разумных ID)
         for (i in 0 until 1000) {
-            val intent = Intent(context, Task::class.java).apply {
+            val intent = Intent(context, TaskReminderReceiver::class.java).apply {
                 putExtra("TASK_ID", i.toLong())
             }
             
