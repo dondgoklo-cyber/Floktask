@@ -42,7 +42,8 @@ import com.taskmanager.presentation.theme.Spacing
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsightsScreen(
-    viewModel: InsightsViewModel = hiltViewModel()
+ 
+   viewModel: InsightsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -96,7 +97,8 @@ fun InsightsScreen(
                     StatCard(
                         icon = Icons.Filled.Schedule,
                         iconTint = AppTheme.colors.primary,
-                        title = "Фокус (Pomodoro)",
+             
+           title = "Фокус (Pomodoro)",
                         mainValue = state.pomodoroStats.todayCount.toString(),
                         mainLabel = "сессий сегодня",
                         secondaryValues = listOf(
@@ -148,7 +150,8 @@ private fun StatCard(
     secondaryValues: List<String>
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Mod
+ifier.fillMaxWidth(),
         shape = RoundedCornerShape(Radius.lg),
         elevation = CardDefaults.cardElevation(defaultElevation = Elevation.sm),
         colors = CardDefaults.cardColors(
@@ -204,4 +207,4 @@ private fun StatCard(
             }
         }
     }
-}��
+}
