@@ -258,7 +258,7 @@ fun TaskRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         metaItems.forEachIndexed { index, meta ->
-                            MetaItem(meta.icon, meta.text, meta.color)
+                            MetaItemRow(meta.icon, meta.text, meta.color)
                             if (index < metaItems.lastIndex) {
                                 // Разделитель точка, если нужно, или просто отступ
                                 // В ТЗ сказано "порядок фиксированный", точки между элементами не обязательны если есть отступы
@@ -363,7 +363,7 @@ private fun buildMetaList(task: Task, projectName: String?, projectColor: Color?
 }
 
 @Composable
-private fun MetaItem(icon: ImageVector?, text: String, color: Color) {
+private fun MetaItemRow(icon: ImageVector?, text: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         if (icon != null) {
             Icon(

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Inbox
@@ -88,7 +89,8 @@ import com.taskmanager.presentation.screens.tasks.TaskEditScreen
 import com.taskmanager.presentation.screens.today.TodayScreen
 import com.taskmanager.presentation.screens.upcoming.UpcomingScreen
 import com.taskmanager.presentation.screens.voice.VoiceTaskSheet
-import com.taskmanager.presentation.viewmodel.tasks.QuickAddViewModel
+import com.taskmanager.presentation.theme.Spacing
+import com.taskmanager.presentation.screens.tasks.QuickAddViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -238,13 +240,13 @@ fun NavGraph() {
             composable(Screen.Calendar.route) { CalendarScreen() }
             composable(Screen.Habits.route) { HabitsScreen() }
             composable(Screen.More.route) { MoreScreen(onNavigate = { route -> navController.navigate(route) }) }
-            composable(Screen.Focus.route) { FocusScreen(focusTaskId = null) }
+            composable(Screen.Focus.route) { FocusScreen() }
             composable(
                 route = Screen.FocusWithTask.route,
                 arguments = listOf(navArgument("taskId") { type = NavType.LongType })
             ) { backStackEntry ->
-                val taskId = backStackEntry.arguments.getLong("taskId")
-                FocusScreen(focusTaskId = taskId)
+                // FocusScreen не принимает focusTaskId напрямую, задача берется из SavedStateHandle в ViewModel
+                FocusScreen()
             }
             composable(Screen.Insights.route) { InsightsScreen() }
             composable(Screen.Projects.route) {
@@ -281,14 +283,14 @@ fun NavGraph() {
                 arguments = listOf(navArgument("taskId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val taskId = backStackEntry.arguments?.getLong("taskId") ?: 0L
-                TaskEditScreen(taskId = taskId, onBack = { navController.popBackStack() })
+                TaskEditScreen(onBack = { navController.popBackStack() })
             }
             composable(
                 route = Screen.NoteEdit.route,
                 arguments = listOf(navArgument("noteId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val noteId = backStackEntry.arguments?.getLong("noteId") ?: 0L
-                NoteEditScreen(noteId = noteId, onBack = { navController.popBackStack() })
+                NoteEditScreen(onBack = { navController.popBackStack() })
             }
             composable(
                 route = Screen.ProjectDetail.route,
